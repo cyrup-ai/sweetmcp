@@ -263,16 +263,6 @@ release/
 chrome_data*/
 
 # Assets and large files
-*.fig
-*.gif
-*.mp4
-*.png
-*.svg
-*.ico
-*.icns
-*.jpg
-assets/
-*/assets/
 tokenizer_files/
 
 # Temporary and Cache directories
