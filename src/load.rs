@@ -5,6 +5,7 @@ use sysinfo::System;
 
 pub struct Load {
     inflight: AtomicU64,
+    #[allow(dead_code)]
     sys: System,
     cpus: usize,
 }

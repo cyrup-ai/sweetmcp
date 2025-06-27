@@ -10,19 +10,34 @@ mod load;
 mod metric_picker;
 mod mcp_bridge;
 mod edge;
+mod peer_discovery;
+mod dns_discovery;
+mod mdns_discovery;
+mod metrics;
+mod tls;
+mod crypto;
+mod circuit_breaker;
+mod shutdown;
+mod rate_limit;
 
 use anyhow::Result;
 use config::Config;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
-use opentelemetry::{global, KeyValue};
-use opentelemetry_sdk::Resource;
+use opentelemetry::global;
 use opentelemetry_prometheus::PrometheusExporter;
-use pingora::server::{configuration::Opt, Server};
+use pingora::server::Server;
 use std::sync::Arc;
 use tokio::sync::mpsc;
 
 #[tokio::main(flavor = "multi_thread")]
-async fn main() -> Result<()> {
+async fn main() {
+    if let Err(e) = run_server().await {
+        eprintln!("🚫 SweetMCP Server failed to start: {}", e);
+        std::process::exit(1);
+    }
+}
+
+async fn run_server() -> Result<()> {
     // Initialize structured logging
     init_logging()?;
     
@@ -44,11 +59,48 @@ async fn main() -> Result<()> {
     });
     
     // Create server with default options
-    let mut server = Server::new(None).unwrap();
+    let mut server = Server::new(None)
+        .map_err(|e| anyhow::anyhow!("Failed to create Pingora server: {}", e))?;
     server.bootstrap();
     
+    // Create peer registry
+    let peer_registry = peer_discovery::PeerRegistry::new();
+    
+    // Extract port from TCP bind address
+    let local_port = cfg.tcp_bind.split(':')
+        .last()
+        .and_then(|p| p.parse::<u16>().ok())
+        .unwrap_or(8443);
+    
+    // Primary discovery: DNS-based (if configured)
+    if let Some(service_name) = dns_discovery::should_use_dns_discovery() {
+        let dns_discovery = dns_discovery::DnsDiscovery::new(
+            service_name.clone(),
+            peer_registry.clone(),
+            None, // Use default DoH servers
+        );
+        tokio::spawn(async move {
+            tracing::info!("🌍 Starting DNS discovery for: {}", service_name);
+            dns_discovery.run().await;
+        });
+    } else {
+        // Fallback: mDNS for local network discovery
+        let mdns_discovery = mdns_discovery::MdnsDiscovery::new(peer_registry.clone(), local_port);
+        tokio::spawn(async move {
+            tracing::info!("🔍 Starting mDNS local discovery");
+            mdns_discovery.run().await;
+        });
+    }
+    
+    // Always start HTTP-based peer exchange for mesh formation
+    let discovery_service = peer_discovery::DiscoveryService::new(peer_registry.clone());
+    tokio::spawn(async move {
+        tracing::info!("🔄 Starting HTTP peer exchange");
+        discovery_service.run().await;
+    });
+    
     // Create HTTP proxy service
-    let edge_service = edge::EdgeService::new(cfg.clone(), bridge_tx.clone());
+    let edge_service = edge::EdgeService::new(cfg.clone(), bridge_tx.clone(), peer_registry.clone());
     let mut proxy_service = pingora_proxy::http_proxy_service(&server.configuration, edge_service);
     
     // Add TCP listener
@@ -72,11 +124,8 @@ async fn main() -> Result<()> {
     tracing::info!("  UDS: {}", cfg.uds_path);
     tracing::info!("  Metrics: http://{}/metrics", cfg.metrics_bind);
     
-    // Run the server
+    // Run the server - this never returns
     server.run_forever();
-    
-    tracing::info!("🛑 SweetMCP Server shutdown complete");
-    Ok(())
 }
 
 fn init_logging() -> Result<()> {

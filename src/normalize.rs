@@ -7,12 +7,14 @@ use mcp_rust_sdk::{Request, protocol::RequestId};
 use serde_json::{json, Value};
 use uuid::Uuid;
 
+#[allow(dead_code)]
 pub enum Proto {
     GraphQL,
     JsonRpc,
     Capnp,
 }
 
+#[allow(dead_code)]
 pub fn to_mcp(_user: &str, body: &[u8]) -> Result<(Proto, Request)> {
     if let Ok(v) = serde_json::from_slice::<Value>(body) {
         if v.get("jsonrpc").is_some() {

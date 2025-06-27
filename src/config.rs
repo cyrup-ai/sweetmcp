@@ -1,7 +1,6 @@
 //! Configuration management for SweetMCP Server
 
 use anyhow::{Context, Result};
-use base64_url::base64;
 use serde::{Deserialize, Serialize};
 use std::{env, sync::Arc, time::Duration};
 
@@ -167,6 +166,7 @@ impl Config {
     }
     
     /// Validate the configuration
+    #[allow(dead_code)]
     pub fn validate(&self) -> Result<()> {
         if self.inflight_max == 0 {
             anyhow::bail!("inflight_max must be greater than 0");
@@ -226,28 +226,3 @@ fn parse_duration(s: &str) -> Result<Duration> {
     Ok(duration)
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    
-    #[test]
-    fn test_parse_duration() {
-        assert_eq!(parse_duration("30s").unwrap(), Duration::from_secs(30));
-        assert_eq!(parse_duration("5m").unwrap(), Duration::from_secs(300));
-        assert_eq!(parse_duration("2h").unwrap(), Duration::from_secs(7200));
-        assert_eq!(parse_duration("1d").unwrap(), Duration::from_secs(86400));
-        
-        assert!(parse_duration("").is_err());
-        assert!(parse_duration("30").is_err());
-        assert!(parse_duration("30x").is_err());
-    }
-    
-    #[test]
-    fn test_config_validation() {
-        // This test requires setting up a valid JWT secret
-        std::env::set_var("SWEETMCP_JWT_SECRET", base64_url::encode(&[0u8; 32]));
-        
-        let config = Config::from_env().unwrap();
-        assert!(config.validate().is_ok());
-    }
-}

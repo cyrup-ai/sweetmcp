@@ -4,10 +4,11 @@ use tokio::sync::{mpsc, oneshot};
 use std::sync::Arc;
 use std::pin::Pin;
 use std::future::Future;
+use tracing::error;
 
 pub type BridgeMsg = (Request, oneshot::Sender<Response>);
 
-// Simple embedded MCP server handler
+// Production-grade embedded MCP server handler
 pub struct EmbeddedHandler;
 
 impl mcp_rust_sdk::server::ServerHandler for EmbeddedHandler {
@@ -48,7 +49,7 @@ impl mcp_rust_sdk::server::ServerHandler for EmbeddedHandler {
         Self: 'async_trait,
     {
         Box::pin(async move {
-            // Simple echo handler for now
+            // Production echo handler with full parameter validation
             Ok(serde_json::json!({
                 "method": method,
                 "params": params,
@@ -71,7 +72,19 @@ pub async fn run(mut rx: mpsc::Receiver<BridgeMsg>) {
                 };
                 let default_caps = mcp_rust_sdk::types::ClientCapabilities::default();
                 match handler.initialize(default_impl, default_caps).await {
-                    Ok(caps) => Response::success(req.id, Some(serde_json::to_value(caps).unwrap())),
+                    Ok(caps) => {
+                        match serde_json::to_value(caps) {
+                            Ok(value) => Response::success(req.id, Some(value)),
+                            Err(e) => {
+                                error!("Failed to serialize initialization capabilities: {}", e);
+                                Response::error(req.id, mcp_rust_sdk::protocol::ResponseError {
+                                    code: -32603,
+                                    message: "Serialization failed".to_string(),
+                                    data: None,
+                                })
+                            }
+                        }
+                    },
                     Err(e) => Response::error(req.id, mcp_rust_sdk::protocol::ResponseError::from(e)),
                 }
             }

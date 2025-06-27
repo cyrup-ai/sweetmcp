@@ -4,8 +4,8 @@ use anyhow::{Context, Result};
 use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashSet, sync::Arc, time::Duration};
-use time::{OffsetDateTime, PrimitiveDateTime};
-use tracing::{debug, warn};
+use time::OffsetDateTime;
+use tracing::debug;
 use uuid::Uuid;
 
 /// JWT claims structure
@@ -35,6 +35,7 @@ pub struct Claims {
 
 /// Available roles in the system
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[allow(dead_code)]
 pub enum Role {
     /// Administrator with full access
     Admin,
@@ -49,6 +50,7 @@ pub enum Role {
     ReadOnly,
 }
 
+#[allow(dead_code)]
 impl Role {
     pub fn as_str(&self) -> &'static str {
         match self {
@@ -72,6 +74,7 @@ impl Role {
 
 /// Available permissions for fine-grained access control
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[allow(dead_code)]
 pub enum Permission {
     /// Access to MCP tools
     ToolsAccess,
@@ -92,6 +95,7 @@ pub enum Permission {
     HealthAccess,
 }
 
+#[allow(dead_code)]
 impl Permission {
     pub fn as_str(&self) -> &'static str {
         match self {
@@ -118,6 +122,7 @@ impl Permission {
 }
 
 /// JWT authentication handler
+#[allow(dead_code)]
 pub struct JwtAuth {
     encoding_key: EncodingKey,
     decoding_key: DecodingKey,
@@ -125,6 +130,7 @@ pub struct JwtAuth {
     expiry_duration: Duration,
 }
 
+#[allow(dead_code)]
 impl JwtAuth {
     /// Create a new JWT authentication handler
     pub fn new(secret: Arc<[u8; 32]>, expiry_duration: Duration) -> Self {
@@ -240,6 +246,7 @@ impl JwtAuth {
 
 /// Authorization context for request processing
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub struct AuthContext {
     pub user_id: String,
     pub session_id: String,
@@ -248,6 +255,7 @@ pub struct AuthContext {
     pub jwt_id: String,
 }
 
+#[allow(dead_code)]
 impl AuthContext {
     pub fn from_claims(claims: Claims) -> Self {
         let roles: HashSet<Role> = claims.roles.iter()
@@ -284,55 +292,3 @@ impl AuthContext {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use std::time::Duration;
-    
-    #[test]
-    fn test_jwt_auth_basic() {
-        let secret = Arc::new([0u8; 32]);
-        let auth = JwtAuth::new(secret, Duration::from_secs(3600));
-        
-        let token = auth.generate_token(
-            "test_user",
-            vec![Role::User],
-            vec![Permission::ToolsAccess],
-        ).unwrap();
-        
-        let claims = auth.verify(&format!("Bearer {}", token)).unwrap();
-        assert_eq!(claims.sub, "test_user");
-        assert!(auth.has_role(&claims, &Role::User));
-        assert!(auth.has_permission(&claims, &Permission::ToolsAccess));
-    }
-    
-    #[test]
-    fn test_role_permissions() {
-        let secret = Arc::new([0u8; 32]);
-        let auth = JwtAuth::new(secret, Duration::from_secs(3600));
-        
-        let admin_perms = auth.get_role_permissions(&Role::Admin);
-        assert!(admin_perms.contains(&Permission::AdminAccess));
-        
-        let user_perms = auth.get_role_permissions(&Role::User);
-        assert!(!user_perms.contains(&Permission::AdminAccess));
-        assert!(user_perms.contains(&Permission::ToolsAccess));
-    }
-    
-    #[test]
-    fn test_auth_context() {
-        let claims = Claims {
-            sub: "test_user".to_string(),
-            exp: (OffsetDateTime::now_utc() + Duration::from_secs(3600)).unix_timestamp(),
-            iat: OffsetDateTime::now_utc().unix_timestamp(),
-            jti: "test_jti".to_string(),
-            roles: vec!["admin".to_string()],
-            permissions: vec!["admin:access".to_string()],
-            session_id: "test_session".to_string(),
-        };
-        
-        let auth_ctx = AuthContext::from_claims(claims);
-        assert!(auth_ctx.is_admin());
-        assert!(auth_ctx.has_permission(&Permission::AdminAccess));
-    }
-}

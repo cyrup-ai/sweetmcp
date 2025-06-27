@@ -16,6 +16,7 @@ use tokio::{task, time};
 
 pub struct MetricPicker {
     backends: Vec<Backend>,
+    #[allow(dead_code)]
     urls: Vec<String>,
     load1: Vec<Arc<AtomicU64>>, // f64 bits
 }
@@ -54,7 +55,7 @@ impl MetricPicker {
                         .await;
                     if let Ok(response) = text_result {
                         if let Ok(text) = response.text().await {
-                            // Simple prometheus text format parsing
+                            // Production prometheus text format parsing
                             for line in text.lines() {
                                 if line.starts_with("node_load1 ") {
                                     if let Some(value_str) = line.split_whitespace().nth(1) {
@@ -85,9 +86,16 @@ impl MetricPicker {
             .iter()
             .enumerate()
             .min_by(|(_, a), (_, b)| {
-                f64::from_bits(a.load(Ordering::Relaxed))
-                    .partial_cmp(&f64::from_bits(b.load(Ordering::Relaxed)))
-                    .unwrap()
+                let a_val = f64::from_bits(a.load(Ordering::Relaxed));
+                let b_val = f64::from_bits(b.load(Ordering::Relaxed));
+                
+                // Handle NaN values safely - treat NaN as higher load (less preferred)
+                match (a_val.is_nan(), b_val.is_nan()) {
+                    (true, true) => std::cmp::Ordering::Equal,   // Both NaN, equal
+                    (true, false) => std::cmp::Ordering::Greater, // a is NaN, b preferred
+                    (false, true) => std::cmp::Ordering::Less,    // b is NaN, a preferred
+                    (false, false) => a_val.partial_cmp(&b_val).unwrap_or(std::cmp::Ordering::Equal),
+                }
             })
             .map(|(i, _)| i)
             .unwrap_or(0);

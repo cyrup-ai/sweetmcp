@@ -1,0 +1,38 @@
+[profile.default]
+# Show output for failing tests only
+failure-output = "immediate"
+success-output = "never"
+
+# Run tests in parallel
+test-threads = 4
+
+# Timeout for individual tests
+slow-timeout = "60s"
+leak-timeout = "100ms"
+
+# Test retries for flaky tests
+retries = 1
+
+[profile.ci]
+# CI-specific configuration
+failure-output = "immediate-final"
+success-output = "never"
+test-threads = 8
+slow-timeout = "120s"
+retries = 2
+
+# Filter expressions for different test types
+[test-groups.unit]
+max-threads = 4
+filter = "kind(lib)"
+
+[test-groups.integration]
+max-threads = 2
+filter = "kind(test)"
+
+# Custom filters
+[profile.default.junit]
+path = "target/nextest/default/junit.xml"
+
+[profile.ci.junit]
+path = "target/nextest/ci/junit.xml"

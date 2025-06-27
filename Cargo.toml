@@ -35,6 +35,7 @@ capnp = "0.21"
 jsonwebtoken = "9.3"
 ring = "0.17"
 uuid = { version = "1.17", features = ["v4", "serde"] }
+hex = "0.4"
 
 # Observability
 opentelemetry = { version = "0.30", features = ["trace", "metrics"] }
@@ -69,14 +70,30 @@ prometheus-parser = "0.4"
 # HTTP client for peer communication
 reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json", "stream"] }
 
+# DNS resolver for service discovery
+hickory-resolver = { version = "0.24", features = ["tokio"] }
+
 # Rate limiting
 governor = "0.10"
 nonzero_ext = "0.3"
 
 # Additional security
-time = { version = "0.3", features = ["serde", "macros"] }
+time = { version = "0.3", features = ["serde", "macros", "formatting"] }
 rand = "0.9"
 url = "2.5"
+rustls = { version = "0.23", features = ["std"] }
+rustls-pemfile = "2.2"
+rcgen = { git = "https://github.com/rustls/rcgen", branch = "main", features = ["pem"] }
+hostname = "0.4"
+sodiumoxide = "0.2"
+x509-parser = { version = "0.17", features = ["verify"] }
+zeroize = { version = "1.8.1", features = ["derive"] }
+age = { version = "0.11.1", features = ["armor"] }
+webpki = { version = "0.22.4", features = ["std"] }
+pem = "3.0"
+der = { version = "0.7", features = ["derive", "oid", "std"] }
+x509-cert = { version = "0.2", features = ["builder"] }
+x509-ocsp = { version = "0.2", default-features = false }
 
 # Feature-gated dependencies
 futures = "0.3"
@@ -120,6 +137,10 @@ overflow-checks = true
 # [[bench]]
 # name = "load_balancing"
 # harness = false
+
+[lib]
+name = "sweetmcp"
+path = "src/lib.rs"
 
 [[bin]]
 name = "sweetmcp_server"
