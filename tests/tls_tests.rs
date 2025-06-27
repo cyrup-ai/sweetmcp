@@ -87,38 +87,21 @@ RX4MzusreyKRGdvr2IN2gYCDPOgOiqp3YKkOnXV8/pya1KSGrT51fEYTdUrjJ6dr
     // CA certificate for testing
     #[test]
     fn test_simple_parse() {
-        println!("Test simple parse starting");
         // Minimal test to check if parse_certificate_from_pem is working
         let simple_cert = SELF_SIGNED_CERT;
-        println!("About to call parse_certificate_from_pem");
         let result = TlsManager::parse_certificate_from_pem(simple_cert);
-        match &result {
-            Ok(_) => println!("parse_certificate_from_pem succeeded"),
-            Err(e) => println!("parse_certificate_from_pem failed: {:?}", e),
-        }
-        assert!(result.is_ok());
+        result.expect("Failed to parse simple certificate");
     }
 
     #[test]
     fn test_debug_example_cert() {
-        println!("Parsing EXAMPLE_CERT to see what we get:");
         let result = TlsManager::parse_certificate_from_pem(EXAMPLE_CERT);
         match result {
-            Ok(parsed) => {
-                println!("Subject: {:?}", parsed.subject);
-                println!("Issuer: {:?}", parsed.issuer);
-                println!("SAN DNS Names: {:?}", parsed.san_dns_names);
-                println!("SAN IP Addresses: {:?}", parsed.san_ip_addresses);
-                println!("Is CA: {}", parsed.is_ca);
-                println!("Key Usage: {:?}", parsed.key_usage);
-                println!("OCSP URLs: {:?}", parsed.ocsp_urls);
-                println!("CRL URLs: {:?}", parsed.crl_urls);
-                println!("Not Before: {:?}", parsed.not_before);
-                println!("Not After: {:?}", parsed.not_after);
+            Ok(_parsed) => {
+                // Certificate parsed successfully
             },
             Err(e) => {
-                println!("Failed to parse: {:?}", e);
-                panic!("Failed to parse EXAMPLE_CERT");
+                assert!(false, "Failed to parse EXAMPLE_CERT: {:?}", e);
             }
         }
     }
@@ -156,8 +139,6 @@ nLRbwHOoq7hHwg==
 
     #[test] 
     fn test_parse_example_certificate() {
-        println!("Starting test_parse_example_certificate");
-        
         // Test with the EXAMPLE_CERT we know is valid
         let parsed = TlsManager::parse_certificate_from_pem(EXAMPLE_CERT)
             .expect("Failed to parse EXAMPLE_CERT");
@@ -176,8 +157,6 @@ nLRbwHOoq7hHwg==
         
         // This certificate is self-signed, so subject equals issuer
         assert_eq!(parsed.subject, parsed.issuer);
-        
-        println!("Successfully parsed example certificate!");
     }
 
     #[test]
@@ -235,10 +214,10 @@ nLRbwHOoq7hHwg==
         assert!(result.is_err());
         
         if let Err(e) = result {
-            match e {
-                sweetmcp::tls::TlsError::CertificateParsing(_) => {},
-                _ => panic!("Expected CertificateParsing error"),
-            }
+            assert!(
+                matches!(e, sweetmcp::tls::TlsError::CertificateParsing(_)),
+                "Expected CertificateParsing error, got: {:?}", e
+            );
         }
     }
 
