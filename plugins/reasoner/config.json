@@ -1,0 +1,9 @@
+{
+  "plugins": [
+    {
+      "name": "mcp-reasoner",
+      "path": "oci://ghcr.io/yourusername/mcp-reasoner-plugin:latest",
+      "env": {}
+    }
+  ]
+}

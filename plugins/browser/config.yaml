@@ -1,0 +1,21 @@
+# MCP Browser Use Configuration
+
+# Browser Settings
+browser:
+  headless: true                    # If true, the browser runs in headless mode
+  disable_security: false           # If true, disables security features in the browser
+  window:
+    width: 1280                     # Browser window width
+    height: 720                     # Browser window height
+
+# Model Settings
+model:
+  provider: "openai"                # LLM provider ("openai" or "anthropic")
+  name: ""                          # Model name (e.g., "gpt-4o" or "claude-3-5-sonnet")
+  temperature: 0.7                  # Temperature setting for LLM
+  max_steps: 20                     # Maximum number of steps for agent execution
+
+# API Keys - Consider using environment variables instead for security
+# api_keys:
+#   openai: ""                      # OpenAI API key
+#   anthropic: ""                   # Anthropic API key

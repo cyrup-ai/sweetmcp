@@ -1,0 +1,19 @@
+/target
+/Cargo.lock
+**/*.rs.bk
+*.pdb
+
+# Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test artifacts
+/test-output/
+/tmp/

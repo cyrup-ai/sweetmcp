@@ -1,0 +1,87 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# Default settings for all files
+[*]
+indent_style = space
+indent_size = 4
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# Markdown-specific settings
+[*.{md,markdown}]
+indent_size = 2
+trim_trailing_whitespace = false  # Important for markdown line breaks
+max_line_length = 80
+# Additional markdown rules
+markdown.header.punctuation.spaces_after_symbols = 1  # Space after # in headers
+markdown.list.item.spacing = 1  # Space between list markers and content
+markdown.list.indent.size = 2  # List item indentation
+markdown.emphasis.delimiter = *  # Use * for emphasis
+markdown.strong.delimiter = **  # Use ** for strong emphasis
+markdown.blockquote.punctuation.spaces_after_symbols = 1  # Space after > in blockquotes
+markdown.code.block.fence.length = 3  # Use ``` for code blocks
+markdown.code.block.language.required = true  # Require language definition after opening fence (e.g., ```rust)
+markdown.link.delimiter = []()  # Standard link format
+markdown.horizontal_rule.style = ---  # Use --- for horizontal rules
+markdown.table.column_alignment = left  # Default column alignment
+
+# Rust-specific settings
+[*.rs]
+indent_size = 4
+language = rust
+
+# Ensure rustfmt (cargo fmt) respects .editorconfig settings 
+# For rustfmt tool integration - aligned with rustfmt.toml
+[rustfmt.toml]
+indent_size = 4
+max_width = 100
+tab_spaces = 4
+
+# Python-specific settings
+[*.py]
+indent_size = 4
+language = python
+
+# TypeScript-specific settings
+[*.{ts,tsx}]
+indent_size = 2
+language = typescript
+
+# JavaScript-specific settings
+[*.{js,jsx,json}]
+indent_size = 2
+language = javascript
+
+# Go-specific settings
+[*.go]
+indent_style = tab
+indent_size = 4
+language = go
+
+# Shell script settings
+[*.{sh,bash,zsh}]
+indent_size = 2
+language = shell
+
+# Fish script settings
+[*.fish]
+indent_size = 2
+language = fish
+
+# Nushell script settings
+[*.nu]
+indent_size = 2
+language = nushell
+
+# TOML files (Cargo.toml, etc.)
+[*.toml]
+indent_size = 2
+
+# YAML files
+[*.{yml,yaml}]
+indent_size = 2

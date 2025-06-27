@@ -1,0 +1,5 @@
+[[services]]
+name = "test-echo"
+command = "while true; do echo 'Test service running'; sleep 5; done"
+auto_restart = true
+restart_delay_s = 5
