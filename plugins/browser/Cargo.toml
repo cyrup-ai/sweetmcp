@@ -1,13 +1,14 @@
 [package]
-name = "mcp-plugin-browser"
+name = "sweetmcp-plugin-browser"
 version = "0.1.0"
-edition = "2021"
-authors = ["David Maple<david@cyrup.ai>"]
-description = "MCP browser automation server in Rust"
-repository = "https://github.com/cyrup-ai/mcp-plugin-browser"
-license = "MIT"
+edition = "2024"
+
+[lib]
+name = "sweetmcp_plugin_browser"
+crate-type = ["cdylib"]
 
 [dependencies]
+extism-pdk = "1.4.1"
 chromiumoxide = { version = "0.7.0", features = ["tokio-runtime"] }
 tracing = "0.1.40"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
@@ -24,7 +25,7 @@ kalosm = { git = "https://github.com/cyrup-ai/floneum.git", branch = "update-ort
     "language",
     "metal",
     "surrealdb",
-    "vision",
+    "vision", 
     "prompt_annealing",
     "bert",
 ], default-features = false }
@@ -45,7 +46,7 @@ bytes = "1.5.0"
 surrealdb = { version = "2.2.1", features = ["kv-mem", "kv-surrealkv", "protocol-ws"] }
 url = "2.5.0"
 serde_yaml = "0.9.34"
+# Force compatible ahash version for kalosm-llama tokenizers compatibility
+ahash = { version = "0.8.12", features = ["serde"] }
+sweetmcp-workspace-hack = { version = "0.1", path = "../../sweetmcp-workspace-hack" }
 
-[[bin]]
-name = "mcp-plugin-browser"
-path = "src/main.rs"

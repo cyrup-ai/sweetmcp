@@ -1,8 +1,12 @@
 use std::error::Error as StdError;
 use std::fmt;
 
+use async_trait::async_trait;
+use base64::Engine;
 use hyper::{Body, Client, Request, Uri};
 use hyper_tls::HttpsConnector;
+
+use crate::chromiumoxide::{ContentFetcher, FetchResult};
 
 #[derive(Debug)]
 pub enum FetchError {
@@ -122,5 +126,26 @@ impl HyperFetcher {
         }
 
         result
+    }
+}
+
+#[async_trait]
+impl ContentFetcher for HyperFetcher {
+    async fn fetch_content(&self, url: &str) -> Result<FetchResult, Box<dyn StdError + Send + Sync>> {
+        // Fetch HTML content using hyper
+        let content = Self::fetch(url).await
+            .map_err(|e| Box::new(e) as Box<dyn StdError + Send + Sync>)?;
+            
+        // Clean the HTML content
+        let cleaned_content = Self::clean_html(&content);
+        
+        // Generate a placeholder screenshot since hyper doesn't support screenshots
+        let screenshot_base64 = base64::engine::general_purpose::STANDARD.encode(b"placeholder-screenshot-data");
+        
+        Ok(FetchResult {
+            content: cleaned_content,
+            screenshot_base64,
+            content_type: "text/html".to_string(),
+        })
     }
 }

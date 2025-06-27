@@ -9,7 +9,6 @@ use std::path::Path;
 use std::sync::Arc;
 
 use kalosm::language::*;
-use rmcp::server;
 use serde::{Deserialize, Serialize};
 use tokio::sync::Mutex;
 use tracing::{debug, error, info, Level};
@@ -151,7 +150,7 @@ fn load_yaml_config() -> Result<Config, Box<dyn std::error::Error>> {
 }
 
 /// Initialize the browser
-pub async fn init_browser() -> Arc<BrowserContext> {
+pub async fn init_browser() -> Result<Arc<BrowserContext>, UtilsError> {
     // Load default config
     let config = load_yaml_config().unwrap_or_else(|_| {
         info!("No valid config.yaml found, using default browser configuration");
@@ -215,7 +214,7 @@ pub async fn init_browser() -> Arc<BrowserContext> {
             UtilsError::BrowserError(format!("Failed to create browser context: {}", e))
         })?;
         
-    Arc::new(context)
+    Ok(Arc::new(context))
 }
 
 /// Initialize the agent
@@ -225,7 +224,7 @@ pub fn init_agent(
     use_vision: bool,
     llm: Llama,
     browser: Arc<BrowserContext>,
-) -> Agent {
+) -> Result<Agent, UtilsError> {
     let controller = Controller::new();
     let system_prompt = SystemPrompt::new();
     let agent_prompt = AgentMessagePrompt::new();
@@ -249,7 +248,7 @@ pub fn init_agent(
     .map_err(|e| {
         error!("Failed to create agent: {}", e);
         UtilsError::UnexpectedError(format!("Failed to create agent: {}", e))
-    })?
+    })
 }
 
 /// Run the browser agent with the specified task
@@ -257,7 +256,7 @@ pub async fn run_browser_agent(
     task: &str,
     add_infos: &str,
     use_vision: bool,
-) -> AgentHistoryList {
+) -> Result<AgentHistoryList, UtilsError> {
     let (model_provider, model_name, temperature, max_steps) = load_config();
     
     let llm = get_llm_model(
@@ -270,7 +269,7 @@ pub async fn run_browser_agent(
         UtilsError::LlmError(format!("Failed to initialize LLM: {}", e))
     })?;
     
-    let browser = init_browser().await;
+    let browser = init_browser().await?;
     
     let agent = init_agent(
         task,
@@ -278,7 +277,7 @@ pub async fn run_browser_agent(
         use_vision,
         llm,
         browser.clone(),
-    );
+    )?;
     
     info!("Running agent for task: {}", task);
     let history = agent.run(max_steps).await
@@ -292,21 +291,6 @@ pub async fn run_browser_agent(
         error!("Error closing browser: {}", e);
     }
     
-    history
+    Ok(history)
 }
 
-/// Create and run the MCP server
-pub async fn run_server() {
-    // Initialize tracing
-    init_tracing();
-    
-    // Initialize server
-    let mut server = Server::default();
-    
-    // Register the run_browser_agent tool
-    server.add_tool("run_browser_agent", run_browser_agent);
-    
-    // Start the server
-    info!("Starting MCP Browser Use server");
-    server.serve().await;
-}

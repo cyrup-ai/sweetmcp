@@ -1,10 +1,10 @@
 [package]
-name = "mcp-plugin-eval-rs"
+name = "sweetmcp-plugin-eval-rs"
 version = "0.1.0"
 edition = "2024"
 
 [lib]
-name = "mcp-plugin-eval-rs"
+name = "sweetmcp_plugin_eval_rs"
 crate-type = ["cdylib"]
 
 [dependencies]
@@ -16,11 +16,7 @@ rustpython-vm = { version = "0.4.0", default-features = false, features = ["comp
 once_cell = "1.18"
 base64-serde = "0.8.0"
 base64 = "0.22.1"
-
-[profile.release]
-lto = true
-opt-level = 's'
-strip = true
+sweetmcp-workspace-hack = { version = "0.1", path = "../../sweetmcp-workspace-hack" }
 
 [target.wasm32-wasi.dependencies]
 getrandom = { version = "0.2", features = ["js"] }

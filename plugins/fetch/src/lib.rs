@@ -11,7 +11,7 @@ use async_trait::async_trait;
 use chromiumoxide::ContentFetcher;
 use extism_pdk::*;
 use htmd::HtmlToMarkdown;
-use plugin::types::{
+use pdk::types::{
     CallToolRequest, CallToolResult, Content, ContentType, ListToolsResult, ToolDescription,
 };
 use serde::{Deserialize, Serialize};
