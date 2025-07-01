@@ -232,8 +232,27 @@ async fn generate_sweetmcp_wildcard_certificate(xdg_config_home: &Path) -> Resul
     // Set as non-CA certificate
     params.is_ca = rcgen::IsCa::NoCa;
 
-    // SweetMCP domains with consistent branding
+    // SweetMCP domains with wildcards for all domains
     params.subject_alt_names = vec![
+        // Wildcard entries
+        SanType::DnsName("*.cyrup.dev".try_into()
+            .context("Invalid DNS name: *.cyrup.dev")?),
+        SanType::DnsName("*.cyrup.ai".try_into()
+            .context("Invalid DNS name: *.cyrup.ai")?),
+        SanType::DnsName("*.cyrup.cloud".try_into()
+            .context("Invalid DNS name: *.cyrup.cloud")?),
+        SanType::DnsName("*.cyrup.pro".try_into()
+            .context("Invalid DNS name: *.cyrup.pro")?),
+        // Base domains
+        SanType::DnsName("cyrup.dev".try_into()
+            .context("Invalid DNS name: cyrup.dev")?),
+        SanType::DnsName("cyrup.ai".try_into()
+            .context("Invalid DNS name: cyrup.ai")?),
+        SanType::DnsName("cyrup.cloud".try_into()
+            .context("Invalid DNS name: cyrup.cloud")?),
+        SanType::DnsName("cyrup.pro".try_into()
+            .context("Invalid DNS name: cyrup.pro")?),
+        // Specific SweetMCP entries (covered by wildcards but explicit for clarity)
         SanType::DnsName("sweetmcp.cyrup.dev".try_into()
             .context("Invalid DNS name: sweetmcp.cyrup.dev")?),
         SanType::DnsName("sweetmcp.cyrup.ai".try_into()
@@ -247,7 +266,7 @@ async fn generate_sweetmcp_wildcard_certificate(xdg_config_home: &Path) -> Resul
     // Set distinguished name
     let mut dn = DistinguishedName::new();
     dn.push(DnType::OrganizationName, "SweetMCP");
-    dn.push(DnType::CommonName, "sweetmcp.cyrup.dev");
+    dn.push(DnType::CommonName, "*.cyrup.dev");
     params.distinguished_name = dn;
 
     // Set non-expiring validity period (100 years)
@@ -374,9 +393,7 @@ fn import_wildcard_certificate_macos(cert_path: &str) -> Result<()> {
         .args(&[
             "add-trusted-cert",
             "-d",              // Add to admin cert store
-            "-r", "trustAsRoot", // Trust as root certificate
-            "-p", "ssl",       // Trust for SSL
-            "-p", "smime",     // Trust for S/MIME
+            "-r", "trustRoot", // Trust as root certificate
             "-k", "/Library/Keychains/System.keychain",
             &temp_cert_path
         ])
