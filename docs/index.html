@@ -13,97 +13,111 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0a0a0a;
             color: #ffffff;
             min-height: 100vh;
-            overflow-x: hidden;
         }
         
-        /* Animated lightning background */
-        .lightning-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(138, 43, 226, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(30, 144, 255, 0.05) 0%, transparent 50%);
-            animation: lightning-pulse 4s ease-in-out infinite;
-            z-index: -1;
-        }
-        
-        @keyframes lightning-pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-        
-        /* Floating particles */
-        .particle {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: rgba(255, 215, 0, 0.6);
-            border-radius: 50%;
-            animation: float 6s ease-in-out infinite;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-            text-align: center;
-            position: relative;
-            z-index: 1;
-        }
-        
+        /* Top section with #07141f background */
         .hero-section {
+            background: #07141f;
             padding: 4rem 0;
+            text-align: center;
         }
         
         .cyrup-logo {
             margin-bottom: 2rem;
         }
         
-        .sweetmcp-logo {
-            max-width: 500px;
+        .cyrup-logo video {
+            width: 300px;
+            height: auto;
+            margin-bottom: 1rem;
+            border-radius: 15px;
+        }
+        
+        .magical-text {
+            font-size: 1.2rem;
+            color: #c261c3;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+        
+        .sweet-mcp-title {
+            font-size: 4rem;
+            font-weight: 800;
+            color: #18ca9b;
+            margin: 2rem 0;
+        }
+        
+        /* Features section - 3 pane full width scaling */
+        .features-section {
+            background: #07141f;
+            padding: 4rem 0;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0;
+            max-width: 100%;
+        }
+        
+        .feature-pane {
+            padding: 3rem 2rem;
+            text-align: center;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .feature-pane:last-child {
+            border-right: none;
+        }
+        
+        .feature-pane img {
+            max-width: 200px;
             width: 100%;
             height: auto;
-            margin: 2rem 0;
-            filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));
+            margin-bottom: 1.5rem;
         }
         
-        .tagline {
+        .feature-title {
             font-size: 1.5rem;
-            font-weight: 300;
-            margin-bottom: 3rem;
-            color: #e0e0e0;
-            line-height: 1.4;
+            font-weight: 600;
+            color: #18ca9b;
+            margin-bottom: 1rem;
         }
         
+        .feature-desc {
+            color: #CCCCCC;
+            line-height: 1.5;
+        }
+        
+        /* White section */
+        .white-section {
+            background: #FFFFFF;
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .sweetmcp-logo {
+            max-width: 600px;
+            width: 100%;
+            height: auto;
+            margin: 0 auto;
+            display: block;
+        }
+        
+        /* Installer section */
         .install-section {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 3rem;
-            margin: 3rem 0;
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            background: #FFFFFF;
+            padding: 4rem 2rem;
+            text-align: center;
         }
         
         .install-title {
             font-size: 2.5rem;
             font-weight: 700;
             margin-bottom: 2rem;
-            background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700);
+            background: linear-gradient(135deg, #CCCCCC, #EFEFEF);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -118,9 +132,9 @@
         }
         
         .tab-button {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #ffffff;
+            background: #EFEFEF;
+            border: 1px solid #CCCCCC;
+            color: #333333;
             padding: 0.8rem 1.5rem;
             border-radius: 10px;
             cursor: pointer;
@@ -130,27 +144,29 @@
         }
         
         .tab-button:hover {
-            background: rgba(255, 215, 0, 0.2);
-            border-color: rgba(255, 215, 0, 0.5);
+            background: #c261c3;
+            border-color: #c261c3;
+            color: #FFFFFF;
             transform: translateY(-2px);
         }
         
         .tab-button.active {
-            background: linear-gradient(135deg, #ffd700, #ffed4e);
-            color: #000000;
-            border-color: #ffd700;
+            background: #c261c3;
+            color: #FFFFFF;
+            border-color: #c261c3;
         }
         
         .install-command {
-            background: #1a1a1a;
+            background: linear-gradient(135deg, #CCCCCC, #EFEFEF);
             border-radius: 15px;
             padding: 2rem;
-            margin: 2rem 0;
+            margin: 2rem auto;
+            max-width: 800px;
             font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
             font-size: 1.1rem;
-            color: #00ff00;
+            color: #333333;
             position: relative;
-            border: 1px solid #333;
+            border: 1px solid #CCCCCC;
             overflow-x: auto;
             display: none;
         }
@@ -169,8 +185,8 @@
             position: absolute;
             top: 1rem;
             right: 1rem;
-            background: linear-gradient(135deg, #ffd700, #ffed4e);
-            color: #000000;
+            background: #c261c3;
+            color: #FFFFFF;
             border: none;
             padding: 0.5rem 1rem;
             border-radius: 8px;
@@ -181,76 +197,45 @@
         }
         
         .copy-btn:hover {
+            background: #8a3a8b;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
         }
         
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin: 4rem 0;
-        }
-        
-        .feature-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 215, 0, 0.3);
-        }
-        
-        .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-        
-        .feature-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: #ffd700;
-        }
-        
-        .feature-desc {
-            color: #b0b0b0;
-            line-height: 1.5;
-        }
-        
+        /* Footer */
         .footer {
-            margin-top: 4rem;
+            background: #FFFFFF;
             padding: 2rem 0;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: #888;
+            text-align: center;
+            border-top: 1px solid #EFEFEF;
+            color: #666666;
         }
         
         .footer a {
-            color: #ffd700;
+            color: #c261c3;
             text-decoration: none;
             transition: color 0.3s ease;
         }
         
         .footer a:hover {
-            color: #ffed4e;
+            color: #8a3a8b;
         }
         
         @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
+            .sweet-mcp-title {
+                font-size: 2.5rem;
             }
             
-            .install-title {
-                font-size: 2rem;
+            .features-grid {
+                grid-template-columns: 1fr;
             }
             
-            .tagline {
-                font-size: 1.2rem;
+            .feature-pane {
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            .feature-pane:last-child {
+                border-bottom: none;
             }
             
             .install-section {
@@ -269,113 +254,79 @@
     </style>
 </head>
 <body>
-    <div class="lightning-bg"></div>
+    <!-- Top section with #07141f background -->
+    <div class="hero-section">
+        <div class="cyrup-logo">
+            <video autoplay muted loop playsinline>
+                <source src="cyrup_oceanic.mp4" type="video/mp4">
+            </video>
+            <div class="magical-text">✨ Magical AI Excellence ⚡</div>
+        </div>
+        
+        <h1 class="sweet-mcp-title">Sweet MCP Server</h1>
+    </div>
     
-    <div class="container">
-        <div class="hero-section">
-            <div class="cyrup-logo">
-                <video autoplay muted loop playsinline style="width: 300px; height: auto; margin-bottom: 1rem; border-radius: 15px; filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));">
-                    <source src="cyrup_oceanic.mp4" type="video/mp4">
-                    <h1 style="font-size: 4rem; font-weight: 800; background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">CYRUP.AI</h1>
-                </video>
-                <div style="font-size: 1.2rem; color: #ffd700; font-weight: 600; margin-top: 0.5rem;">CYRUP.AI</div>
-            </div>
-            
-            <img src="sweetmcp.png" alt="SweetMCP - Maple Syrup on Plate" class="sweetmcp-logo">
-            
-            <div class="tagline">
-                Model Context Protocol integration platform<br>
-                AI tool integration with automatic SSL certificates and local DNS
-            </div>
-        </div>
-        
-        <div class="install-section">
-            <div class="install-title">One-Line Installer</div>
-            
-            <div class="platform-tabs">
-                <button class="tab-button active" onclick="showPlatform('bash')">🍎 macOS & 🐧 Linux</button>
-                <button class="tab-button" onclick="showPlatform('powershell')">🪟 Windows</button>
-            </div>
-            
-            <div id="bash-command" class="install-command active">
-                <button class="copy-btn" onclick="copyToClipboard('bash')">Copy</button>
-                <code>curl -fsSL https://get.cyrup.ai/sweetmcp.sh | bash</code>
-            </div>
-            
-            <div id="powershell-command" class="install-command">
-                <button class="copy-btn" onclick="copyToClipboard('powershell')">Copy</button>
-                <code>iex (iwr -UseBasicParsing https://get.cyrup.ai/sweetmcp.ps1).Content</code>
-            </div>
-        </div>
-        
+    <!-- Features section - 3 pane full width -->
+    <div class="features-section">
         <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">🔐</div>
+            <div class="feature-pane">
+                <img src="feature1.png" alt="Feature 1" style="display: none;">
                 <div class="feature-title">SSL Certificates</div>
                 <div class="feature-desc">Wildcard certificates for *.cyrup.{dev,ai,cloud,pro} with OS trust store integration</div>
             </div>
             
-            <div class="feature-card">
-                <div class="feature-icon">🌐</div>
-                <div class="feature-title">Local DNS</div>
-                <div class="feature-desc">Automatic host entries for sweetmcp.cyrup.* domains pointing to localhost</div>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">⚡</div>
-                <div class="feature-title">Pingora Gateway</div>
-                <div class="feature-desc">High-performance proxy server with automatic service registration</div>
-            </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">🤖</div>
+            <div class="feature-pane">
+                <img src="feature2.png" alt="Feature 2" style="display: none;">
                 <div class="feature-title">AI Tool Integration</div>
                 <div class="feature-desc">Auto-detects Claude Desktop, Windsurf, and other AI development tools</div>
             </div>
             
-            <div class="feature-card">
-                <div class="feature-icon">🔄</div>
+            <div class="feature-pane">
+                <img src="feature3.png" alt="Feature 3" style="display: none;">
                 <div class="feature-title">Multi-Protocol</div>
                 <div class="feature-desc">GraphQL, JSON-RPC 2.0, and Cap'n Proto → MCP conversion</div>
             </div>
-            
-            <div class="feature-card">
-                <div class="feature-icon">🛡️</div>
-                <div class="feature-title">Production Ready</div>
-                <div class="feature-desc">JWT auth, rate limiting, health checks, and automatic load balancing</div>
-            </div>
+        </div>
+    </div>
+    
+    <!-- White section with dinner plate image -->
+    <div class="white-section">
+        <img src="assets/sweetmcp.png" alt="SweetMCP - Maple Syrup on Dinner Plate" class="sweetmcp-logo">
+    </div>
+    
+    <!-- Installer section -->
+    <div class="install-section">
+        <div class="install-title">One-Line Installer</div>
+        
+        <div class="platform-tabs">
+            <button class="tab-button active" onclick="showPlatform('bash')">🍎 macOS & 🐧 Linux</button>
+            <button class="tab-button" onclick="showPlatform('powershell')">🪟 Windows</button>
         </div>
         
-        <div class="footer">
-            <p>
-                <a href="https://github.com/cyrup-ai/sweetmcp" target="_blank">GitHub</a> •
-                <a href="https://docs.cyrup.ai/sweetmcp" target="_blank">Documentation</a> •
-                <a href="https://discord.gg/cyrup-ai" target="_blank">Community</a>
-            </p>
-            <p style="margin-top: 1rem;">
-                <a href="https://cyrup.ai" target="_blank">Cyrup.ai</a>
-            </p>
+        <div id="bash-command" class="install-command active">
+            <button class="copy-btn" onclick="copyToClipboard('bash')">Copy</button>
+            <code>curl -fsSL https://get.cyrup.ai/sweetmcp.sh | bash</code>
         </div>
+        
+        <div id="powershell-command" class="install-command">
+            <button class="copy-btn" onclick="copyToClipboard('powershell')">Copy</button>
+            <code>iex (iwr -UseBasicParsing https://get.cyrup.ai/sweetmcp.ps1).Content</code>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <div class="footer">
+        <p>
+            <a href="https://github.com/cyrup-ai/sweetmcp" target="_blank">GitHub</a> •
+            <a href="https://docs.cyrup.ai/sweetmcp" target="_blank">Documentation</a> •
+            <a href="https://discord.gg/cyrup-ai" target="_blank">Community</a>
+        </p>
+        <p style="margin-top: 1rem;">
+            <a href="https://cyrup.ai" target="_blank">Cyrup.ai</a>
+        </p>
     </div>
 
     <script>
-        // Create floating particles
-        function createParticle() {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.animationDelay = Math.random() * 6 + 's';
-            particle.style.animationDuration = (Math.random() * 3 + 4) + 's';
-            document.body.appendChild(particle);
-            
-            setTimeout(() => {
-                particle.remove();
-            }, 8000);
-        }
-        
-        // Create particles periodically
-        setInterval(createParticle, 500);
-        
         function showPlatform(platform) {
             // Update tab buttons
             document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
@@ -399,10 +350,10 @@
                 const btn = event.target;
                 const originalText = btn.textContent;
                 btn.textContent = 'Copied!';
-                btn.style.background = '#00ff00';
+                btn.style.background = '#18ca9b';
                 setTimeout(() => {
                     btn.textContent = originalText;
-                    btn.style.background = '';
+                    btn.style.background = '#c261c3';
                 }, 2000);
             }).catch(err => {
                 console.error('Failed to copy: ', err);
