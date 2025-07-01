@@ -12,221 +12,350 @@
         }
         
         body {
-            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        /* Animated lightning background */
+        .lightning-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(138, 43, 226, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(30, 144, 255, 0.05) 0%, transparent 50%);
+            animation: lightning-pulse 4s ease-in-out infinite;
+            z-index: -1;
+        }
+        
+        @keyframes lightning-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        /* Floating particles */
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 215, 0, 0.6);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
         }
         
         .container {
-            max-width: 800px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
             text-align: center;
+            position: relative;
+            z-index: 1;
         }
         
-        .logo {
-            font-size: 4rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-            background: linear-gradient(45deg, #ffd700, #ffed4e);
+        .hero-section {
+            padding: 4rem 0;
+        }
+        
+        .cyrup-logo {
+            margin-bottom: 2rem;
+            animation: magical-glow 3s ease-in-out infinite;
+        }
+        
+        @keyframes magical-glow {
+            0%, 100% { 
+                filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.3));
+                transform: scale(1);
+            }
+            50% { 
+                filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.6));
+                transform: scale(1.02);
+            }
+        }
+        
+        .sweetmcp-logo {
+            max-width: 500px;
+            width: 100%;
+            height: auto;
+            margin: 2rem 0;
+            filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));
+        }
+        
+        .tagline {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 3rem;
+            color: #e0e0e0;
+            line-height: 1.4;
+        }
+        
+        .install-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 3rem 0;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .install-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
         
-        .tagline {
-            font-size: 1.5rem;
-            margin-bottom: 3rem;
-            opacity: 0.9;
-        }
-        
-        .install-section {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 3rem;
+        .platform-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
             margin-bottom: 2rem;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            flex-wrap: wrap;
         }
         
-        .install-title {
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-            color: #ffd700;
+        .tab-button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        
+        .tab-button:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: rgba(255, 215, 0, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .tab-button.active {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000000;
+            border-color: #ffd700;
         }
         
         .install-command {
             background: #1a1a1a;
-            border-radius: 10px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-            font-size: 1.2rem;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+            font-size: 1.1rem;
             color: #00ff00;
             position: relative;
+            border: 1px solid #333;
             overflow-x: auto;
-            border: 2px solid #333;
+            display: none;
+        }
+        
+        .install-command.active {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .copy-btn {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #ffd700;
-            color: #1a1a1a;
+            top: 1rem;
+            right: 1rem;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #000000;
             border: none;
             padding: 0.5rem 1rem;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 0.9rem;
-            font-weight: bold;
+            font-weight: 600;
             transition: all 0.3s ease;
         }
         
         .copy-btn:hover {
-            background: #ffed4e;
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
         }
         
-        .platforms {
+        .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
         }
         
-        .platform {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
         }
         
-        .platform-icon {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
+        .feature-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 215, 0, 0.3);
         }
         
-        .features {
-            text-align: left;
-            margin-top: 2rem;
-        }
-        
-        .features h3 {
-            color: #ffd700;
+        .feature-icon {
+            font-size: 3rem;
             margin-bottom: 1rem;
-            text-align: center;
         }
         
-        .features ul {
-            list-style: none;
-            columns: 2;
-            column-gap: 2rem;
+        .feature-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #ffd700;
         }
         
-        .features li {
-            margin-bottom: 0.5rem;
-            padding-left: 1.5rem;
-            position: relative;
-        }
-        
-        .features li::before {
-            content: "🍯";
-            position: absolute;
-            left: 0;
+        .feature-desc {
+            color: #b0b0b0;
+            line-height: 1.5;
         }
         
         .footer {
-            margin-top: 2rem;
-            opacity: 0.7;
+            margin-top: 4rem;
+            padding: 2rem 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #888;
         }
         
         .footer a {
             color: #ffd700;
             text-decoration: none;
+            transition: color 0.3s ease;
         }
         
         .footer a:hover {
-            text-decoration: underline;
+            color: #ffed4e;
         }
         
         @media (max-width: 768px) {
-            .logo {
-                font-size: 2.5rem;
+            .container {
+                padding: 1rem;
+            }
+            
+            .install-title {
+                font-size: 2rem;
             }
             
             .tagline {
                 font-size: 1.2rem;
             }
             
-            .install-command {
-                font-size: 1rem;
-                padding: 1rem;
+            .install-section {
+                padding: 2rem 1rem;
             }
             
-            .features ul {
-                columns: 1;
+            .platform-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .tab-button {
+                width: 200px;
             }
         }
     </style>
 </head>
 <body>
+    <div class="lightning-bg"></div>
+    
     <div class="container">
-        <div class="logo">SweetMCP</div>
-        <div class="tagline">The sweetest Model Context Protocol integration platform</div>
+        <div class="hero-section">
+            <div class="cyrup-logo">
+                <video autoplay muted loop playsinline style="width: 300px; height: auto; margin-bottom: 1rem; border-radius: 15px; filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));">
+                    <source src="cyrup_oceanic.mp4" type="video/mp4">
+                    <h1 style="font-size: 4rem; font-weight: 800; background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">CYRUP.AI</h1>
+                </video>
+                <div style="font-size: 1.2rem; color: #ffd700; font-weight: 600; margin-top: 0.5rem;">✨ Magical AI Excellence ⚡</div>
+            </div>
+            
+            <img src="sweetmcp.png" alt="SweetMCP - Maple Syrup on Plate" class="sweetmcp-logo">
+            
+            <div class="tagline">
+                The sweetest Model Context Protocol integration platform<br>
+                Zero-configuration AI tool integration with automatic SSL certificates and local DNS
+            </div>
+        </div>
         
         <div class="install-section">
             <div class="install-title">One-Line Installer</div>
             
-            <div style="margin-bottom: 1rem;">
-                <strong>macOS & Linux:</strong>
+            <div class="platform-tabs">
+                <button class="tab-button active" onclick="showPlatform('bash')">🍎 macOS & 🐧 Linux</button>
+                <button class="tab-button" onclick="showPlatform('powershell')">🪟 Windows</button>
             </div>
-            <div class="install-command">
+            
+            <div id="bash-command" class="install-command active">
                 <button class="copy-btn" onclick="copyToClipboard('bash')">Copy</button>
-                <code id="install-cmd-bash">curl -fsSL https://get.cyrup.ai/sweetmcp.sh | bash</code>
+                <code>curl -fsSL https://get.cyrup.ai/sweetmcp.sh | bash</code>
             </div>
             
-            <div style="margin-bottom: 1rem; margin-top: 2rem;">
-                <strong>Windows (PowerShell as Administrator):</strong>
-            </div>
-            <div class="install-command">
-                <button class="copy-btn" onclick="copyToClipboard('ps1')">Copy</button>
-                <code id="install-cmd-ps1">iex (iwr -UseBasicParsing https://get.cyrup.ai/sweetmcp.ps1).Content</code>
-            </div>
-            
-            <div class="platforms">
-                <div class="platform">
-                    <div class="platform-icon">🍎</div>
-                    <strong>macOS</strong><br>
-                    Intel & Apple Silicon
-                </div>
-                <div class="platform">
-                    <div class="platform-icon">🐧</div>
-                    <strong>Linux</strong><br>
-                    x86_64 & aarch64
-                </div>
-                <div class="platform">
-                    <div class="platform-icon">🪟</div>
-                    <strong>Windows</strong><br>
-                    x86_64 & i686
-                </div>
+            <div id="powershell-command" class="install-command">
+                <button class="copy-btn" onclick="copyToClipboard('powershell')">Copy</button>
+                <code>iex (iwr -UseBasicParsing https://get.cyrup.ai/sweetmcp.ps1).Content</code>
             </div>
         </div>
         
-        <div class="features">
-            <h3>What Gets Installed</h3>
-            <ul>
-                <li>SweetMCP Daemon (cyrupd)</li>
-                <li>Pingora Gateway Server</li>
-                <li>Wildcard SSL Certificates</li>
-                <li>Local DNS Configuration</li>
-                <li>System Trust Store Integration</li>
-                <li>Auto-service Registration</li>
-                <li>Multi-domain Support</li>
-                <li>Zero-config AI Tool Integration</li>
-            </ul>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔐</div>
+                <div class="feature-title">SSL Certificates</div>
+                <div class="feature-desc">Wildcard certificates for *.cyrup.{dev,ai,cloud,pro} with OS trust store integration</div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🌐</div>
+                <div class="feature-title">Local DNS</div>
+                <div class="feature-desc">Automatic host entries for sweetmcp.cyrup.* domains pointing to localhost</div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-title">Pingora Gateway</div>
+                <div class="feature-desc">High-performance proxy server with automatic service registration</div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <div class="feature-title">AI Tool Integration</div>
+                <div class="feature-desc">Auto-detects Claude Desktop, Windsurf, and other AI development tools</div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🔄</div>
+                <div class="feature-title">Multi-Protocol</div>
+                <div class="feature-desc">GraphQL, JSON-RPC 2.0, and Cap'n Proto → MCP conversion</div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <div class="feature-title">Production Ready</div>
+                <div class="feature-desc">JWT auth, rate limiting, health checks, and automatic load balancing</div>
+            </div>
         </div>
         
         <div class="footer">
@@ -235,25 +364,57 @@
                 <a href="https://docs.cyrup.ai/sweetmcp" target="_blank">Documentation</a> •
                 <a href="https://discord.gg/cyrup-ai" target="_blank">Community</a>
             </p>
-            <p style="margin-top: 1rem; font-size: 0.9rem;">
+            <p style="margin-top: 1rem;">
                 Made with 🍯 by <a href="https://cyrup.ai" target="_blank">Cyrup.ai</a>
             </p>
         </div>
     </div>
 
     <script>
+        // Create floating particles
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 6 + 's';
+            particle.style.animationDuration = (Math.random() * 3 + 4) + 's';
+            document.body.appendChild(particle);
+            
+            setTimeout(() => {
+                particle.remove();
+            }, 8000);
+        }
+        
+        // Create particles periodically
+        setInterval(createParticle, 500);
+        
+        function showPlatform(platform) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update command displays
+            document.querySelectorAll('.install-command').forEach(cmd => cmd.classList.remove('active'));
+            if (platform === 'bash') {
+                document.getElementById('bash-command').classList.add('active');
+            } else {
+                document.getElementById('powershell-command').classList.add('active');
+            }
+        }
+        
         function copyToClipboard(type) {
-            const elementId = type === 'ps1' ? 'install-cmd-ps1' : 'install-cmd-bash';
-            const command = document.getElementById(elementId).textContent;
-            const btn = event.target;
+            const command = type === 'bash' 
+                ? 'curl -fsSL https://get.cyrup.ai/sweetmcp.sh | bash'
+                : 'iex (iwr -UseBasicParsing https://get.cyrup.ai/sweetmcp.ps1).Content';
             
             navigator.clipboard.writeText(command).then(() => {
+                const btn = event.target;
                 const originalText = btn.textContent;
                 btn.textContent = 'Copied!';
                 btn.style.background = '#00ff00';
                 setTimeout(() => {
                     btn.textContent = originalText;
-                    btn.style.background = '#ffd700';
+                    btn.style.background = '';
                 }, 2000);
             }).catch(err => {
                 console.error('Failed to copy: ', err);
@@ -261,18 +422,13 @@
         }
         
         // Auto-select command on click
-        document.getElementById('install-cmd-bash').addEventListener('click', function() {
-            const range = document.createRange();
-            range.selectNode(this);
-            window.getSelection().removeAllRanges();
-            window.getSelection().addRange(range);
-        });
-        
-        document.getElementById('install-cmd-ps1').addEventListener('click', function() {
-            const range = document.createRange();
-            range.selectNode(this);
-            window.getSelection().removeAllRanges();
-            window.getSelection().addRange(range);
+        document.querySelectorAll('.install-command code').forEach(code => {
+            code.addEventListener('click', function() {
+                const range = document.createRange();
+                range.selectNode(this);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+            });
         });
     </script>
 </body>
