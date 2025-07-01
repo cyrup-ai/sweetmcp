@@ -1,280 +1,119 @@
-# Extism Plugin System in SweetMCP
+# SweetMCP Auto-Integration System TODO
 
-## Overview
-SweetMCP uses Extism to load and run WebAssembly (WASM) plugins. This allows extending the MCP server with new tools and prompts without modifying the core server code.
+## Foundation Components
 
-## Key Components
+### 1. Enhanced Certificate Management
+Create wildcard self-signed certificate with multiple SAN entries in $XDG_CONFIG_HOME/sweetmcp/wildcard.cyrup.pem. Primary *.cyrup.dev with SAN for *.cyrup.ai, *.cyrup.pro, *.cyrup.cloud. Certificate should be non-expiring for maximum convenience.
+DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
 
-### 1. Plugin Manager (`sweetmcp-axum/src/plugin/manager.rs`)
-- **PluginManager** struct holds:
-  - `plugins`: HashMap of loaded Extism Plugin instances
-  - `tool_to_plugin`: Maps tool names to their plugin names
-  - `prompt_info`: Maps prompt names to plugin names and metadata
-  - `client_capabilities`: Client capabilities from MCP initialization
-  - `pending_requests`: For async request/response handling
+### 2. Act as an Objective QA Rust developer and rate the work performed previously on certificate management requirements. Verify the wildcard certificate was generated correctly with all required SAN entries, stored in the correct location, and is properly formatted for cross-platform use.
 
-### 2. Plugin Loading Process
-1. **Load plugins from config** (`load_plugins()` function)
-   - Supports loading from:
-     - Local files: `path/to/plugin.wasm`
-     - HTTP URLs: `https://example.com/plugin.wasm`
-     - OCI registries: `oci://user/plugin-name`
-   
-2. **Plugin initialization**:
-   - Creates Extism Manifest with WASM data
-   - Sets allowed hosts and paths from config
-   - Instantiates Plugin with `Plugin::new(&manifest, [], true)`
+### 3. Multi-Domain Host File Management  
+Add host entries for sweetmcp.cyrup.dev, sweetmcp.cyrup.ai, sweetmcp.cyrup.cloud, sweetmcp.cyrup.pro all pointing to 127.0.0.1. Handle cross-platform host file locations and permissions with proper sudo elevation.
+DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
 
-3. **Tool Discovery**:
-   - Calls `plugin.call("main_handler", {"name": "describe"})` OR
-   - Calls exported `describe()` function directly
-   - Returns `ListToolsResult` with tool descriptions
-   - Maps tool names to plugin names for routing
+### 4. Act as an Objective QA Rust developer and rate the work performed previously on host file management requirements. Verify all 4 domain entries were added correctly, point to 127.0.0.1, and work across different operating systems.
 
-4. **Prompt Discovery**:
-   - Calls `plugin.call("mcp_list_prompts", ())`
-   - Returns array of Prompt objects
-   - Maps prompt names to plugin names
+### 5. Cross-Platform Trust Store Integration
+Import the wildcard certificate into OS trust stores (macOS Keychain, Linux ca-certificates, Windows certlm) using sudo privileges. Support all major operating systems with proper error handling.
+DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
 
-### 3. Plugin Structure
+### 6. Act as an Objective QA Rust developer and rate the work performed previously on trust store integration requirements. Verify the certificate was imported successfully into each OS trust store and is properly trusted for HTTPS connections.
 
-Each plugin must:
+## Tool Integration Framework
 
-1. **Export functions** (C ABI):
-   - `call()` - Main tool execution entry point
-   - `describe()` - Returns tool descriptions
-   - Optional: `main_handler()` - Alternative entry point
-   - Optional: `mcp_list_prompts()` - For prompt support
-   - Optional: `mcp_get_prompt_template()` - For prompt templates
+### 7. Tool Integration Strategy Pattern
+Create ToolIntegrationStrategy trait with methods: detect(), configure(), validate(). Design registry pattern to hold all strategies and enable easy addition of new tools.
+DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
 
-2. **Use Extism PDK types**:
-   ```rust
-   use extism_pdk::*;
-   ```
+### 8. Act as an Objective QA Rust developer and rate the work performed previously on strategy pattern requirements. Verify the trait design is extensible, the registry works correctly, and new strategies can be easily added.
 
-3. **Define MCP types** (usually in `plugin.rs` or `types.rs`):
-   - `CallToolRequest` - Input for tool calls
-   - `CallToolResult` - Output from tool calls
-   - `ListToolsResult` - Tool descriptions
-   - `ToolDescription` - Individual tool metadata
-   - `Content` - Response content types
+### 9. Tool Scanner Background Service
+Create daemon background service that scans for installed tools every 15 minutes and on startup. Integrate with existing Pingora background service architecture. Should detect newly installed tools and trigger automatic configuration.
+DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
 
-### 4. Tool Execution Flow
+### 10. Act as an Objective QA Rust developer and rate the work performed previously on tool scanner service requirements. Verify the background service runs correctly, scans at proper intervals, and integrates well with the existing daemon architecture.
 
-1. **Client calls tool** → MCP server receives request
-2. **Router forwards to** `tools_call_handler()`
-3. **Handler looks up** plugin name from `tool_to_plugin` map
-4. **Calls plugin**: `plugin.call("call", json_string)`
-5. **Plugin processes** and returns `CallToolResult`
-6. **Server sends** response back to client
+## POC Tool Implementations
 
-### 5. Example Plugin Structure (hash plugin)
+### 11. Claude Desktop Strategy Implementation
+Implement ToolIntegrationStrategy for Claude Desktop. Detect installation across platforms, configure MCP server entry pointing to SweetMCP Pingora endpoint via HTTPS. Add SweetMCP as additional server, do not replace existing configurations.
+DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
 
-```rust
-// lib.rs
-mod plugin;  // or pdk.rs for types
-use extism_pdk::*;
-use plugin::types::*;
+### 12. Act as an Objective QA Rust developer and rate the work performed previously on Claude Desktop integration requirements. Verify detection works across platforms, configuration is added correctly, and existing MCP servers are preserved.
 
-// Tool implementation
-pub(crate) fn call(input: CallToolRequest) -> Result<CallToolResult, Error> {
-    // Extract arguments
-    let args = input.params.arguments.unwrap_or_default();
-    
-    // Process request
-    // ...
-    
-    // Return result
-    Ok(CallToolResult {
-        content: vec![Content {
-            text: Some(result),
-            r#type: ContentType::Text,
-            // ...
-        }],
-        is_error: None,
-    })
-}
+### 13. Windsurf Strategy Implementation
+Implement ToolIntegrationStrategy for Windsurf. Detect installation, configure MCP integration pointing to SweetMCP HTTPS endpoint. Handle Windsurf-specific configuration format and file locations.
+DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
 
-// Tool description
-pub(crate) fn describe() -> Result<ListToolsResult, Error> {
-    Ok(ListToolsResult {
-        tools: vec![ToolDescription {
-            name: "tool_name".into(),
-            description: "Tool description".into(),
-            input_schema: json!({
-                "type": "object",
-                "properties": {
-                    // JSON Schema for arguments
-                },
-                "required": ["field1", "field2"]
-            }).as_object().unwrap().clone(),
-        }],
-    })
-}
-```
+### 14. Act as an Objective QA Rust developer and rate the work performed previously on Windsurf integration requirements. Verify Windsurf detection works, configuration format is correct, and integration points to the proper SweetMCP endpoint.
 
-## How to Write Prompts for Plugins
+## Future Strategy Stubs
 
-When writing prompts for AI agents to use plugins:
+### 15. VSCode Strategy Trait Stub
+Create trait implementation stub for VSCode with detect(), configure(), validate() methods. Document expected configuration approach for future implementation.
+DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
 
-1. **Describe available tools clearly**:
-   - List tool names and their purposes
-   - Explain input parameters and types
-   - Give examples of when to use each tool
+### 16. Act as an Objective QA Rust developer and rate the work performed previously on VSCode strategy stub requirements. Verify the stub implementation is properly structured and documented for future development.
 
-2. **Tool selection hints**:
-   ```
-   Available tools:
-   - hash: Generate cryptographic hashes (sha256, md5, etc)
-     Use when: Need to hash passwords, verify checksums, encode data
-     Arguments: data (string), algorithm (sha256|md5|base64|...)
-   ```
+### 17. Zed Strategy Trait Stub
+Create trait implementation stub for Zed editor with detect(), configure(), validate() methods. Document expected configuration approach for future implementation.
+DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
 
-3. **Provide usage examples**:
-   ```
-   To hash a password:
-   Use tool: hash
-   Arguments: {
-     "data": "mypassword123",
-     "algorithm": "sha256"
-   }
-   ```
+### 18. Act as an Objective QA Rust developer and rate the work performed previously on Zed strategy stub requirements. Verify the stub implementation is properly structured and documented for future development.
 
-4. **Error handling guidance**:
-   - Explain common errors and fixes
-   - Show how to interpret error responses
+### 19. Cursor.AI Strategy Trait Stub
+Create trait implementation stub for Cursor.AI with detect(), configure(), validate() methods. Document expected configuration approach for future implementation.
+DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
 
-## Plugin Prompt Support
+### 20. Act as an Objective QA Rust developer and rate the work performed previously on Cursor.AI strategy stub requirements. Verify the stub implementation is properly structured and documented for future development.
 
-Plugins can also provide prompts (templates) for generating structured requests:
+### 21. Raycast Strategy Trait Stub
+Create trait implementation stub for Raycast with detect(), configure(), validate() methods. Document expected configuration approach for future implementation.
+DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
 
-### 1. Prompt Discovery
-```rust
-#[plugin_fn]
-pub fn mcp_list_prompts(_: ()) -> FnResult<Json<Vec<PluginPrompt>>> {
-    let prompts = vec![
-        PluginPrompt {
-            name: "prompt_name".to_string(),
-            description: Some("Description of what this prompt does".to_string()),
-            arguments: Some(vec![
-                PluginPromptArgument {
-                    name: "arg1".to_string(),
-                    description: Some("Description of argument".to_string()),
-                    required: Some(true),
-                },
-            ]),
-        }
-    ];
-    Ok(Json(prompts))
-}
-```
+### 22. Act as an Objective QA Rust developer and rate the work performed previously on Raycast strategy stub requirements. Verify the stub implementation is properly structured and documented for future development.
 
-### 2. Prompt Template Retrieval
-```rust
-#[plugin_fn]
-pub fn mcp_get_prompt_template(Json(args): Json<Value>) -> FnResult<String> {
-    let prompt_name = args.get("name")
-        .and_then(|v| v.as_str())
-        .ok_or_else(|| anyhow::anyhow!("Missing 'name' argument"))?;
-    
-    match prompt_name {
-        "prompt_name" => {
-            let template = r#"
-Template text with {{ variable }} placeholders.
-{% if condition %}Conditional content{% endif %}
-"#;
-            Ok(template.to_string())
-        }
-        _ => Err(anyhow::anyhow!("Prompt '{}' not found", prompt_name).into()),
-    }
-}
-```
+### 23. Warp Terminal Strategy Trait Stub
+Create trait implementation stub for Warp terminal with detect(), configure(), validate() methods. Document expected configuration approach for future implementation.
+DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
 
-### 3. Template Syntax
-- Uses Jinja2-style templating
-- Variables: `{{ variable_name }}`
-- Defaults: `{{ variable | default("default_value") }}`
-- Conditionals: `{% if variable %}...{% endif %}`
+### 24. Act as an Objective QA Rust developer and rate the work performed previously on Warp strategy stub requirements. Verify the stub implementation is properly structured and documented for future development.
 
-## How Agents Should Use Plugins
+### 25. Lapce Strategy Trait Stub
+Create trait implementation stub for Lapce editor with detect(), configure(), validate() methods. Document expected configuration approach for future implementation.
+DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
 
-When prompting AI agents to use plugins:
+### 26. Act as an Objective QA Rust developer and rate the work performed previously on Lapce strategy stub requirements. Verify the stub implementation is properly structured and documented for future development.
 
-### 1. Tool Discovery
-```
-To see available tools, the system will call:
-- plugin.call("main_handler", {"name": "describe"}) OR
-- plugin's describe() function
+### 27. Goose Strategy Trait Stub
+Create trait implementation stub for Goose with detect(), configure(), validate() methods. Document expected configuration approach for future implementation.
+DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
 
-This returns all tools the plugin provides.
-```
+### 28. Act as an Objective QA Rust developer and rate the work performed previously on Goose strategy stub requirements. Verify the stub implementation is properly structured and documented for future development.
 
-### 2. Tool Invocation
-```
-To use a tool:
-1. Find the tool in the tool_to_plugin mapping
-2. Call: plugin.call("call", {
-    "params": {
-        "name": "tool_name",
-        "arguments": {
-            "arg1": "value1",
-            "arg2": "value2"
-        }
-    }
-})
-```
+### 29. OpenAI Codex Strategy Trait Stub
+Create trait implementation stub for OpenAI Codex with detect(), configure(), validate() methods. Document expected configuration approach for future implementation.
+DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
 
-### 3. Example Agent Prompt
-```
-You have access to the following MCP tools via plugins:
+### 30. Act as an Objective QA Rust developer and rate the work performed previously on OpenAI Codex strategy stub requirements. Verify the stub implementation is properly structured and documented for future development.
 
-**hash** (from hash plugin):
-- Purpose: Generate cryptographic hashes and encodings
-- Arguments:
-  - data: string - The data to hash/encode
-  - algorithm: enum - One of: sha256, sha512, md5, base64, base32
-- Example: To hash a password, call with {"data": "password123", "algorithm": "sha256"}
+## Integration and Testing
 
-**list_dir** (from fs plugin):
-- Purpose: List directory contents
-- Arguments:
-  - path: string - Directory path (optional, defaults to ".")
-  - include_hidden: boolean - Show hidden files (optional)
-- Example: To list current directory, call with {"path": "."}
+### 31. Enhanced Installer Integration
+Update installer.rs to call certificate generation, host file management, trust store integration, and tool scanner initialization during daemon installation.
+DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
 
-When the user asks for something these tools can do, use them appropriately.
-```
+### 32. Act as an Objective QA Rust developer and rate the work performed previously on installer integration requirements. Verify all new components are properly integrated into the installation process and work correctly during daemon setup.
 
-## Plugin Development Best Practices
+### 33. Cross-Platform Validation
+Test certificate generation, host file management, trust store integration, and tool detection across macOS, Linux, and Windows. Ensure all components work correctly on different operating systems.
+DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
 
-1. **Export the required functions**:
-   - `call()` - Required for tool execution
-   - `describe()` - Required for tool discovery
-   - `mcp_list_prompts()` - Optional for prompt support
-   - `mcp_get_prompt_template()` - Optional for prompt templates
+### 34. Act as an Objective QA Rust developer and rate the work performed previously on cross-platform validation requirements. Verify all functionality works correctly across different operating systems and edge cases are handled properly.
 
-2. **Use proper error handling**:
-   - Return proper MCP error codes
-   - Include helpful error messages
-   - Log errors for debugging
+### 35. End-to-End Integration Test
+Create comprehensive test that installs daemon, generates certificates, configures host entries, scans for tools, and validates that Claude Desktop and Windsurf are automatically configured when detected.
+DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
 
-3. **Follow MCP type conventions**:
-   - Use the standard MCP types from the SDK
-   - Return proper JSON structures
-   - Include all required fields
-
-4. **Security considerations**:
-   - Validate all inputs
-   - Use allowed_hosts and allowed_paths properly
-   - Don't expose sensitive information
-
-## Next Steps
-
-- [x] Document prompt support in plugins
-- [x] Create plugin development guide (see docs/plugin-description-guide.md)
-- [x] Add example prompts for agents (see docs/agent-plugin-usage.md)
-- [x] Analyze existing plugin descriptions (see docs/plugin-description-analysis.md)
-- [ ] Update poorly described plugins (fs, arxiv, qr-code, eval-*)
-- [ ] Document plugin configuration options
-- [ ] Create plugin testing framework
-- [ ] Add plugin development quickstart template
+### 36. Act as an Objective QA Rust developer and rate the work performed previously on end-to-end integration test requirements. Verify the complete workflow functions as designed and delivers the expected user experience of zero-friction tool integration.
