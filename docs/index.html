@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SweetMCP - One-Line Installer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .tagline {
+            font-size: 1.5rem;
+            margin-bottom: 3rem;
+            opacity: 0.9;
+        }
+        
+        .install-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .install-title {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: #ffd700;
+        }
+        
+        .install-command {
+            background: #1a1a1a;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            font-size: 1.2rem;
+            color: #00ff00;
+            position: relative;
+            overflow-x: auto;
+            border: 2px solid #333;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ffd700;
+            color: #1a1a1a;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background: #ffed4e;
+            transform: translateY(-2px);
+        }
+        
+        .platforms {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .platform {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .platform-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .features {
+            text-align: left;
+            margin-top: 2rem;
+        }
+        
+        .features h3 {
+            color: #ffd700;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .features ul {
+            list-style: none;
+            columns: 2;
+            column-gap: 2rem;
+        }
+        
+        .features li {
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        
+        .features li::before {
+            content: "🍯";
+            position: absolute;
+            left: 0;
+        }
+        
+        .footer {
+            margin-top: 2rem;
+            opacity: 0.7;
+        }
+        
+        .footer a {
+            color: #ffd700;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            .tagline {
+                font-size: 1.2rem;
+            }
+            
+            .install-command {
+                font-size: 1rem;
+                padding: 1rem;
+            }
+            
+            .features ul {
+                columns: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">SweetMCP</div>
+        <div class="tagline">The sweetest Model Context Protocol integration platform</div>
+        
+        <div class="install-section">
+            <div class="install-title">One-Line Installer</div>
+            
+            <div style="margin-bottom: 1rem;">
+                <strong>macOS & Linux:</strong>
+            </div>
+            <div class="install-command">
+                <button class="copy-btn" onclick="copyToClipboard('bash')">Copy</button>
+                <code id="install-cmd-bash">curl -fsSL https://get.cyrup.ai/sweetmcp.sh | bash</code>
+            </div>
+            
+            <div style="margin-bottom: 1rem; margin-top: 2rem;">
+                <strong>Windows (PowerShell as Administrator):</strong>
+            </div>
+            <div class="install-command">
+                <button class="copy-btn" onclick="copyToClipboard('ps1')">Copy</button>
+                <code id="install-cmd-ps1">iex (iwr -UseBasicParsing https://get.cyrup.ai/sweetmcp.ps1).Content</code>
+            </div>
+            
+            <div class="platforms">
+                <div class="platform">
+                    <div class="platform-icon">🍎</div>
+                    <strong>macOS</strong><br>
+                    Intel & Apple Silicon
+                </div>
+                <div class="platform">
+                    <div class="platform-icon">🐧</div>
+                    <strong>Linux</strong><br>
+                    x86_64 & aarch64
+                </div>
+                <div class="platform">
+                    <div class="platform-icon">🪟</div>
+                    <strong>Windows</strong><br>
+                    x86_64 & i686
+                </div>
+            </div>
+        </div>
+        
+        <div class="features">
+            <h3>What Gets Installed</h3>
+            <ul>
+                <li>SweetMCP Daemon (cyrupd)</li>
+                <li>Pingora Gateway Server</li>
+                <li>Wildcard SSL Certificates</li>
+                <li>Local DNS Configuration</li>
+                <li>System Trust Store Integration</li>
+                <li>Auto-service Registration</li>
+                <li>Multi-domain Support</li>
+                <li>Zero-config AI Tool Integration</li>
+            </ul>
+        </div>
+        
+        <div class="footer">
+            <p>
+                <a href="https://github.com/cyrup-ai/sweetmcp" target="_blank">GitHub</a> •
+                <a href="https://docs.cyrup.ai/sweetmcp" target="_blank">Documentation</a> •
+                <a href="https://discord.gg/cyrup-ai" target="_blank">Community</a>
+            </p>
+            <p style="margin-top: 1rem; font-size: 0.9rem;">
+                Made with 🍯 by <a href="https://cyrup.ai" target="_blank">Cyrup.ai</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function copyToClipboard(type) {
+            const elementId = type === 'ps1' ? 'install-cmd-ps1' : 'install-cmd-bash';
+            const command = document.getElementById(elementId).textContent;
+            const btn = event.target;
+            
+            navigator.clipboard.writeText(command).then(() => {
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                btn.style.background = '#00ff00';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '#ffd700';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+        
+        // Auto-select command on click
+        document.getElementById('install-cmd-bash').addEventListener('click', function() {
+            const range = document.createRange();
+            range.selectNode(this);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+        });
+        
+        document.getElementById('install-cmd-ps1').addEventListener('click', function() {
+            const range = document.createRange();
+            range.selectNode(this);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+        });
+    </script>
+</body>
+</html>
