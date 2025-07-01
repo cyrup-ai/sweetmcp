@@ -17,7 +17,7 @@ It routes requests based on server load:
 - Handles requests locally when not overloaded
 - Forwards to the peer with lowest `node_load1` metric when overloaded
 
-## Auto-Discovery
+## Auto-Discovery 
 
 SweetMCP nodes automatically discover each other using industry-standard approaches:
 

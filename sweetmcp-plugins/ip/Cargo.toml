@@ -1,0 +1,16 @@
+[package]
+name = "sweetmcp-plugin-ip"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "sweetmcp_plugin_ip"
+crate-type = ["cdylib"]
+
+[dependencies]
+extism-pdk = "1.4.1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+base64 = "0.21"
+base64-serde = "0.8.0"
+sweetmcp-workspace-hack = { version = "0.1", path = "../../sweetmcp-workspace-hack" }

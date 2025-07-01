@@ -1,0 +1,37 @@
+[package]
+name = "rio-ext-test"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Core dependencies
+anyhow = "1.0.98"
+chromiumoxide = { version = "0.7.0", features = ["tokio-runtime"] }
+chromiumoxide_cdp = "0.7.0"
+futures = "0.3.31"
+serde_json = "1.0.140"
+tempfile = "3.20.0"
+tokio = { version = "1.45", features = ["full"] }
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.19", features = ["fmt"] }
+
+# Image processing
+image = "0.25.6"
+image-compare = "0.4.1"
+sixel-tokenizer = "0.1.0"
+pollster = "0.4"
+
+# Rio integration - all from same branch to ensure compatibility
+rio-window = { git = "https://github.com/raphamorim/rio", branch = "main" }
+rio-backend = { git = "https://github.com/raphamorim/rio", branch = "main" }
+sugarloaf = { git = "https://github.com/raphamorim/rio", branch = "main", package = "sugarloaf" }
+teletypewriter = { git = "https://github.com/raphamorim/rio", branch = "main", package = "teletypewriter" }
+raw-window-handle = "0.6.2"
+base64 = "0.22.1"
+percent-encoding = "2.3.1"
+thiserror = "2.0.12"
+wgpu = "25.0.0"
+
+[[bin]]
+name = "rio-ext-test"
+path = "src/main.rs"

@@ -1,0 +1,19 @@
+[build]
+target = "wasm32-wasip1"
+
+[target.wasm32-wasip1]
+rustflags = [
+  "-C", "target-feature=+atomics,+bulk-memory,+mutable-globals",
+  # Enable optimizations for wasm
+  "-C", "opt-level=3",
+  # Reduce code size
+  "-C", "codegen-units=1",
+  "-C", "panic=abort",
+  # LTO for better optimization across crate boundaries
+  # "-C", "lto=fat",
+]
+
+# Configure the linker for better wasm output
+# [target.wasm32-wasip1.unstable]
+# build-std = ["std", "panic_abort"]
+# build-std-features = ["panic_immediate_abort"]
