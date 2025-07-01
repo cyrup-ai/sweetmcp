@@ -53,6 +53,7 @@ sysinfo = { version = "0.35", features = ["multithread"] }
 
 # Configuration & Environment
 env_logger = "0.11"
+log = "0.4"
 dotenvy = "0.15"
 config = { version = "0.15", features = ["yaml", "toml"] }
 

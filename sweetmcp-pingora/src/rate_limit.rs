@@ -13,7 +13,6 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
-use tokio::time::interval;
 use tracing::{debug, info, warn};
 
 /// Token bucket rate limiting algorithm configuration
@@ -383,6 +382,7 @@ impl AdvancedRateLimitManager {
 
     /// Check if request should be allowed
     pub fn check_request(&self, endpoint: &str, peer_ip: Option<&str>, tokens: u32) -> bool {
+        
         let config = match self.endpoint_configs.get(endpoint) {
             Some(config) => config.clone(),
             None => {
@@ -556,20 +556,11 @@ impl AdvancedRateLimitManager {
         stats
     }
 
-    /// Start periodic cleanup task for unused peer limiters
-    pub fn start_cleanup_task(self: Arc<Self>) {
-        tokio::spawn(async move {
-            let mut cleanup_interval = interval(Duration::from_secs(300)); // Cleanup every 5 minutes
-
-            loop {
-                cleanup_interval.tick().await;
-                self.cleanup_unused_limiters();
-            }
-        });
-    }
+    // Cleanup task is now managed by RateLimitCleanupService in main.rs
+    // The ensure_cleanup_started method is no longer needed
 
     /// Remove peer limiters that haven't been used recently
-    fn cleanup_unused_limiters(&self) {
+    pub fn cleanup_unused_limiters(&self) {
         if let Ok(mut peer_limiters) = self.peer_limiters.lock() {
             let initial_count: usize = peer_limiters
                 .values()

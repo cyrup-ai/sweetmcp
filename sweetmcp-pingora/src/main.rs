@@ -27,7 +27,6 @@ use opentelemetry_prometheus::PrometheusExporter;
 use pingora::server::Server;
 use std::sync::Arc;
 use tokio::sync::mpsc;
-use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 fn main() {
     env_logger::init();
@@ -39,18 +38,15 @@ fn main() {
 }
 
 fn run_server() -> Result<()> {
-    // Initialize structured logging
-    init_logging()?;
-
-    tracing::info!("🍬 Starting SweetMCP Server with Sugora Gateway");
+    log::info!("🍬 Starting SweetMCP Server with Sugora Gateway");
 
     // Load configuration
     let cfg = Arc::new(Config::from_env()?);
-    tracing::info!("✅ Configuration loaded successfully");
+    log::info!("✅ Configuration loaded successfully");
 
     // Initialize OpenTelemetry
     let _exporter = init_otel()?;
-    tracing::info!("📊 OpenTelemetry initialized");
+    log::info!("📊 OpenTelemetry initialized");
 
     // Setup MCP bridge
     let (bridge_tx, bridge_rx) = mpsc::channel::<mcp_bridge::BridgeMsg>(1024);
@@ -108,6 +104,19 @@ fn run_server() -> Result<()> {
     // Create HTTP proxy service
     let edge_service =
         edge::EdgeService::new(cfg.clone(), bridge_tx.clone(), peer_registry.clone());
+    
+    // Add rate limit cleanup service
+    let rate_limit_service = background_service("rate-limit-cleanup", RateLimitCleanupService {
+        rate_limiter: edge_service.rate_limiter(),
+    });
+    server.add_service(rate_limit_service);
+    
+    // Add metrics collector service
+    let metrics_service = background_service("metrics-collector", MetricsCollectorService {
+        metric_picker: edge_service.metric_picker(),
+    });
+    server.add_service(metrics_service);
+    
     let mut proxy_service = pingora_proxy::http_proxy_service(&server.configuration, edge_service);
 
     // Add TCP listener
@@ -117,16 +126,16 @@ fn run_server() -> Result<()> {
     // Ensure directory exists
     if let Some(parent) = std::path::Path::new(&cfg.uds_path).parent() {
         if let Err(e) = std::fs::create_dir_all(parent) {
-            tracing::warn!("Failed to create UDS directory {:?}: {}", parent, e);
+            log::warn!("Failed to create UDS directory {:?}: {}", parent, e);
         } else {
-            tracing::info!("Created UDS directory {:?}", parent);
+            log::info!("Created UDS directory {:?}", parent);
         }
     }
     
     // Remove old socket file if it exists
     if std::path::Path::new(&cfg.uds_path).exists() {
         if let Err(e) = std::fs::remove_file(&cfg.uds_path) {
-            tracing::warn!("Failed to remove old socket file: {}", e);
+            log::warn!("Failed to remove old socket file: {}", e);
         }
     }
     
@@ -142,39 +151,15 @@ fn run_server() -> Result<()> {
 
     // The exporter automatically registers with the default prometheus registry
 
-    tracing::info!("🚀 Sugora Gateway ready!");
-    tracing::info!("  TCP: {}", cfg.tcp_bind);
-    tracing::info!("  UDS: {}", cfg.uds_path);
-    tracing::info!("  Metrics: http://{}/metrics", cfg.metrics_bind);
+    log::info!("🚀 Sugora Gateway ready!");
+    log::info!("  TCP: {}", cfg.tcp_bind);
+    log::info!("  UDS: {}", cfg.uds_path);
+    log::info!("  Metrics: http://{}/metrics", cfg.metrics_bind);
 
     // Run the server - this never returns
     server.run_forever();
 }
 
-fn init_logging() -> Result<()> {
-    // Get log level from environment or use INFO
-    let log_level = std::env::var("SWEETMCP_LOG_LEVEL")
-        .unwrap_or_else(|_| "info".to_string())
-        .parse::<tracing::Level>()
-        .unwrap_or(tracing::Level::INFO);
-
-    let subscriber = tracing_subscriber::registry()
-        .with(
-            tracing_subscriber::fmt::layer()
-                .with_target(true)
-                .with_thread_ids(true)
-                .with_file(true)
-                .with_line_number(true)
-                .json(),
-        )
-        .with(
-            tracing_subscriber::filter::EnvFilter::from_default_env()
-                .add_directive(format!("sweetmcp_server={}", log_level).parse()?),
-        );
-
-    subscriber.init();
-    Ok(())
-}
 
 fn init_otel() -> Result<PrometheusExporter> {
     let exporter = opentelemetry_prometheus::exporter().build()?;
@@ -190,6 +175,7 @@ use pingora::server::ShutdownWatch;
 use pingora::services::background::{background_service, BackgroundService};
 use std::pin::Pin;
 use std::future::Future;
+use std::time::Duration;
 
 struct McpBridgeService {
     rx: Option<mpsc::Receiver<mcp_bridge::BridgeMsg>>,
@@ -211,13 +197,13 @@ impl BackgroundService for McpBridgeService {
         };
         
         Box::pin(async move {
-            tracing::info!("🔌 Starting MCP bridge");
+            log::info!("🔌 Starting MCP bridge");
             tokio::select! {
                 _ = mcp_bridge::run(rx) => {
-                    tracing::info!("MCP bridge stopped");
+                    log::info!("MCP bridge stopped");
                 }
                 _ = shutdown.changed() => {
-                    tracing::info!("MCP bridge shutting down");
+                    log::info!("MCP bridge shutting down");
                 }
             }
         })
@@ -245,13 +231,13 @@ impl BackgroundService for DnsDiscoveryService {
         };
         
         Box::pin(async move {
-            tracing::info!("🌍 Starting DNS discovery for: {}", service_name);
+            log::info!("🌍 Starting DNS discovery for: {}", service_name);
             tokio::select! {
                 _ = discovery.run() => {
-                    tracing::info!("DNS discovery stopped");
+                    log::info!("DNS discovery stopped");
                 }
                 _ = shutdown.changed() => {
-                    tracing::info!("DNS discovery shutting down");
+                    log::info!("DNS discovery shutting down");
                 }
             }
         })
@@ -277,13 +263,13 @@ impl BackgroundService for MdnsDiscoveryService {
         };
         
         Box::pin(async move {
-            tracing::info!("🔍 Starting mDNS local discovery");
+            log::info!("🔍 Starting mDNS local discovery");
             tokio::select! {
                 _ = discovery.run() => {
-                    tracing::info!("mDNS discovery stopped");
+                    log::info!("mDNS discovery stopped");
                 }
                 _ = shutdown.changed() => {
-                    tracing::info!("mDNS discovery shutting down");
+                    log::info!("mDNS discovery shutting down");
                 }
             }
         })
@@ -309,13 +295,109 @@ impl BackgroundService for PeerDiscoveryService {
         };
         
         Box::pin(async move {
-            tracing::info!("🔄 Starting HTTP peer exchange");
+            log::info!("🔄 Starting HTTP peer exchange");
             tokio::select! {
                 _ = service.run() => {
-                    tracing::info!("Peer discovery stopped");
+                    log::info!("Peer discovery stopped");
                 }
                 _ = shutdown.changed() => {
-                    tracing::info!("Peer discovery shutting down");
+                    log::info!("Peer discovery shutting down");
+                }
+            }
+        })
+    }
+}
+
+struct RateLimitCleanupService {
+    rate_limiter: Arc<rate_limit::AdvancedRateLimitManager>,
+}
+
+impl BackgroundService for RateLimitCleanupService {
+    fn start<'life0, 'async_trait>(
+        &'life0 self,
+        mut shutdown: ShutdownWatch,
+    ) -> Pin<Box<dyn Future<Output = ()> + Send + 'async_trait>>
+    where
+        'life0: 'async_trait,
+        Self: 'async_trait,
+    {
+        let rate_limiter = self.rate_limiter.clone();
+        
+        Box::pin(async move {
+            log::info!("🧹 Starting rate limit cleanup service");
+            let mut cleanup_interval = tokio::time::interval(Duration::from_secs(300)); // 5 minutes
+            
+            loop {
+                tokio::select! {
+                    _ = cleanup_interval.tick() => {
+                        rate_limiter.cleanup_unused_limiters();
+                    }
+                    _ = shutdown.changed() => {
+                        log::info!("Rate limit cleanup shutting down");
+                        break;
+                    }
+                }
+            }
+        })
+    }
+}
+
+struct MetricsCollectorService {
+    metric_picker: Arc<metric_picker::MetricPicker>,
+}
+
+impl BackgroundService for MetricsCollectorService {
+    fn start<'life0, 'async_trait>(
+        &'life0 self,
+        mut shutdown: ShutdownWatch,
+    ) -> Pin<Box<dyn Future<Output = ()> + Send + 'async_trait>>
+    where
+        'life0: 'async_trait,
+        Self: 'async_trait,
+    {
+        let metric_picker = self.metric_picker.clone();
+        
+        Box::pin(async move {
+            log::info!("📊 Starting metrics collector service");
+            let client = reqwest::Client::builder()
+                .timeout(Duration::from_secs(2))
+                .build()
+                .unwrap_or_else(|_| reqwest::Client::new());
+                
+            let mut scrape_interval = tokio::time::interval(Duration::from_secs(5));
+            
+            loop {
+                tokio::select! {
+                    _ = scrape_interval.tick() => {
+                        let targets = metric_picker.get_metrics_targets();
+                        for (idx, url) in targets {
+                            let client_clone = client.clone();
+                            let picker_clone = metric_picker.clone();
+                            
+                            // Spawn individual metric fetches to run concurrently
+                            tokio::spawn(async move {
+                                if let Ok(response) = client_clone.get(&url).send().await {
+                                    if let Ok(text) = response.text().await {
+                                        // Parse prometheus metrics for node_load1
+                                        for line in text.lines() {
+                                            if line.starts_with("node_load1 ") {
+                                                if let Some(value_str) = line.split_whitespace().nth(1) {
+                                                    if let Ok(value) = value_str.parse::<f64>() {
+                                                        picker_clone.update_load(idx, value);
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                    _ = shutdown.changed() => {
+                        log::info!("Metrics collector shutting down");
+                        break;
+                    }
                 }
             }
         })

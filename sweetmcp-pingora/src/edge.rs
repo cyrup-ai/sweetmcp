@@ -10,7 +10,7 @@ use crate::{
     rate_limit::AdvancedRateLimitManager,
 };
 use bytes::Bytes;
-use pingora::http::Method;
+use pingora::http::{Method, ResponseHeader, StatusCode};
 use pingora::upstreams::peer::HttpPeer;
 use pingora::Result;
 use pingora_load_balancing::Backend;
@@ -25,7 +25,7 @@ use tokio::sync::mpsc::Sender;
 pub struct EdgeService {
     cfg: Arc<Config>,
     auth: JwtAuth,
-    picker: MetricPicker,
+    picker: Arc<MetricPicker>,
     load: Arc<Mutex<Load>>,
     #[allow(dead_code)]
     bridge_tx: Sender<crate::mcp_bridge::BridgeMsg>,
@@ -61,12 +61,11 @@ impl EdgeService {
         // Advanced rate limiting with token bucket and sliding window algorithms
         let rate_limit_manager = Arc::new(AdvancedRateLimitManager::new());
 
-        // Start cleanup task for unused peer limiters
-        rate_limit_manager.clone().start_cleanup_task();
+        // Note: cleanup task will be started lazily when first rate limit check occurs
 
         Self {
             auth: JwtAuth::new(cfg.jwt_secret.clone(), cfg.jwt_expiry),
-            picker: MetricPicker::from_backends(&backends),
+            picker: Arc::new(MetricPicker::from_backends(&backends)),
             load: Arc::new(Mutex::new(Load::new())),
             peer_registry,
             rate_limit_manager,
@@ -77,6 +76,16 @@ impl EdgeService {
 }
 
 impl EdgeService {
+    /// Get a reference to the rate limiter for background service setup
+    pub fn rate_limiter(&self) -> Arc<AdvancedRateLimitManager> {
+        self.rate_limit_manager.clone()
+    }
+    
+    /// Get a reference to the metric picker for background service setup
+    pub fn metric_picker(&self) -> Arc<MetricPicker> {
+        self.picker.clone()
+    }
+
     fn validate_discovery_token(&self, token: &str) -> bool {
         if let Ok(expected_token) = std::env::var("SWEETMCP_DISCOVERY_TOKEN") {
             !expected_token.is_empty() && token == expected_token
@@ -379,6 +388,21 @@ impl ProxyHttp for EdgeService {
                     .await?;
                 session
                     .write_response_body(Some(Bytes::from_static(response_body.as_bytes())), true)
+                    .await?;
+                self.record_http_metrics_and_cleanup(ctx, 200, response_body.len());
+                return Ok(true);
+            }
+
+            // Health check endpoint - no authentication required
+            if path == "/health" {
+                let response_body = b"OK";
+                session
+                    .write_response_header(Box::new(
+                        ResponseHeader::build(StatusCode::OK, None)?
+                    ), true)
+                    .await?;
+                session
+                    .write_response_body(Some(Bytes::from_static(response_body)), true)
                     .await?;
                 self.record_http_metrics_and_cleanup(ctx, 200, response_body.len());
                 return Ok(true);
