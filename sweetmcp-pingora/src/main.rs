@@ -29,15 +29,16 @@ use std::sync::Arc;
 use tokio::sync::mpsc;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-#[tokio::main(flavor = "multi_thread")]
-async fn main() {
-    if let Err(e) = run_server().await {
+fn main() {
+    env_logger::init();
+    
+    if let Err(e) = run_server() {
         eprintln!("🚫 SweetMCP Server failed to start: {}", e);
         std::process::exit(1);
     }
 }
 
-async fn run_server() -> Result<()> {
+fn run_server() -> Result<()> {
     // Initialize structured logging
     init_logging()?;
 
@@ -53,10 +54,6 @@ async fn run_server() -> Result<()> {
 
     // Setup MCP bridge
     let (bridge_tx, bridge_rx) = mpsc::channel::<mcp_bridge::BridgeMsg>(1024);
-    tokio::spawn(async move {
-        tracing::info!("🔌 Starting MCP bridge");
-        mcp_bridge::run(bridge_rx).await
-    });
 
     // Create server with default options
     let mut server =
@@ -74,32 +71,39 @@ async fn run_server() -> Result<()> {
         .and_then(|p| p.parse::<u16>().ok())
         .unwrap_or(8443);
 
-    // Primary discovery: DNS-based (if configured)
+    // Create background services
+    let mcp_bridge = background_service("mcp-bridge", McpBridgeService { rx: Some(bridge_rx) });
+    
+    // Create discovery services based on configuration
     if let Some(service_name) = dns_discovery::should_use_dns_discovery() {
         let dns_discovery = dns_discovery::DnsDiscovery::new(
             service_name.clone(),
             peer_registry.clone(),
             None, // Use default DoH servers
         );
-        tokio::spawn(async move {
-            tracing::info!("🌍 Starting DNS discovery for: {}", service_name);
-            dns_discovery.run().await;
+        let dns_service = background_service("dns-discovery", DnsDiscoveryService {
+            service_name,
+            discovery: dns_discovery,
         });
+        server.add_service(dns_service);
     } else {
         // Fallback: mDNS for local network discovery
         let mdns_discovery = mdns_discovery::MdnsDiscovery::new(peer_registry.clone(), local_port);
-        tokio::spawn(async move {
-            tracing::info!("🔍 Starting mDNS local discovery");
-            mdns_discovery.run().await;
+        let mdns_service = background_service("mdns-discovery", MdnsDiscoveryService {
+            discovery: mdns_discovery,
         });
+        server.add_service(mdns_service);
     }
 
     // Always start HTTP-based peer exchange for mesh formation
     let discovery_service = peer_discovery::DiscoveryService::new(peer_registry.clone());
-    tokio::spawn(async move {
-        tracing::info!("🔄 Starting HTTP peer exchange");
-        discovery_service.run().await;
+    let peer_service = background_service("peer-discovery", PeerDiscoveryService {
+        service: discovery_service,
     });
+    
+    // Add background services
+    server.add_service(mcp_bridge);
+    server.add_service(peer_service);
 
     // Create HTTP proxy service
     let edge_service =
@@ -110,6 +114,22 @@ async fn run_server() -> Result<()> {
     proxy_service.add_tcp(&cfg.tcp_bind);
 
     // Add Unix socket listener
+    // Ensure directory exists
+    if let Some(parent) = std::path::Path::new(&cfg.uds_path).parent() {
+        if let Err(e) = std::fs::create_dir_all(parent) {
+            tracing::warn!("Failed to create UDS directory {:?}: {}", parent, e);
+        } else {
+            tracing::info!("Created UDS directory {:?}", parent);
+        }
+    }
+    
+    // Remove old socket file if it exists
+    if std::path::Path::new(&cfg.uds_path).exists() {
+        if let Err(e) = std::fs::remove_file(&cfg.uds_path) {
+            tracing::warn!("Failed to remove old socket file: {}", e);
+        }
+    }
+    
     proxy_service.add_uds(&cfg.uds_path, None);
 
     // Add the proxy service to server
@@ -163,4 +183,141 @@ fn init_otel() -> Result<PrometheusExporter> {
     global::set_text_map_propagator(opentelemetry_sdk::propagation::TraceContextPropagator::new());
 
     Ok(exporter)
+}
+
+// Background service implementations
+use pingora::server::ShutdownWatch;
+use pingora::services::background::{background_service, BackgroundService};
+use std::pin::Pin;
+use std::future::Future;
+
+struct McpBridgeService {
+    rx: Option<mpsc::Receiver<mcp_bridge::BridgeMsg>>,
+}
+
+impl BackgroundService for McpBridgeService {
+    fn start<'life0, 'async_trait>(
+        &'life0 self,
+        mut shutdown: ShutdownWatch,
+    ) -> Pin<Box<dyn Future<Output = ()> + Send + 'async_trait>>
+    where
+        'life0: 'async_trait,
+        Self: 'async_trait,
+    {
+        // This is safe because we only call start once
+        let rx = unsafe { 
+            let this = self as *const Self as *mut Self;
+            (*this).rx.take().expect("start called twice")
+        };
+        
+        Box::pin(async move {
+            tracing::info!("🔌 Starting MCP bridge");
+            tokio::select! {
+                _ = mcp_bridge::run(rx) => {
+                    tracing::info!("MCP bridge stopped");
+                }
+                _ = shutdown.changed() => {
+                    tracing::info!("MCP bridge shutting down");
+                }
+            }
+        })
+    }
+}
+
+struct DnsDiscoveryService {
+    service_name: String,
+    discovery: dns_discovery::DnsDiscovery,
+}
+
+impl BackgroundService for DnsDiscoveryService {
+    fn start<'life0, 'async_trait>(
+        &'life0 self,
+        mut shutdown: ShutdownWatch,
+    ) -> Pin<Box<dyn Future<Output = ()> + Send + 'async_trait>>
+    where
+        'life0: 'async_trait,
+        Self: 'async_trait,
+    {
+        // We need to move the discovery out of self
+        let service_name = self.service_name.clone();
+        let discovery = unsafe {
+            std::ptr::read(&self.discovery as *const dns_discovery::DnsDiscovery)
+        };
+        
+        Box::pin(async move {
+            tracing::info!("🌍 Starting DNS discovery for: {}", service_name);
+            tokio::select! {
+                _ = discovery.run() => {
+                    tracing::info!("DNS discovery stopped");
+                }
+                _ = shutdown.changed() => {
+                    tracing::info!("DNS discovery shutting down");
+                }
+            }
+        })
+    }
+}
+
+struct MdnsDiscoveryService {
+    discovery: mdns_discovery::MdnsDiscovery,
+}
+
+impl BackgroundService for MdnsDiscoveryService {
+    fn start<'life0, 'async_trait>(
+        &'life0 self,
+        mut shutdown: ShutdownWatch,
+    ) -> Pin<Box<dyn Future<Output = ()> + Send + 'async_trait>>
+    where
+        'life0: 'async_trait,
+        Self: 'async_trait,
+    {
+        // We need to move the discovery out of self
+        let discovery = unsafe {
+            std::ptr::read(&self.discovery as *const mdns_discovery::MdnsDiscovery)
+        };
+        
+        Box::pin(async move {
+            tracing::info!("🔍 Starting mDNS local discovery");
+            tokio::select! {
+                _ = discovery.run() => {
+                    tracing::info!("mDNS discovery stopped");
+                }
+                _ = shutdown.changed() => {
+                    tracing::info!("mDNS discovery shutting down");
+                }
+            }
+        })
+    }
+}
+
+struct PeerDiscoveryService {
+    service: peer_discovery::DiscoveryService,
+}
+
+impl BackgroundService for PeerDiscoveryService {
+    fn start<'life0, 'async_trait>(
+        &'life0 self,
+        mut shutdown: ShutdownWatch,
+    ) -> Pin<Box<dyn Future<Output = ()> + Send + 'async_trait>>
+    where
+        'life0: 'async_trait,
+        Self: 'async_trait,
+    {
+        // We need to move the service out of self
+        let service = unsafe {
+            std::ptr::read(&self.service as *const peer_discovery::DiscoveryService)
+        };
+        
+        Box::pin(async move {
+            tracing::info!("🔄 Starting HTTP peer exchange");
+            tokio::select! {
+                _ = service.run() => {
+                    tracing::info!("Peer discovery stopped");
+                }
+                _ = shutdown.changed() => {
+                    tracing::info!("Peer discovery shutting down");
+                }
+            }
+        })
+    }
 }

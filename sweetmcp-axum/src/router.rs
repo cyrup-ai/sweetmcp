@@ -75,6 +75,7 @@ fn build_rpc_router(
 }
 
 /// Structure for JSON-RPC Error responses
+#[derive(Debug, Serialize)]
 pub struct JsonRpcError {
     jsonrpc: String,
     error: rpc_router::Error, // Use qualified type

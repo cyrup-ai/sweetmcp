@@ -120,8 +120,14 @@ impl Config {
 
         let tcp_bind = env::var("SWEETMCP_TCP_BIND").unwrap_or_else(|_| "0.0.0.0:8443".to_string());
 
-        let uds_path =
-            env::var("SWEETMCP_UDS_PATH").unwrap_or_else(|_| "/run/sugora.sock".to_string());
+        let uds_path = env::var("SWEETMCP_UDS_PATH").unwrap_or_else(|_| {
+            let xdg_config = env::var("XDG_CONFIG_HOME")
+                .unwrap_or_else(|_| {
+                    let home = env::var("HOME").unwrap_or_else(|_| "/tmp".to_string());
+                    format!("{}/.config", home)
+                });
+            format!("{}/sweetmcp/sugora.sock", xdg_config)
+        });
 
         let workers = env::var("SWEETMCP_WORKERS")
             .unwrap_or_else(|_| "4".to_string())
