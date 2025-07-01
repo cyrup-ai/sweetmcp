@@ -98,7 +98,7 @@
         
         /* White section */
         .white-section {
-            background: #ffffff;
+            background: #e6e0d8;
             color: #333;
             padding: 4rem 2rem;
             text-align: center;
@@ -258,16 +258,29 @@
     </style>
 </head>
 <body>
-    <div class="hero-section">
-        <video autoplay muted loop playsinline class="cyrup-video">
-            <source src="assets/cyrup_oceanic.mp4" type="video/mp4">
-        </video>
+    <div class="white-section">
+        <img src="assets/sweetmcp.png" alt="Sweet MCP" class="sweetmcp-logo">
         
-        <h1 class="hero-title">Sweet MCP Server</h1>
-        <p class="hero-subtitle">
-            Zero-configuration AI tool integration with automatic SSL certificates and local DNS
-        </p>
+        <div class="installer-section">
+            <div class="installer-title">One-Line Installer</div>
+            
+            <div class="platform-tabs">
+                <button class="tab-button active" onclick="showPlatform('bash')">🍎 macOS & 🐧 Linux</button>
+                <button class="tab-button" onclick="showPlatform('powershell')">🪟 Windows</button>
+            </div>
+            
+            <div id="bash-command" class="install-command active">
+                <button class="copy-btn" onclick="copyToClipboard('bash')">Copy</button>
+                <code>curl -fsSL https://get.cyrup.ai/sweetmcp.sh | bash</code>
+            </div>
+            
+            <div id="powershell-command" class="install-command">
+                <button class="copy-btn" onclick="copyToClipboard('powershell')">Copy</button>
+                <code>iex (iwr -UseBasicParsing https://get.cyrup.ai/sweetmcp.ps1).Content</code>
+            </div>
+        </div>
     </div>
+
     
     <div class="features-section">
         <div class="features-grid">
@@ -291,28 +304,7 @@
         </div>
     </div>
     
-    <div class="white-section">
-        <img src="assets/sweetmcp.png" alt="SweetMCP - Maple Syrup on Plate" class="sweetmcp-logo">
-        
-        <div class="installer-section">
-            <div class="installer-title">One-Line Installer</div>
-            
-            <div class="platform-tabs">
-                <button class="tab-button active" onclick="showPlatform('bash')">🍎 macOS & 🐧 Linux</button>
-                <button class="tab-button" onclick="showPlatform('powershell')">🪟 Windows</button>
-            </div>
-            
-            <div id="bash-command" class="install-command active">
-                <button class="copy-btn" onclick="copyToClipboard('bash')">Copy</button>
-                <code>curl -fsSL https://get.cyrup.ai/sweetmcp.sh | bash</code>
-            </div>
-            
-            <div id="powershell-command" class="install-command">
-                <button class="copy-btn" onclick="copyToClipboard('powershell')">Copy</button>
-                <code>iex (iwr -UseBasicParsing https://get.cyrup.ai/sweetmcp.ps1).Content</code>
-            </div>
-        </div>
-    </div>
+
     
     <div class="footer">
         <p>
@@ -322,6 +314,17 @@
         </p>
         <p style="margin-top: 1rem;">
             Made with 🍯 by <a href="https://cyrup.ai" target="_blank">Cyrup.ai</a>
+        </p>
+    </div>
+    
+        <div class="hero-section">
+        <video autoplay muted loop playsinline class="cyrup-video">
+            <source src="assets/cyrup_oceanic.mp4" type="video/mp4">
+        </video>
+        
+        <h1 class="hero-title">Sweet MCP Server</h1>
+        <p class="hero-subtitle">
+            Zero-configuration AI tool integration with automatic SSL certificates and local DNS
         </p>
     </div>
 
