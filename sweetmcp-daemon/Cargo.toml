@@ -30,9 +30,10 @@ async-recursion = "1.0.5"
 async-process = { version = "2.3", optional = true }
 tokio         = { version = "1.38.0", optional = true, features = ["process", "macros", "signal", "rt-multi-thread", "time", "fs"] }
 sweetmcp-workspace-hack = { version = "0.1", path = "../sweetmcp-workspace-hack" }
+rcgen = "0.13"
 
 [features]
-default = []
+default = ["runtime"]
 systemd-notify = ["systemd"]
 systemd = ["dep:systemd"]
 runtime = ["tokio", "async-process"]

@@ -19,13 +19,27 @@ use std::path::{Path, PathBuf};
 
 fn main() {
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
-    if let Err(e) = real_main() {
-        error!("{e:#}");
-        std::process::exit(1);
+    
+    #[cfg(feature = "runtime")]
+    {
+        let rt = tokio::runtime::Runtime::new().expect("Failed to create Tokio runtime");
+        if let Err(e) = rt.block_on(real_main()) {
+            error!("{e:#}");
+            std::process::exit(1);
+        }
+    }
+    
+    #[cfg(not(feature = "runtime"))]
+    {
+        if let Err(e) = real_main_sync() {
+            error!("{e:#}");
+            std::process::exit(1);
+        }
     }
 }
 
-fn real_main() -> Result<()> {
+#[cfg(feature = "runtime")]
+async fn real_main() -> Result<()> {
     let args = cli::Args::parse();
 
     match args.sub.unwrap_or(cli::Cmd::Run {
@@ -42,7 +56,33 @@ fn real_main() -> Result<()> {
             dry_run,
             sign,
             identity,
-        } => installer::install(dry_run, sign, identity),
+        } => installer::install(dry_run, sign, identity).await,
+        cli::Cmd::Uninstall { dry_run } => installer::uninstall(dry_run),
+    }
+}
+
+#[cfg(not(feature = "runtime"))]
+fn real_main_sync() -> Result<()> {
+    let args = cli::Args::parse();
+
+    match args.sub.unwrap_or(cli::Cmd::Run {
+        foreground: false,
+        config: None,
+        system: false,
+    }) {
+        cli::Cmd::Run {
+            foreground,
+            config,
+            system,
+        } => run_daemon(foreground, config, system),
+        cli::Cmd::Install {
+            dry_run: _,
+            sign: _,
+            identity: _,
+        } => {
+            error!("Install command requires async runtime. Enable 'runtime' feature.");
+            std::process::exit(1);
+        },
         cli::Cmd::Uninstall { dry_run } => installer::uninstall(dry_run),
     }
 }
