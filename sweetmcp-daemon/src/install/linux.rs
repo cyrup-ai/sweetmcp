@@ -20,7 +20,14 @@ impl PlatformExecutor {
             return Err(InstallerError::MissingExecutable("pkexec".into()));
         }
 
-        Self::run_pkexec(Self::install_script(&builder)).map_err(Into::into)
+        let result = Self::run_pkexec(Self::install_script(&builder)).map_err(Into::into);
+        
+        // If daemon installation succeeded, install service definitions
+        if result.is_ok() && !builder.services.is_empty() {
+            Self::install_services(&builder.services)?;
+        }
+        
+        result
     }
 
     pub fn uninstall(label: &str) -> Result<(), InstallerError> {
@@ -43,6 +50,34 @@ impl PlatformExecutor {
         );
 
         Self::run_pkexec(script).map_err(Into::into)
+    }
+
+    fn install_services(services: &[crate::config::ServiceDefinition]) -> Result<(), InstallerError> {
+        for service in services {
+            let service_toml = toml::to_string_pretty(service)
+                .map_err(|e| InstallerError::System(format!("Failed to serialize service: {}", e)))?;
+            
+            let script = format!(
+                r#"
+                set -e
+                # Create services directory
+                mkdir -p /etc/cyrupd/services
+                
+                # Write service definition
+                cat > /etc/cyrupd/services/{}.toml << 'EOF'
+{}
+EOF
+                
+                # Set permissions
+                chown root:root /etc/cyrupd/services/{}.toml
+                chmod 644 /etc/cyrupd/services/{}.toml
+                "#,
+                service.name, service_toml, service.name, service.name
+            );
+            
+            Self::run_pkexec(script)?;
+        }
+        Ok(())
     }
 
     fn install_script(b: &InstallerBuilder) -> String {

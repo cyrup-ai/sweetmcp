@@ -3,6 +3,7 @@
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 use std::{env, sync::Arc, time::Duration};
+use rand::Rng;
 
 /// Main configuration structure for SweetMCP Server
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -64,9 +65,33 @@ impl Config {
         // Load .env file if present
         dotenvy::dotenv().ok();
 
-        // JWT secret is required
-        let secret_b64 = env::var("SWEETMCP_JWT_SECRET")
-            .context("SWEETMCP_JWT_SECRET environment variable is required")?;
+        // JWT secret handling - auto-generate in dev mode if not provided
+        let secret_b64 = match env::var("SWEETMCP_JWT_SECRET") {
+            Ok(secret) => secret,
+            Err(_) => {
+                // Check if in development mode
+                let is_dev_mode = cfg!(debug_assertions) || env::var("SWEETMCP_DEV_MODE").is_ok();
+                
+                if is_dev_mode {
+                    // Generate random 32 bytes
+                    let mut rng = rand::thread_rng();
+                    let mut secret_bytes = [0u8; 32];
+                    rng.fill(&mut secret_bytes);
+                    let generated_secret = base64_url::encode(&secret_bytes);
+                    
+                    // Print warning in dev mode only
+                    eprintln!();
+                    eprintln!("⚠️  Development Mode: Auto-generated JWT secret");
+                    eprintln!("   SWEETMCP_JWT_SECRET={}", generated_secret);
+                    eprintln!("   For production, set this environment variable explicitly!");
+                    eprintln!();
+                    
+                    generated_secret
+                } else {
+                    return Err(anyhow::anyhow!("SWEETMCP_JWT_SECRET environment variable is required"));
+                }
+            }
+        };
 
         let secret_vec = base64_url::decode(&secret_b64)
             .context("Invalid base64 encoding in SWEETMCP_JWT_SECRET")?;

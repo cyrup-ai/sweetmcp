@@ -1,4 +1,5 @@
 use std::{collections::HashMap, path::PathBuf};
+use crate::config::ServiceDefinition;
 
 /// Builder for daemon installation metadata.
 ///
@@ -32,6 +33,9 @@ pub struct InstallerBuilder {
 
     /// Whether the daemon requires network availability
     pub wants_network: bool,
+
+    /// Service definitions to install with the daemon
+    pub services: Vec<ServiceDefinition>,
 }
 
 impl InstallerBuilder {
@@ -52,6 +56,7 @@ impl InstallerBuilder {
             description: format!("{} service", label),
             auto_restart: true,
             wants_network: true,
+            services: Vec::new(),
         }
     }
 
@@ -105,6 +110,16 @@ impl InstallerBuilder {
     pub fn network(mut self, v: bool) -> Self {
         self.wants_network = v;
         self
+    }
+
+    /// Add a service definition to install with the daemon.
+    pub fn service(self, service: ServiceDefinition) -> Self {
+        let mut services = self.services;
+        services.push(service);
+        Self {
+            services,
+            ..self
+        }
     }
 }
 

@@ -4,6 +4,8 @@ use bevy::{
     prelude::*,
     render::render_resource::{Extent3d, TextureDescriptor, TextureDimension, TextureFormat, TextureUsages},
     window::PrimaryWindow,
+    ui::{Style, Val, UiRect, node_bundles::{NodeBundle, TextBundle}},
+    text::TextStyle,
 };
 use image::{DynamicImage, ImageBuffer, Rgba};
 use std::error::Error as StdError;
@@ -89,17 +91,17 @@ impl BevyRenderer {
             if render_complete.0 {
                 if let Some(image) = &screenshot.0 {
                     // Convert image to base64
-                    let mut buffer = Vec::new();
+                    let mut buffer = std::io::Cursor::new(Vec::new());
                     if let Err(e) = image.write_to(&mut buffer, image::ImageOutputFormat::Png) {
                         eprintln!("Failed to encode screenshot: {}", e);
                     } else {
-                        let base64_image = base64::engine::general_purpose::STANDARD.encode(&buffer);
+                        let base64_image = base64::engine::general_purpose::STANDARD.encode(buffer.into_inner());
                         let mut state = shared_state_clone.lock().unwrap();
                         state.content = Some(html_content.0.clone());
                         state.screenshot_base64 = Some(base64_image);
                     }
                 }
-                app.exit();
+                std::process::exit(0);
             }
         });
 
@@ -229,10 +231,11 @@ impl ContentFetcher for BevyRenderer {
         
         // Clean the HTML (remove scripts and styles)
         let cleaned_html = crate::hyper::HyperFetcher::clean_html(&html_content);
+        let cleaned_html_clone = cleaned_html.clone();
         
         // Render the content and get a screenshot
         let screenshot_base64 = tokio::task::spawn_blocking(move || {
-            BevyRenderer::setup_bevy_app(cleaned_html.clone())
+            BevyRenderer::setup_bevy_app(cleaned_html_clone)
         })
         .await
         .map_err(|e| BevyRenderError::Setup(format!("Failed to spawn rendering task: {}", e)))?

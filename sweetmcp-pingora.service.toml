@@ -1,0 +1,23 @@
+[[services]]
+name = "sweetmcp-pingora"
+description = "SweetMCP Pingora Gateway Server"
+command = "cd /Volumes/samsung_t9/projects/y/sweetmcp && /Volumes/samsung_t9/projects/y/sweetmcp/target/debug/sweetmcp_server"
+working_dir = "/Volumes/samsung_t9/projects/y/sweetmcp"
+auto_restart = true
+user = "root"
+group = "wheel"
+restart_delay_s = 5
+
+[services.env_vars]
+RUST_LOG = "info"
+SWEETMCP_TCP_BIND = "0.0.0.0:8443"
+SWEETMCP_UDS_PATH = "/run/sugora.sock"
+SWEETMCP_METRICS_BIND = "127.0.0.1:9090"
+SWEETMCP_DEV_MODE = "true"
+
+[services.health_check]
+check_type = "tcp"
+target = "127.0.0.1:8443"
+interval_secs = 30
+timeout_secs = 5
+retries = 3

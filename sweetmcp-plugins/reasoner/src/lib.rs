@@ -3,6 +3,8 @@ use extism_pdk::*;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use std::collections::HashMap;
+use std::sync::Mutex;
+use std::sync::OnceLock;
 
 // Core types for the MCP reasoner
 
@@ -197,15 +199,10 @@ impl SimpleReasoner {
 }
 
 // Track plugin state (singleton pattern)
-static mut REASONER: Option<SimpleReasoner> = None;
+static REASONER: OnceLock<Mutex<SimpleReasoner>> = OnceLock::new();
 
-fn get_reasoner() -> &'static mut SimpleReasoner {
-    unsafe {
-        if REASONER.is_none() {
-            REASONER = Some(SimpleReasoner::new());
-        }
-        REASONER.as_mut().unwrap()
-    }
+fn get_reasoner() -> &'static Mutex<SimpleReasoner> {
+    REASONER.get_or_init(|| Mutex::new(SimpleReasoner::new()))
 }
 
 // Extism plugin exports
@@ -236,11 +233,11 @@ pub fn process_thought(input: String) -> FnResult<String> {
     let reasoner = get_reasoner();
     
     // Process the thought
-    let response = reasoner.process_thought(request.clone());
+    let response = reasoner.lock().unwrap().process_thought(request.clone());
     
     // Get stats for the used strategy
     let strategy = response.strategy_used.clone().unwrap_or("beam_search".to_string());
-    let stats = reasoner.get_stats(vec![&strategy]);
+    let stats = reasoner.lock().unwrap().get_stats(vec![&strategy]);
     
     // Create the enhanced response
     let enhanced_response = EnhancedResponse {
@@ -262,7 +259,7 @@ pub fn process_thought(input: String) -> FnResult<String> {
 pub fn clear(_: String) -> FnResult<String> {
     // Get the reasoner singleton and clear it
     let reasoner = get_reasoner();
-    reasoner.clear();
+    reasoner.lock().unwrap().clear();
     
     Ok("Reasoner state cleared".to_string())
 }

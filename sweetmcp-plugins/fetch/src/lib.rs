@@ -241,7 +241,7 @@ fn parse_options(args: serde_json::Map<String, Value>) -> Result<FetchOptions, E
             theme,
         })
     } else {
-        Err(Error::Other("Please provide a url".into()))
+        Err(Error::msg("Please provide a url"))
     }
 }
 
@@ -251,7 +251,7 @@ fn block_on_fetch(url: &str) -> Result<chromiumoxide::FetchResult, Error> {
     let rt = tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()
-        .map_err(|e| Error::Other(format!("Failed to create runtime: {}", e)))?;
+        .map_err(|e| Error::msg(format!("Failed to create runtime: {}", e)))?;
         
     rt.block_on(async {
         // Multi-stage fetching with fallbacks:
@@ -275,7 +275,7 @@ fn block_on_fetch(url: &str) -> Result<chromiumoxide::FetchResult, Error> {
         
         match firecrawl_result {
             Ok(result) => Ok(result),
-            Err(e) => Err(Error::Other(format!("All fetch attempts failed. Last error: {}", e))),
+            Err(e) => Err(Error::msg(format!("All fetch attempts failed. Last error: {}", e))),
         }
     })
 }
@@ -291,10 +291,10 @@ fn process_fetch_result(
         ScreenshotFormat::Sixel => {
             // Convert base64 to image, then to sixel
             let image_data = base64::engine::general_purpose::STANDARD.decode(&result.screenshot_base64)
-                .map_err(|e| Error::Other(format!("Failed to decode screenshot: {}", e)))?;
+                .map_err(|e| Error::msg(format!("Failed to decode screenshot: {}", e)))?;
                 
             let image = image::load_from_memory(&image_data)
-                .map_err(|e| Error::Other(format!("Failed to load image: {}", e)))?;
+                .map_err(|e| Error::msg(format!("Failed to load image: {}", e)))?;
                 
             encode_sixel(&image.to_rgb8())
         }
@@ -308,7 +308,7 @@ fn process_fetch_result(
                 .build();
                 
             let markdown = converter.convert(&result.content)
-                .map_err(|e| Error::Other(format!("Failed to convert HTML to markdown: {}", e)))?;
+                .map_err(|e| Error::msg(format!("Failed to convert HTML to markdown: {}", e)))?;
                 
             (markdown, "text/markdown".to_string())
         },
@@ -334,7 +334,7 @@ fn process_fetch_result(
     let final_content = if options.syntax_highlighting {
         apply_syntax_highlighting(&content, &options.content_format, options.theme.as_deref())?
     } else {
-        content
+        content.to_string()
     };
     
     Ok(FetchResponse {
@@ -394,7 +394,7 @@ fn apply_syntax_highlighting(
             let ts = ThemeSet::load_defaults();
             
             let syntax = ss.find_syntax_by_extension("json")
-                .ok_or_else(|| Error::Other("Failed to find JSON syntax".into()))?;
+                .ok_or_else(|| Error::msg("Failed to find JSON syntax"))?;
                 
             let theme = match theme_name {
                 Some(name) if ts.themes.contains_key(name) => &ts.themes[name],
@@ -402,7 +402,7 @@ fn apply_syntax_highlighting(
             };
             
             let html = highlighted_html_for_string(content, &ss, syntax, theme)
-                .map_err(|e| Error::Other(format!("Failed to highlight JSON: {}", e)))?;
+                .map_err(|e| Error::msg(format!("Failed to highlight JSON: {}", e)))?;
                 
             Ok(html)
         },

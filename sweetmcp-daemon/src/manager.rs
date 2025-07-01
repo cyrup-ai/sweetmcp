@@ -22,6 +22,8 @@ impl ServiceManager {
     pub fn new(cfg: &ServiceConfig) -> Result<Self> {
         let (bus_tx, bus_rx) = bounded::<Evt>(BUS_BOUND);
         let mut workers = HashMap::new();
+        
+        // Load services from config file
         for def in cfg.services.clone() {
             let tx = crate::service::spawn(def.clone(), bus_tx.clone());
             workers.insert(
@@ -29,6 +31,34 @@ impl ServiceManager {
                 tx,
             );
         }
+        
+        // Load services from services directory
+        if let Some(services_dir) = &cfg.services_dir {
+            if let Ok(entries) = std::fs::read_dir(services_dir) {
+                for entry in entries.flatten() {
+                    let path = entry.path();
+                    if path.extension().and_then(|s| s.to_str()) == Some("toml") {
+                        match std::fs::read_to_string(&path) {
+                            Ok(content) => {
+                                match toml::from_str::<crate::config::ServiceDefinition>(&content) {
+                                    Ok(def) => {
+                                        info!("Loading service '{}' from {}", def.name, path.display());
+                                        let tx = crate::service::spawn(def.clone(), bus_tx.clone());
+                                        workers.insert(
+                                            Box::leak(def.name.clone().into_boxed_str()) as &'static str,
+                                            tx,
+                                        );
+                                    }
+                                    Err(e) => error!("Failed to parse service file {}: {}", path.display(), e),
+                                }
+                            }
+                            Err(e) => error!("Failed to read service file {}: {}", path.display(), e),
+                        }
+                    }
+                }
+            }
+        }
+        
         Ok(Self {
             bus_tx,
             bus_rx,

@@ -14,9 +14,6 @@ crate-type = ["cdylib"]
 extism-pdk = "1.4.1"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-uuid = { version = "1.6", features = ["v4", "serde"] }
-tokio = { version = "1.35", features = ["rt", "macros"] }
-async-trait = "0.1.77"
-thiserror = "1.0"
-lru = "0.12.1"
-sweetmcp-workspace-hack = { version = "0.1", path = "../../sweetmcp-workspace-hack" }
+uuid = { version = "1.11", features = ["v4", "serde", "rng-getrandom"] }
+getrandom = { version = "0.3.3", features = ["wasm_js"] }
+once_cell = "1.21"

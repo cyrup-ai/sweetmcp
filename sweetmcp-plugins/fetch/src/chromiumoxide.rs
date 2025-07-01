@@ -50,7 +50,7 @@ impl ChromiumFetcher {
             width: 1280,
             height: 800,
             device_scale_factor: None,
-            is_mobile: false,
+            emulating_mobile: false,
             is_landscape: false,
             has_touch: false,
         };
@@ -129,7 +129,7 @@ impl ChromiumFetcher {
 impl ContentFetcher for ChromiumFetcher {
     async fn fetch_content(&self, url: &str) -> Result<FetchResult, Box<dyn StdError + Send + Sync>> {
         // Launch browser
-        let browser = Self::create_browser().await?;
+        let mut browser = Self::create_browser().await?;
 
         // Create a new page
         let page = browser.new_page("")
@@ -161,12 +161,8 @@ impl ContentFetcher for ChromiumFetcher {
         // Get content
         let content = Self::get_cleaned_content(&page).await?;
 
-        // Get content type
-        let content_type = match page.content_type().await {
-            Ok(Some(ct)) => ct,
-            Ok(None) => "text/html".to_string(),
-            Err(e) => return Err(ChromiumFetchError::Content(format!("Failed to get content type: {}", e))),
-        };
+        // Set default content type since content_type() method was removed
+        let content_type = "text/html".to_string();
 
         // Close browser
         browser.close().await

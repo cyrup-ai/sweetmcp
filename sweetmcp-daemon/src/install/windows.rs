@@ -50,12 +50,42 @@ impl PlatformExecutor {
 
         let full_cmd = format!("{}{}{}{}", cmd, restart_cmd, deps_cmd, start_cmd);
 
-        Self::run_as_admin(&full_cmd)
+        let result = Self::run_as_admin(&full_cmd);
+        
+        // If daemon installation succeeded, install service definitions
+        if result.is_ok() && !b.services.is_empty() {
+            Self::install_services(&b.services)?;
+        }
+        
+        result
     }
 
     pub fn uninstall(label: &str) -> Result<(), InstallerError> {
         let cmd = format!(r#"sc.exe stop "{}" & sc.exe delete "{}""#, label, label);
         Self::run_as_admin(&cmd)
+    }
+
+    fn install_services(services: &[crate::config::ServiceDefinition]) -> Result<(), InstallerError> {
+        for service in services {
+            let service_toml = toml::to_string_pretty(service)
+                .map_err(|e| InstallerError::System(format!("Failed to serialize service: {}", e)))?;
+            
+            // Windows paths use backslashes
+            let services_dir = r"C:\ProgramData\cyrupd\services";
+            let service_file = format!(r"{}\{}.toml", services_dir, service.name);
+            
+            let cmd = format!(
+                r#"mkdir "{}" 2>nul & echo.{} > "{}""#,
+                services_dir,
+                service_toml.replace('\n', "^
+
+& echo."),
+                service_file
+            );
+            
+            Self::run_as_admin(&cmd)?;
+        }
+        Ok(())
     }
 
     fn run_as_admin(cmd: &str) -> Result<(), InstallerError> {

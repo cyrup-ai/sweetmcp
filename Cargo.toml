@@ -1,30 +1,33 @@
 [workspace]
-resolver = "2"
+resolver = "3"
 members = [
     "sweetmcp-axum",
     "sweetmcp-pingora", 
     "sweetmcp-daemon",
     "sweetmcp-memory",
     # WebAssembly plugins - now properly configured with extism-pdk 1.4.1
-    "plugins/arxiv",
-    "plugins/browser",
-    "plugins/eval-js",
-    "plugins/eval-py", 
-    "plugins/eval-rs",
-    "plugins/eval-sh",
-    "plugins/fetch",
-    "plugins/fs",
-    "plugins/hash",
-    "plugins/ip",
-    "plugins/qr-code",
-    "plugins/reasoner",
-    "plugins/time",
+    "sweetmcp-plugins/arxiv",
+    "sweetmcp-plugins/browser",
+    "sweetmcp-plugins/eval-js",
+    "sweetmcp-plugins/eval-py", 
+    "sweetmcp-plugins/eval-rs",
+    "sweetmcp-plugins/eval-sh",
+    "sweetmcp-plugins/fetch",
+    "sweetmcp-plugins/fs",
+    "sweetmcp-plugins/hash",
+    "sweetmcp-plugins/ip",
+    "sweetmcp-plugins/qr-code",
+    "sweetmcp-plugins/reasoner",
+    "sweetmcp-plugins/time",
     "sweetmcp-workspace-hack",
 ]
 
+[workspace.dependencies]
+flate2 = { version = "1.1", default-features = false, features = ["rust_backend"] }
+
 [workspace.package]
 version = "0.1.0"
-authors = ["SweetMCP Contributors"]
-edition = "2021"
+authors = ["David Maple<david@cyrup.ai"]
+edition = "2024"  
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/sweetmcp/sweetmcp"
+repository = "https://github.com/cyrup-ai/sweetmcp"

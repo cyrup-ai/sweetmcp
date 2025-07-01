@@ -37,6 +37,45 @@ pub fn install(dry: bool, sign: bool, identity: Option<String>) -> Result<()> {
         return Ok(());
     }
 
+    // Build the pingora server first
+    info!("Building SweetMCP Pingora server...");
+    let build_status = std::process::Command::new("cargo")
+        .args(&["build", "--package", "sweetmcp-pingora"])
+        .current_dir(std::env::current_dir()?)
+        .status()?;
+    
+    if !build_status.success() {
+        return Err(anyhow::anyhow!("Failed to build sweetmcp-pingora"));
+    }
+
+    // Create the pingora service definition
+    let pingora_binary = exe_path.parent().unwrap().join("sweetmcp_server");
+    let pingora_service = crate::config::ServiceDefinition {
+        name: "sweetmcp-pingora".to_string(),
+        description: Some("SweetMCP Pingora Gateway Server".to_string()),
+        command: pingora_binary.to_string_lossy().to_string(),
+        working_dir: Some(std::env::current_dir()?.to_string_lossy().to_string()),
+        env_vars: {
+            let mut env = std::collections::HashMap::new();
+            env.insert("RUST_LOG".to_string(), "info".to_string());
+            env.insert("SWEETMCP_TCP_BIND".to_string(), "0.0.0.0:8443".to_string());
+            env.insert("SWEETMCP_UDS_PATH".to_string(), "/run/sugora.sock".to_string());
+            env.insert("SWEETMCP_METRICS_BIND".to_string(), "127.0.0.1:9090".to_string());
+            env.insert("SWEETMCP_DEV_MODE".to_string(), "true".to_string());
+            env
+        },
+        auto_restart: true,
+        user: Some("root".to_string()),
+        group: Some("wheel".to_string()),
+        restart_delay_s: Some(5),
+        depends_on: Vec::new(),
+        health_check: None,
+        log_rotation: None,
+        watch_dirs: Vec::new(),
+        ephemeral_dir: None,
+        memfs: None,
+    };
+
     // Build the installer configuration
     let installer = InstallerBuilder::new("cyrupd", exe_path)
         .description("Cyrup Service Manager")
@@ -46,9 +85,10 @@ pub fn install(dry: bool, sign: bool, identity: Option<String>) -> Result<()> {
         .arg(config_path.to_str().unwrap())
         .env("RUST_LOG", "info")
         .auto_restart(true)
-        .network(true);
+        .network(true)
+        .service(pingora_service);
 
-    // On Linux, try to use cyops group if it exists
+    // Platform-specific user/group settings
     #[cfg(target_os = "linux")]
     let installer = {
         if let Ok(group) = nix::unistd::Group::from_name("cyops")? {
@@ -61,6 +101,12 @@ pub fn install(dry: bool, sign: bool, identity: Option<String>) -> Result<()> {
             installer
         }
     };
+
+    // On macOS, run as root with wheel group for system daemon privileges
+    #[cfg(target_os = "macos")]
+    let installer = installer
+        .user("root")
+        .group("wheel");
 
     // Install the daemon with GUI authorization
     match install_daemon(installer) {

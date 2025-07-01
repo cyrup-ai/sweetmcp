@@ -1,6 +1,7 @@
 //! macOS platform implementation using osascript and launchd.
 
 use crate::install::{InstallerBuilder, InstallerError};
+use crate::install::builder::CommandBuilder;
 use anyhow::{Context, Result};
 use once_cell::sync::OnceCell;
 use plist::Value;
@@ -15,39 +16,108 @@ const APP_ZIP_PLACEHOLDER: &[u8] = b"PLACEHOLDER_FOR_SIGNED_HELPER";
 
 impl PlatformExecutor {
     pub fn install(b: InstallerBuilder) -> Result<(), InstallerError> {
+        // First, copy the binary to /tmp so elevated context can access it
+        let temp_path = format!("/tmp/{}", b.label);
+        std::fs::copy(&b.program, &temp_path)
+            .map_err(|e| InstallerError::System(format!("Failed to copy binary to temp: {}", e)))?;
+
         let plist_content = Self::generate_plist(&b);
-        let script = format!(
-            r#"
-            set -e
-            # Create directories
-            mkdir -p /Library/LaunchDaemons
-            mkdir -p /usr/local/bin
-            mkdir -p /var/log/{label}
+        
+        // Build the installation commands using CommandBuilder
+        let mkdir_cmd = CommandBuilder::new("mkdir")
+            .arg("-p")
+            .arg("/Library/LaunchDaemons")
+            .arg("/usr/local/bin")
+            .arg(&format!("/var/log/{}", b.label));
+        
+        let cp_cmd = CommandBuilder::new("cp")
+            .arg(&temp_path)
+            .arg(&format!("/usr/local/bin/{}", b.label));
             
-            # Install binary
-            cp {prog} /usr/local/bin/{label}
-            chown root:wheel /usr/local/bin/{label}
-            chmod 755 /usr/local/bin/{label}
+        let chown_cmd = CommandBuilder::new("chown")
+            .arg("root:wheel")
+            .arg(&format!("/usr/local/bin/{}", b.label));
             
-            # Create launch daemon plist
-            cat > /Library/LaunchDaemons/{label}.plist << 'EOF'
-{plist}
-EOF
+        let chmod_cmd = CommandBuilder::new("chmod")
+            .arg("755")
+            .arg(&format!("/usr/local/bin/{}", b.label));
             
-            # Set permissions
-            chown root:wheel /Library/LaunchDaemons/{label}.plist
-            chmod 644 /Library/LaunchDaemons/{label}.plist
-            
-            # Load the daemon
-            launchctl load -w /Library/LaunchDaemons/{label}.plist
-        "#,
-            prog = b.program.display(),
-            label = b.label,
-            plist = plist_content,
-        );
+        let rm_cmd = CommandBuilder::new("rm")
+            .arg("-f")
+            .arg(&temp_path);
+        
+        // Write files to temp location first, then move them in elevated context
+        let temp_plist = format!("/tmp/{}.plist", b.label);
+        std::fs::write(&temp_plist, &plist_content)
+            .map_err(|e| InstallerError::System(format!("Failed to write temp plist: {}", e)))?;
+        
+        let plist_file = format!("/Library/LaunchDaemons/{}.plist", b.label);
+        
+        let mut script = format!("set -e\n{}", Self::command_to_script(&mkdir_cmd));
+        script.push_str(&format!(" && {}", Self::command_to_script(&cp_cmd)));
+        script.push_str(&format!(" && {}", Self::command_to_script(&chown_cmd)));
+        script.push_str(&format!(" && {}", Self::command_to_script(&chmod_cmd)));
+        script.push_str(&format!(" && {}", Self::command_to_script(&rm_cmd)));
+        script.push_str(&format!(" && mv {} {}", temp_plist, plist_file));
+        
+        // Set plist permissions
+        let plist_perms_chown = CommandBuilder::new("chown")
+            .arg("root:wheel")
+            .arg(&plist_file);
+        
+        let plist_perms_chmod = CommandBuilder::new("chmod")
+            .arg("644")
+            .arg(&plist_file);
+        
+        script.push_str(&format!(" && {}", Self::command_to_script(&plist_perms_chown)));
+        script.push_str(&format!(" && {}", Self::command_to_script(&plist_perms_chmod)));
+        
+        // Create services directory
+        let services_dir = CommandBuilder::new("mkdir")
+            .arg("-p")
+            .arg("/etc/cyrupd/services");
+        
+        script.push_str(&format!(" && {}", Self::command_to_script(&services_dir)));
+
+        // Add service definitions using CommandBuilder
+        if !b.services.is_empty() {
+            for service in &b.services {
+                let service_toml = toml::to_string_pretty(service)
+                    .map_err(|e| InstallerError::System(format!("Failed to serialize service: {}", e)))?;
+                
+                // Write service file to temp first
+                let temp_service = format!("/tmp/{}.toml", service.name);
+                std::fs::write(&temp_service, &service_toml)
+                    .map_err(|e| InstallerError::System(format!("Failed to write temp service: {}", e)))?;
+                
+                let service_file = format!("/etc/cyrupd/services/{}.toml", service.name);
+                script.push_str(&format!(" && mv {} {}", temp_service, service_file));
+                
+                // Set service file permissions using CommandBuilder
+                let service_perms_chown = CommandBuilder::new("chown")
+                    .arg("root:wheel")
+                    .arg(&service_file);
+                
+                let service_perms_chmod = CommandBuilder::new("chmod")
+                    .arg("644")
+                    .arg(&service_file);
+                
+                script.push_str(&format!(" && {}", Self::command_to_script(&service_perms_chown)));
+                script.push_str(&format!(" && {}", Self::command_to_script(&service_perms_chmod)));
+            }
+        }
+
+        // Load the daemon using CommandBuilder
+        let load_daemon = CommandBuilder::new("launchctl")
+            .arg("load")
+            .arg("-w")
+            .arg(&format!("/Library/LaunchDaemons/{}.plist", b.label));
+        
+        script.push_str(&format!(" && {}", Self::command_to_script(&load_daemon)));
 
         Self::run_osascript(&script)
     }
+
 
     pub fn uninstall(label: &str) -> Result<(), InstallerError> {
         let script = format!(
@@ -177,6 +247,12 @@ EOF
         tokio::task::spawn_blocking(move || Self::install(b))
             .await
             .context("task join failed")?
+    }
+
+    fn command_to_script(cmd: &CommandBuilder) -> String {
+        let mut parts = vec![cmd.program.to_string_lossy().to_string()];
+        parts.extend(cmd.args.iter().cloned());
+        parts.join(" ")
     }
 
     #[cfg(feature = "runtime")]
