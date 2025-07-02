@@ -1,243 +1,181 @@
-# SweetMCP One-Line Installer for Windows
+# SweetMCP One-Line Installer for Windows - DOES IT ALL!
 # Usage: iex (iwr -UseBasicParsing https://get.cyrup.ai/sweetmcp.ps1).Content
 
-param(
-    [switch]$DryRun = $false
-)
+param([switch]$DryRun = $false)
 
-# Enable strict mode
+# Strict mode
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-# Color output functions
-function Write-Info($Message) {
-    Write-Host "[INFO] $Message" -ForegroundColor Blue
+# Colors
+function Write-Blue($msg) { Write-Host $msg -ForegroundColor Blue }
+function Write-Red($msg) { Write-Host $msg -ForegroundColor Red }
+function Write-Yellow($msg) { Write-Host $msg -ForegroundColor Yellow }
+function Write-Green($msg) { Write-Host $msg -ForegroundColor Green }
+
+# Admin check
+$currentUser = [Security.Principal.WindowsIdentity]::GetCurrent()
+$principal = New-Object Security.Principal.WindowsPrincipal($currentUser)
+if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Red "This installer requires administrator privileges."
+    Write-Red "Please run PowerShell as Administrator."
+    exit 1
 }
 
-function Write-Warn($Message) {
-    Write-Host "[WARN] $Message" -ForegroundColor Yellow
+Write-Blue "🍯 SweetMCP Installer - We Do It All!"
+
+# Get config directory
+$ConfigHome = if ($env:XDG_CONFIG_HOME) { $env:XDG_CONFIG_HOME } else { "$env:APPDATA" }
+$SweetMCPHome = "$ConfigHome\sweetmcp"
+
+# Install missing tools via winget or direct download
+function Install-Git {
+    Write-Yellow "Installing Git..."
+    
+    # Try winget first (available on Windows 10 1709+ and Windows 11)
+    if (Get-Command winget -ErrorAction SilentlyContinue) {
+        winget install --id Git.Git -e --silent --accept-package-agreements --accept-source-agreements
+    } else {
+        # Direct download fallback
+        $gitInstaller = "$env:TEMP\git-installer.exe"
+        Write-Yellow "Downloading Git installer..."
+        Invoke-WebRequest -Uri "https://github.com/git-for-windows/git/releases/download/v2.43.0.windows.1/Git-2.43.0-64-bit.exe" -OutFile $gitInstaller
+        Start-Process -FilePath $gitInstaller -ArgumentList "/VERYSILENT", "/NORESTART" -Wait
+        Remove-Item $gitInstaller -Force
+    }
+    
+    # Refresh PATH
+    $env:PATH = [System.Environment]::GetEnvironmentVariable("PATH", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("PATH", "User")
 }
 
-function Write-Error($Message) {
-    Write-Host "[ERROR] $Message" -ForegroundColor Red
-}
-
-function Write-Success($Message) {
-    Write-Host "[SUCCESS] $Message" -ForegroundColor Green
-}
-
-# Cleanup function
-function Cleanup {
-    if ($global:TempDir -and (Test-Path $global:TempDir)) {
-        Write-Info "Cleaning up temporary directory: $global:TempDir"
-        Remove-Item -Path $global:TempDir -Recurse -Force -ErrorAction SilentlyContinue
+function Install-BuildTools {
+    Write-Yellow "Installing Visual Studio Build Tools..."
+    
+    # Try winget first
+    if (Get-Command winget -ErrorAction SilentlyContinue) {
+        winget install --id Microsoft.VisualStudio.2022.BuildTools -e --silent --accept-package-agreements --accept-source-agreements
+    } else {
+        # Direct download
+        $vsInstaller = "$env:TEMP\vs_buildtools.exe"
+        Write-Yellow "Downloading Visual Studio Build Tools..."
+        Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/vs_buildtools.exe" -OutFile $vsInstaller
+        
+        # Install with C++ workload
+        Start-Process -FilePath $vsInstaller -ArgumentList `
+            "--quiet", "--wait", "--norestart", `
+            "--add", "Microsoft.VisualStudio.Workload.VCTools", `
+            "--add", "Microsoft.VisualStudio.Component.Windows10SDK.19041" `
+            -Wait
+        Remove-Item $vsInstaller -Force
     }
 }
 
-# Platform detection
-function Detect-Platform {
-    $arch = if ([Environment]::Is64BitOperatingSystem) { "x86_64" } else { "i686" }
-    $global:Platform = "$arch-pc-windows-msvc"
-    Write-Info "Detected platform: $global:Platform"
-}
-
-# Check system requirements
-function Check-Requirements {
-    Write-Info "Checking system requirements..."
-    
-    # Check for required commands
-    $requiredCommands = @("git", "curl")
-    foreach ($cmd in $requiredCommands) {
-        if (-not (Get-Command $cmd -ErrorAction SilentlyContinue)) {
-            Write-Error "Required command not found: $cmd"
-            switch ($cmd) {
-                "git" { Write-Info "Install git: https://git-scm.com/downloads" }
-                "curl" { Write-Info "curl should be available on Windows 10+ or install from: https://curl.se/windows/" }
+function Install-Curl {
+    # curl is built into Windows 10+ but let's ensure it's available
+    if (-not (Get-Command curl -ErrorAction SilentlyContinue)) {
+        Write-Yellow "Installing curl..."
+        
+        if (Get-Command winget -ErrorAction SilentlyContinue) {
+            winget install --id cURL.cURL -e --silent --accept-package-agreements --accept-source-agreements
+        } else {
+            # curl should be in System32 on Windows 10+
+            if (-not (Test-Path "$env:SystemRoot\System32\curl.exe")) {
+                Write-Red "curl not found and cannot auto-install on this Windows version"
+                Write-Red "Please upgrade to Windows 10 or later"
+                exit 1
             }
-            exit 1
         }
     }
-    
-    # Check for admin privileges
-    $currentUser = [Security.Principal.WindowsIdentity]::GetCurrent()
-    $principal = New-Object Security.Principal.WindowsPrincipal($currentUser)
-    if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-        Write-Error "This script requires administrator privileges. Please run as Administrator."
-        exit 1
-    }
-    
-    # Check for Rust toolchain
-    if (-not (Get-Command rustc -ErrorAction SilentlyContinue)) {
-        Write-Warn "Rust toolchain not found. Installing..."
-        Install-Rust
-    } else {
-        Write-Info "Rust toolchain found: $(rustc --version)"
-    }
-    
-    Write-Success "System requirements satisfied"
 }
 
-# Install Rust toolchain
-function Install-Rust {
-    Write-Info "Installing Rust toolchain..."
-    
-    # Download and run rustup-init
+# Install dependencies
+Write-Blue "Installing dependencies..."
+
+# Git
+if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
+    Install-Git
+}
+
+# Build tools (check for cl.exe compiler)
+$vsWhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+if (-not (Test-Path $vsWhere) -and -not (Get-Command cl -ErrorAction SilentlyContinue)) {
+    Install-BuildTools
+}
+
+# Curl
+Install-Curl
+
+Write-Green "Dependencies installed!"
+
+# Create SweetMCP home directory
+Write-Blue "Creating SweetMCP home directory..."
+New-Item -ItemType Directory -Path $SweetMCPHome -Force | Out-Null
+Set-Location $SweetMCPHome
+
+# Install Rust if needed
+if (-not (Get-Command rustc -ErrorAction SilentlyContinue)) {
+    Write-Yellow "Installing Rust..."
     $rustupUrl = "https://win.rustup.rs/x86_64"
     $rustupPath = "$env:TEMP\rustup-init.exe"
     
     Invoke-WebRequest -Uri $rustupUrl -OutFile $rustupPath
-    & $rustupPath -y --default-toolchain stable
+    & $rustupPath -y --default-toolchain stable --profile default
     
-    # Add cargo to PATH for current session
-    $cargoPath = "$env:USERPROFILE\.cargo\bin"
-    $env:PATH = "$cargoPath;$env:PATH"
-    
-    # Verify installation
-    if (Get-Command rustc -ErrorAction SilentlyContinue) {
-        Write-Success "Rust installed: $(rustc --version)"
-    } else {
-        Write-Error "Failed to install Rust toolchain"
-        exit 1
-    }
+    # Add to PATH
+    $env:PATH = "$env:USERPROFILE\.cargo\bin;$env:PATH"
+    Remove-Item $rustupPath -Force
 }
 
-# Clone the repository
-function Clone-Repository {
-    Write-Info "Cloning SweetMCP repository..."
-    
-    $global:TempDir = Join-Path $env:TEMP "sweetmcp-$(Get-Random)"
-    New-Item -ItemType Directory -Path $global:TempDir | Out-Null
-    Set-Location $global:TempDir
-    
-    # Try SSH first, fallback to HTTPS
-    try {
-        git clone git@github.com:cyrup-ai/sweetmcp.git 2>$null
-        Write-Info "Cloned via SSH"
-    } catch {
-        try {
-            git clone https://github.com/cyrup-ai/sweetmcp.git 2>$null
-            Write-Info "Cloned via HTTPS"
-        } catch {
-            Write-Error "Failed to clone repository"
-            exit 1
-        }
-    }
-    
-    Set-Location sweetmcp
-    Write-Success "Repository cloned successfully"
+# Clone repository (remove old clone if exists)
+Write-Blue "Cloning SweetMCP..."
+if (Test-Path "sweetmcp") {
+    Remove-Item -Path "sweetmcp" -Recurse -Force
 }
 
-# Build the project
-function Build-Project {
-    Write-Info "Building SweetMCP..."
-    
-    # Build in release mode for performance
-    $buildResult = cargo build --release --package sweetmcp-daemon
-    if ($LASTEXITCODE -eq 0) {
-        Write-Success "Build completed successfully"
-    } else {
-        Write-Error "Build failed"
-        exit 1
-    }
+try {
+    git clone --depth 1 https://github.com/cyrup-ai/sweetmcp.git 2>$null
+} catch {
+    Write-Red "Failed to clone repository"
+    exit 1
+}
+Set-Location sweetmcp
+
+# Build
+Write-Blue "Building SweetMCP (this may take a few minutes)..."
+$buildProcess = Start-Process -FilePath "cargo" `
+    -ArgumentList @("build", "--release", "--package", "sweetmcp-daemon") `
+    -Wait -PassThru -NoNewWindow
+
+if ($buildProcess.ExitCode -ne 0) {
+    Write-Red "Build failed"
+    exit 1
 }
 
-# Install the daemon
-function Install-Daemon {
-    Write-Info "Installing SweetMCP daemon..."
-    
-    # Run the daemon installer
-    $installResult = & ".\target\release\sweetmcp-daemon.exe" install
-    if ($LASTEXITCODE -eq 0) {
-        Write-Success "SweetMCP daemon installed successfully"
-    } else {
-        Write-Error "Daemon installation failed"
-        exit 1
-    }
+# Install
+Write-Blue "Installing SweetMCP daemon..."
+$installProcess = Start-Process -FilePath ".\target\release\sweetmcp-daemon.exe" `
+    -ArgumentList "install" `
+    -Wait -PassThru -NoNewWindow
+
+if ($installProcess.ExitCode -ne 0) {
+    Write-Red "Installation failed"
+    exit 1
 }
 
-# Verify installation
-function Verify-Installation {
-    Write-Info "Verifying installation..."
-    
-    # Check if daemon is installed
-    if (Get-Command cyrupd -ErrorAction SilentlyContinue) {
-        Write-Success "Daemon binary installed: $(Get-Command cyrupd | Select-Object -ExpandProperty Source)"
-    } else {
-        Write-Warn "Daemon binary not found in PATH"
-    }
-    
-    # Check certificate
-    $certPath = "$env:APPDATA\sweetmcp\wildcard.cyrup.pem"
-    if (Test-Path $certPath) {
-        Write-Success "Wildcard certificate installed: $certPath"
-    } else {
-        Write-Warn "Wildcard certificate not found at: $certPath"
-    }
-    
-    # Test host entries
-    $testDomains = @("sweetmcp.cyrup.dev", "sweetmcp.cyrup.ai", "sweetmcp.cyrup.cloud", "sweetmcp.cyrup.pro")
-    $hostsWorking = $true
-    
-    foreach ($domain in $testDomains) {
-        try {
-            $result = Test-NetConnection -ComputerName $domain -Port 80 -WarningAction SilentlyContinue
-            if ($result.TcpTestSucceeded -or $result.RemoteAddress -eq "127.0.0.1") {
-                Write-Success "Host entry working: $domain"
-            } else {
-                Write-Warn "Host entry not working: $domain"
-                $hostsWorking = $false
-            }
-        } catch {
-            Write-Warn "Could not test host entry: $domain"
-            $hostsWorking = $false
-        }
-    }
-    
-    if ($hostsWorking) {
-        Write-Success "All host entries are working"
-    } else {
-        Write-Warn "Some host entries may need manual verification"
-    }
-}
+# Success!
+Write-Green @"
 
-# Main installation function
-function Main {
-    Write-Info "Starting SweetMCP installation..."
-    Write-Info "============================================"
-    
-    try {
-        Detect-Platform
-        Check-Requirements
-        Clone-Repository
-        Build-Project
-        Install-Daemon
-        Verify-Installation
-        
-        Write-Info "============================================"
-        Write-Success "SweetMCP installation completed!"
-        Write-Info ""
-        Write-Info "Next steps:"
-        Write-Info "  1. Start the service: sc start cyrupd"
-        Write-Info "  2. Enable auto-start: sc config cyrupd start= auto"
-        Write-Info "  3. Check status: sc query cyrupd"
-        Write-Info "  4. View logs: Get-WinEvent -LogName Application | Where-Object {$_.ProviderName -eq 'cyrupd'}"
-        Write-Info ""
-        Write-Info "Configuration:"
-        Write-Info "  - Config file: $env:APPDATA\cyrupd\cyrupd.toml"
-        Write-Info "  - Certificate: $env:APPDATA\sweetmcp\wildcard.cyrup.pem"
-        Write-Info "  - Host entries: C:\Windows\System32\drivers\etc\hosts"
-        Write-Info ""
-        Write-Info "Domains available:"
-        Write-Info "  - https://sweetmcp.cyrup.dev:8443"
-        Write-Info "  - https://sweetmcp.cyrup.ai:8443"
-        Write-Info "  - https://sweetmcp.cyrup.cloud:8443"
-        Write-Info "  - https://sweetmcp.cyrup.pro:8443"
-        Write-Info ""
-        Write-Success "Welcome to SweetMCP! 🍯"
-    } finally {
-        Cleanup
-    }
-}
+╔══════════════════════════════════════════════════════════════╗
+║           SweetMCP Installation Completed! 🍯                ║
+╚══════════════════════════════════════════════════════════════╝
 
-# Run main function
-Main
+Installed in: $SweetMCPHome
+
+Available at:
+  • https://sweetmcp.cyrup.dev:8443
+  • https://sweetmcp.cyrup.ai:8443
+  • https://sweetmcp.cyrup.cloud:8443
+  • https://sweetmcp.cyrup.pro:8443
+
+Go have fun!
+"@

@@ -29,16 +29,20 @@ iex (iwr -UseBasicParsing https://get.cyrup.ai/sweetmcp.ps1).Content
 <details>
 <summary>🖱️ <strong>What does this do?</strong></summary>
 
-The installer performs a complete soup-to-nuts setup:
-1. ✅ **System Check** - Verifies requirements (git, curl, sudo)
+The installer performs a complete automated setup:
+1. ✅ **Auto-installs ALL Dependencies** - Git, curl, compilers, everything!
 2. ✅ **Rust Installation** - Auto-installs Rust toolchain if missing  
-3. ✅ **Repository Clone** - Pulls latest code from GitHub
-4. ✅ **Release Build** - Compiles optimized binaries
-5. ✅ **SSL Certificates** - Generates wildcard certs for *.cyrup.{dev,ai,cloud,pro}
-6. ✅ **Local DNS** - Adds host entries for sweetmcp.cyrup.* domains
-7. ✅ **Trust Store** - Imports certificates to OS trust store
-8. ✅ **Service Install** - Registers system daemon (systemd/launchd)
-9. ✅ **Verification** - Tests all components
+3. ✅ **Repository Clone** - Downloads latest code from GitHub
+4. ✅ **Build** - Compiles SweetMCP daemon
+5. ✅ **Full Installation** - The daemon installer then:
+   - Generates wildcard SSL certificates for *.cyrup.{dev,ai,cloud,pro}
+   - Imports certificates to OS trust store
+   - Adds host entries for all domains
+   - Installs and starts both services automatically
+   - Configures everything with proper permissions
+
+**Result**: Services are running immediately - just go have fun! 🍯
+**No prerequisites required** - we install everything needed automatically.
 
 </details>
 
@@ -73,41 +77,26 @@ After installation, these endpoints are instantly available:
 
 ---
 
-## 🔌 AI Tool Integration
+## 🔌 AI Tool Integration (Coming Soon)
 
-SweetMCP automatically detects and configures popular AI development tools:
+SweetMCP will automatically detect and configure popular AI development tools:
 
-### Supported Tools
-- **Claude Desktop** - Auto-configures MCP servers
+### Planned Support
+- **Claude Desktop** - Auto-configure MCP servers
 - **Windsurf** - IDE integration 
-- **VSCode** - Extension support (planned)
-- **Zed** - Native integration (planned)
-- **Cursor** - AI pair programming (planned)
+- **VSCode** - Extension support
+- **Zed** - Native integration
+- **Cursor** - AI pair programming
+- **And more...**
 
-### Auto-Detection
-The daemon scans every 15 minutes and automatically:
-- Detects installed AI tools
-- Configures MCP server connections
-- Updates tool-specific settings
-- Validates connectivity
+### How It Will Work
+The daemon will scan periodically and automatically:
+- Detect installed AI tools
+- Configure MCP server connections
+- Update tool-specific settings
+- Restart tools to apply changes
 
----
-
-## 🛠️ Manual Installation
-
-If you prefer to review the code first:
-
-```bash
-# Clone repository
-git clone git@github.com:cyrup-ai/sweetmcp.git
-cd sweetmcp
-
-# Build release binaries
-cargo build --release --package sweetmcp-daemon
-
-# Install with sudo privileges
-sudo ./target/release/sweetmcp-daemon install
-```
+Stay tuned - this feature is actively being developed!
 
 ---
 
@@ -220,11 +209,16 @@ Send binary Cap'n Proto messages to any endpoint.
 
 ### Installation Issues
 ```bash
-# Check requirements
-curl --version && git --version && sudo --version
+# The installer auto-installs all dependencies, but if you have issues:
 
-# Manual Rust install
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+# Check internet connectivity
+ping -c 1 github.com
+
+# Ensure you have sufficient disk space (2GB+)
+df -h
+
+# For very old or unusual systems, you may need to manually install:
+# - Git, curl, gcc/clang, make, pkg-config, openssl development files
 ```
 
 ### Service Issues  

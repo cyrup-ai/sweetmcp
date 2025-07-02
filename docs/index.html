@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -54,7 +55,7 @@
         /* Features section */
         .features-section {
             background: #051226;
-            padding: 2rem 0;
+            padding: 2rem 0 0 0;
             position: relative;
             background-image: 
                 repeating-linear-gradient(
@@ -64,7 +65,6 @@
                     rgba(255,255,255,0.01) 10px,
                     rgba(255,255,255,0.01) 20px
                 );
-            box-shadow: 0 -4px 12px rgba(0,0,0,0.25) inset;
         }
         
         .features-grid {
@@ -88,7 +88,7 @@
         }
         
         .feature-card:hover {
-            background: rgba(24, 202, 155, 0.1);
+            background: rgba(255, 255, 255, 0.03);
         }
         
         .feature-icon {
@@ -106,6 +106,7 @@
         .feature-desc {
             color: #CCCCCC;
             line-height: 1.5;
+            text-align: left;
         }
         
         /* White section */
@@ -199,11 +200,12 @@
             font-size: 0.9rem;
             color: #6b4e3d;
             position: relative;
-            border: 1px solid #e6c8a8;
+            border: 1px solid #c6eedd;
             overflow-x: auto;
             display: none;
             text-align: left;
             white-space: nowrap;
+            box-shadow: 0 8px 24px rgba(198, 238, 221, 0.12), 0 4px 8px rgba(0, 0, 0, 0.15);
         }
         
         .install-command.active {
@@ -331,47 +333,42 @@
     <div class="features-section">
         <div class="features-grid">
             <div class="feature-card">
-                <div class="feature-icon">⚡</div>
+                <div class="feature-icon"><i class="fas fa-database"></i></div>
                 <div class="feature-title">SURREAL MEMORY</div>
                 <div class="feature-desc">A best-in-class, context-augmentation memory system (vector & graph relationships) backed by SurrealDB, with global and project local retention capabilities.  Full Obsidian knowledge-base support so you can see exactly what your agents have in context.</div>
             </div>
             
             <div class="feature-card">
-                <div class="feature-icon">🔐</div>
+                <div class="feature-icon"><i class="fas fa-lock"></i></div>
                 <div class="feature-title">CRYYPT</div>
-                <div class="feature-desc">Post-quant, military-grade encrypttion vault and secret-store in pure Rust, allowing agents to execute security sensitive tasks without _ever knowing_ your passwords.</div>
+                <div class="feature-desc">Post-quantum, military-grade encryption vault and secret-store in pure Rust, allowing agents to execute security sensitive tasks without ever knowing your passwords. Zero-knowledge architecture with timing-based access controls for ultimate security.</div>
             </div>
             
-                        <div class="feature-card">
-                <div class="feature-icon">🔐</div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-microphone"></i></div>
                 <div class="feature-title">FLUENT VOICE</div>
-                <div class="feature-desc">a pure-Rust AI voice system with native wake word, fast-whisper STT that dictates and *predicts* what you're about to say. Pure-Rust Candle TTS port of Dia Voice for expressive voice narration and conversation capabilities.</div>
+                <div class="feature-desc">A pure-Rust AI voice system with native wake word, fast-whisper STT that dictates and *predicts* what you're about to say. Pure-Rust Candle TTS port of Dia Voice for expressive voice narration and conversation capabilities.</div>
             </div>
-            
         </div>
         
         <div class="features-grid">
-            
             <div class="feature-card">
-                <div class="feature-icon">🌐</div>
+                <div class="feature-icon"><i class="fas fa-bolt"></i></div>
                 <div class="feature-title">LOCAL AI</div>
-                <div class="feature-desc">Sweet MCP auto-configures best-in-class local AI agents ("ambient agents") that you never interface with but work behind the scenes,  assisting your "primetime ai" by auto-optimizing prompts, de-composing tasks, procuring documentation, memorizing key facts and preferences and a whole lot more. </div>
+                <div class="feature-desc">Sweet MCP auto-configures best-in-class local AI agents ("ambient agents") that you never interface with but work behind the scenes, assisting your "primetime ai" by auto-optimizing prompts, de-composing tasks, procuring documentation, memorizing key facts and preferences.</div>
             </div>
             
             <div class="feature-card">
-                <div class="feature-icon">⚡</div>
-                <div class="feature-title"> CODE GENERATION</div>
-                <div class="feature-desc">Sweet MCPis packed with best in class reasoning, thinking, planning and autocoding AI tools.</div>
-            </div>
-        </div>
-        
-            <div class="features-grid">
-                <div class="feature-card">
-                <div class="feature-icon"></div>
-                <div class="feature-title"> ZER0 FRICTION</div>
-                <div class="feature-desc">Use the tools you love.  Sweet MCP is immediately available in Claude Desktop, Claude Code, Windsurf, Cursor.AI, VSCode, Zed, Raycast, Cline, Roo Code, and thousands of others in a single click.</div>
+                <div class="feature-icon"><i class="fas fa-code"></i></div>
+                <div class="feature-title">CODE GENERATION</div>
+                <div class="feature-desc">Sweet MCP is packed with best-in-class reasoning, thinking, planning and autocoding AI tools. Built-in o1-pro reasoning chains, sequential thinking, deep research agents, and specialized code generation models that understand your entire codebase context.</div>
             </div>
             
+            <div class="feature-card">
+                <div class="feature-icon" style="font-family: 'Fira Code', monospace; font-weight: 600;">Ø</div>
+                <div class="feature-title">ZERO FRICTION</div>
+                <div class="feature-desc">Use the tools you love. Sweet MCP is immediately available in Claude Desktop, Claude Code, Windsurf, Cursor.AI, VSCode, Zed, Raycast, Cline, Roo Code, and thousands of others in a single click. No configuration required.</div>
+            </div>
         </div>
     </div>
     
@@ -379,8 +376,6 @@
         <video autoplay muted loop playsinline class="cyrup-video">
             <source src="assets/cyrup_oceanic.mp4" type="video/mp4">
         </video>
-        
-        <h1 class="hero-title">Sweet MCP</h1>
     </div>
     
         <div class="footer">
@@ -390,7 +385,7 @@
             <a href="https://discord.gg/cyrup-ai" target="_blank">Community</a>
         </p>
         <p style="margin-top: 1rem;">
-            Made with 🍯 by <a href="https://github.com/cyrup-ai" target="_blank">Cyrup.ai</a>
+            Made with <i class="fas fa-heart"></i> by <a href="https://github.com/cyrup-ai" target="_blank">Cyrup.ai</a>
         </p>
     </div>
 
