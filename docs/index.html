@@ -295,19 +295,9 @@
         <div class="installer-section">
             <div class="installer-title">one-line installer</div>
             
-            <div class="platform-tabs">
-                <button class="tab-button active" onclick="showPlatform('bash')">macOS & Linux</button>
-                <button class="tab-button" onclick="showPlatform('powershell')">Windows</button>
-            </div>
-            
-            <div id="bash-command" class="install-command active">
-                <button class="copy-btn" onclick="copyToClipboard('bash')">Copy</button>
-                <code>curl -fsSL https://get.cyrup.ai/sweetmcp.sh | bash</code>
-            </div>
-            
-            <div id="powershell-command" class="install-command">
-                <button class="copy-btn" onclick="copyToClipboard('powershell')">Copy</button>
-                <code>iex (iwr -UseBasicParsing https://get.cyrup.ai/sweetmcp.ps1).Content</code>
+            <div class="install-command" style="display: block;">
+                <button class="copy-btn" onclick="copyToClipboard()">Copy</button>
+                <code>curl -fsSL https://get.cyrup.ai/install | sh</code>
             </div>
         </div>
     </div>
@@ -380,24 +370,8 @@
     </div>
 
     <script>
-        function showPlatform(platform) {
-            // Update tab buttons
-            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            // Update command displays
-            document.querySelectorAll('.install-command').forEach(cmd => cmd.classList.remove('active'));
-            if (platform === 'bash') {
-                document.getElementById('bash-command').classList.add('active');
-            } else {
-                document.getElementById('powershell-command').classList.add('active');
-            }
-        }
-        
-        function copyToClipboard(type) {
-            const command = type === 'bash' 
-                ? 'curl -fsSL https://get.cyrup.ai/sweetmcp.sh | bash'
-                : 'iex (iwr -UseBasicParsing https://get.cyrup.ai/sweetmcp.ps1).Content';
+        function copyToClipboard() {
+            const command = 'curl -fsSL https://get.cyrup.ai/install | sh';
             
             navigator.clipboard.writeText(command).then(() => {
                 const btn = event.target;
