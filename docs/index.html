@@ -23,8 +23,8 @@
         
         /* Hero section with Cyrup branding background */
         .hero-section {
-            background: #ffffff;
-            padding: 2rem 0;
+            background: #051226;
+            padding: 0;
             text-align: center;
         }
         
@@ -293,23 +293,24 @@
 </head>
 <body>
     <div class="white-section">
-        <img src="assets/sweetmcp.png" alt="Sweet MCP" class="sweetmcp-logo">
+        <div style="text-align: center; width: 100%;">
+            <img src="assets/sweetmcp.png" alt="Sweet MCP" class="sweetmcp-logo" style="float: none; margin: 0 auto 2rem;">
+            <div class="installer-title" style="text-align: center;">one-line installer</div>
+        </div>
         
-        <div class="installer-section">
-            <div class="installer-title">one-line installer</div>
-            
-            <div class="platform-tabs">
-                <button class="tab-button active" onclick="showPlatform('bash')">🍎 macOS & 🐧 Linux</button>
-                <button class="tab-button" onclick="showPlatform('powershell')">🪟 Windows</button>
+        <div class="installer-section" style="float: none; margin: 0 auto; text-align: center;">
+            <div class="platform-tabs" style="justify-content: center;">
+                <button class="tab-button active" onclick="showPlatform('bash')">󰌢 macOS & 󰌽 Linux</button>
+                <button class="tab-button" onclick="showPlatform('powershell')">󰖳 Windows</button>
             </div>
             
-            <div id="bash-command" class="install-command active">
-                <button class="copy-btn" onclick="copyToClipboard('bash')">Copy</button>
+            <div id="bash-command" class="install-command active" style="margin-left: auto; margin-right: auto;">
+                <button class="copy-btn" onclick="copyToClipboard('bash')">󰉏 Copy</button>
                 <code>curl -fsSL https://get.cyrup.ai/sweetmcp.sh | bash</code>
             </div>
             
-            <div id="powershell-command" class="install-command">
-                <button class="copy-btn" onclick="copyToClipboard('powershell')">Copy</button>
+            <div id="powershell-command" class="install-command" style="margin-left: auto; margin-right: auto;">
+                <button class="copy-btn" onclick="copyToClipboard('powershell')">󰉏 Copy</button>
                 <code>iex (iwr -UseBasicParsing https://get.cyrup.ai/sweetmcp.ps1).Content</code>
             </div>
         </div>
