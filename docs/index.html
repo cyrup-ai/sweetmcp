@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SweetMCP - One-Line Installer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,7 +15,7 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Fira Code', monospace;
             color: #ffffff;
             min-height: 100vh;
             overflow-x: hidden;
@@ -20,7 +23,7 @@
         
         /* Hero section with Cyrup branding background */
         .hero-section {
-            background: #051226;
+            background: #030911;
             padding: 2rem 0;
             text-align: center;
         }
@@ -51,7 +54,7 @@
         
         /* Features section */
         .features-section {
-            background: #07141f;
+            background: #030911;
             padding: 2rem 0;
         }
         
@@ -98,83 +101,89 @@
         
         /* White section */
         .white-section {
-            background: linear-gradient(135deg, #f5f1ed 0%, #FFFFFFF 100%);
+            background: linear-gradient(135deg, #f5f1ed 0%, #FFFFFF 100%);
             color: #333;
-            padding: 0 2rem;
-            text -align: cente r;                                                                                                                                           
+            padding: 4rem 2rem;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-width: 1200px;
+            margin: 0 auto;
         }
         
         .sweetmcp-logo {
-            max-width: 600px;
+            max-width: 400px;
             width: 100%;
             height: auto;
-            margin: 2rem auto;
-            display: block;
+            float: left;
+            margin-right: 4rem;
         }
         
         /* Installer section */
         .installer-section {
-            background: #ffffff;
-            padding: 2rem;
-            text-align: center;
+            float: left;
+            text-align: left;
         }
         
         .installer-title {
-            font-size: 2.5rem;
+            font-size: 1.8rem;
             font-weight: 700;
-            margin-bottom: 2rem;
-            background: linear-gradient(135deg, #ccc, #efefef);
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #d4924b, #f4b565);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            text-align: left;
         }
         
         .platform-tabs {
             display: flex;
-            justify-content: center;
+            justify-content: flex-start;
             gap: 1rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             flex-wrap: wrap;
         }
         
         .tab-button {
-            background: #efefef;
-            border: 1px solid #ccc;
-            color: #333;
-            padding: 0.8rem 1.5rem;
-            border-radius: 10px;
+            background: #fef8f2;
+            border: 1px solid #e6c8a8;
+            color: #6b4e3d;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 1rem;
+            font-size: 0.85rem;
             font-weight: 500;
         }
         
         .tab-button:hover {
-            background: #18ca9b;
+            background: #f4b565;
             color: #ffffff;
-            border-color: #18ca9b;
+            border-color: #d4924b;
             transform: translateY(-2px);
         }
         
         .tab-button.active {
-            background: #c261c3;
+            background: #d4924b;
             color: #ffffff;
-            border-color: #c261c3;
+            border-color: #b67c3d;
         }
         
         .install-command {
             background: #f8f9fa;
-            border-radius: 15px;
-            padding: 2rem;
-            margin: 2rem auto;
-            max-width: 600px;
-            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
-            font-size: 1.1rem;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            max-width: 500px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
             color: #333;
             position: relative;
             border: 1px solid #ccc;
             overflow-x: auto;
             display: none;
+            text-align: left;
         }
         
         .install-command.active {
@@ -208,7 +217,7 @@
         }
         
         .footer {
-            background: #07141f;
+            background: #030911;
             padding: 2rem;
             text-align: center;
             color: #CCCCCC;
@@ -225,6 +234,22 @@
         }
         
         @media (max-width: 768px) {
+            .white-section {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .sweetmcp-logo {
+                float: none;
+                margin: 0 auto 2rem;
+                max-width: 300px;
+            }
+            
+            .installer-section {
+                float: none;
+                text-align: center;
+            }
+            
             .features-grid {
                 grid-template-columns: 1fr;
             }
