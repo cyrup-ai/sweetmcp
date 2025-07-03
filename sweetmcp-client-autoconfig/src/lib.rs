@@ -7,7 +7,7 @@ pub use config::ConfigMerger;
 
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 /// Core trait for MCP client configuration plugins
 pub trait ClientConfigPlugin: Send + Sync {
@@ -24,7 +24,7 @@ pub trait ClientConfigPlugin: Send + Sync {
     fn config_paths(&self) -> Vec<ConfigPath>;
 
     /// Check if config indicates client is installed
-    fn is_installed(&self, path: &PathBuf) -> bool;
+    fn is_installed(&self, path: &Path) -> bool;
 
     /// Inject SweetMCP into existing config
     fn inject_sweetmcp(&self, config_content: &str, format: ConfigFormat) -> Result<String>;

@@ -1,7 +1,7 @@
 use crate::config::ConfigMerger;
 use crate::{ClientConfigPlugin, ConfigFormat, ConfigPath, Platform};
 use anyhow::Result;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 pub struct WindsurfPlugin;
 
@@ -43,7 +43,7 @@ impl ClientConfigPlugin for WindsurfPlugin {
         configs
     }
 
-    fn is_installed(&self, path: &PathBuf) -> bool {
+    fn is_installed(&self, path: &Path) -> bool {
         // Windsurf is installed if the windsurf directory exists
         path.exists() && path.is_dir()
     }

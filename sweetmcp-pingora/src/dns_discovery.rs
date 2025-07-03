@@ -4,14 +4,12 @@
 //! DNS SRV records - the industry standard approach used by Consul, Kubernetes, etc.
 
 use crate::peer_discovery::PeerRegistry;
-use futures::future::join_all;
 // Temporarily disable hickory-resolver until API compatibility is resolved
 // use hickory_resolver::config::{ResolverConfig, ResolverOpts, ResolveHosts};
 // use hickory_resolver::TokioResolver;
-use std::net::SocketAddr;
 use std::time::Duration;
 use tokio::time::interval;
-use tracing::{debug, error, info, warn};
+use tracing::{debug, info, warn};
 
 const DISCOVERY_INTERVAL: Duration = Duration::from_secs(60);
 // DoH servers for future enhancement when hickory-resolver DoH API stabilizes

@@ -1,7 +1,7 @@
 use crate::config::ConfigMerger;
 use crate::{ClientConfigPlugin, ConfigFormat, ConfigPath, Platform};
 use anyhow::Result;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use tracing::debug;
 
 pub struct ClaudeDesktopPlugin;
@@ -70,7 +70,7 @@ impl ClientConfigPlugin for ClaudeDesktopPlugin {
         configs
     }
 
-    fn is_installed(&self, path: &PathBuf) -> bool {
+    fn is_installed(&self, path: &Path) -> bool {
         // Claude is installed if the directory exists
         path.exists() && path.is_dir()
     }

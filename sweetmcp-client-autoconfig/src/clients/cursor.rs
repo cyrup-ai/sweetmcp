@@ -1,7 +1,7 @@
 use crate::config::ConfigMerger;
 use crate::{ClientConfigPlugin, ConfigFormat, ConfigPath, Platform};
 use anyhow::Result;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 pub struct CursorPlugin;
 
@@ -49,7 +49,7 @@ impl ClientConfigPlugin for CursorPlugin {
         configs
     }
 
-    fn is_installed(&self, path: &PathBuf) -> bool {
+    fn is_installed(&self, path: &Path) -> bool {
         // For global config, check if .cursor directory exists
         if path.ends_with(".cursor") {
             return path.exists() && path.is_dir();

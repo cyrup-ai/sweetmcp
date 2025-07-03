@@ -10,7 +10,7 @@ pub type Result<T> = std::result::Result<T, Error>;
 #[derive(Error, Debug)]
 pub enum Error {
     #[error("Database error: {0}")]
-    Database(#[from] surrealdb::Error),
+    Database(Box<surrealdb::Error>),
 
     #[error("Vector store error: {0}")]
     VectorStore(String),
@@ -120,5 +120,11 @@ impl axum::response::IntoResponse for Error {
         };
 
         (status, Json(serde_json::json!({ "error": error_message }))).into_response()
+    }
+}
+
+impl From<surrealdb::Error> for Error {
+    fn from(err: surrealdb::Error) -> Self {
+        Error::Database(Box::new(err))
     }
 }

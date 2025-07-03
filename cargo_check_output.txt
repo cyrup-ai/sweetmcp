@@ -1,0 +1,1513 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Checking sweetmcp-client-autoconfig v0.1.0 (/Volumes/samsung_t9/projects/y/sweetmcp/sweetmcp-client-autoconfig)
+    Checking sweetmcp-memory v0.1.0 (/Volumes/samsung_t9/projects/y/sweetmcp/sweetmcp-memory)
+   Compiling sweetmcp-pingora v0.3.1 (/Volumes/samsung_t9/projects/y/sweetmcp/sweetmcp-pingora)
+    Checking sweetmcp-plugin-hash v0.1.0 (/Volumes/samsung_t9/projects/y/sweetmcp/sweetmcp-plugins/hash)
+    Checking sweetmcp-plugin-fs v0.1.0 (/Volumes/samsung_t9/projects/y/sweetmcp/sweetmcp-plugins/fs)
+    Checking sweetmcp-plugin-eval-sh v0.1.0 (/Volumes/samsung_t9/projects/y/sweetmcp/sweetmcp-plugins/eval-sh)
+    Checking sweetmcp-plugin-eval-js v0.1.0 (/Volumes/samsung_t9/projects/y/sweetmcp/sweetmcp-plugins/eval-js)
+    Checking sweetmcp-plugin-eval-py v0.1.0 (/Volumes/samsung_t9/projects/y/sweetmcp/sweetmcp-plugins/eval-py)
+    Checking sweetmcp-plugin-eval-rs v0.1.0 (/Volumes/samsung_t9/projects/y/sweetmcp/sweetmcp-plugins/eval-rs)
+    Checking sweetmcp-plugin-ip v0.1.0 (/Volumes/samsung_t9/projects/y/sweetmcp/sweetmcp-plugins/ip)
+    Checking sweetmcp-plugin-time v0.1.0 (/Volumes/samsung_t9/projects/y/sweetmcp/sweetmcp-plugins/time)
+    Checking sweetmcp-plugin-browser v0.1.0 (/Volumes/samsung_t9/projects/y/sweetmcp/sweetmcp-plugins/browser)
+    Checking sweetmcp-plugin-qr-code v0.1.0 (/Volumes/samsung_t9/projects/y/sweetmcp/sweetmcp-plugins/qr-code)
+    Checking sweetmcp-plugin-fetch v0.1.0 (/Volumes/samsung_t9/projects/y/sweetmcp/sweetmcp-plugins/fetch)
+    Checking sweetmcp-plugin-arxiv v0.1.0 (/Volumes/samsung_t9/projects/y/sweetmcp/sweetmcp-plugins/arxiv)
+error: unknown start of token: \
+  --> sweetmcp-plugins/eval-js/src/plugin.rs:12:25
+   |
+12 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/eval-js/src/plugin.rs:31:25
+   |
+31 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/eval-js/src/plugin.rs:50:25
+   |
+50 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/eval-js/src/plugin.rs:69:25
+   |
+69 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/eval-js/src/plugin.rs:88:25
+   |
+88 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/eval-js/src/plugin.rs:107:25
+    |
+107 |         let err = format\!("{e:?}");
+    |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/eval-js/src/plugin.rs:126:25
+    |
+126 |         let err = format\!("{e:?}");
+    |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/eval-js/src/plugin.rs:145:25
+    |
+145 |         let err = format\!("{e:?}");
+    |                         ^
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/eval-js/src/plugin.rs:30:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+30 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/eval-js/src/plugin.rs:49:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+49 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/eval-js/src/plugin.rs:68:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+68 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/eval-js/src/plugin.rs:87:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+87 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/eval-js/src/plugin.rs:106:5
+    |
+11  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+106 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/eval-js/src/plugin.rs:125:5
+    |
+11  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+125 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/eval-js/src/plugin.rs:144:5
+    |
+11  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+144 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/qr-code/src/plugin.rs:14:25
+   |
+14 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/qr-code/src/plugin.rs:33:25
+   |
+33 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/qr-code/src/plugin.rs:52:25
+   |
+52 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/qr-code/src/plugin.rs:71:25
+   |
+71 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/qr-code/src/plugin.rs:90:25
+   |
+90 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/qr-code/src/plugin.rs:109:25
+    |
+109 |         let err = format\!("{e:?}");
+    |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/qr-code/src/plugin.rs:128:25
+    |
+128 |         let err = format\!("{e:?}");
+    |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/qr-code/src/plugin.rs:147:25
+    |
+147 |         let err = format\!("{e:?}");
+    |                         ^
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/qr-code/src/plugin.rs:32:5
+   |
+13 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+32 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/qr-code/src/plugin.rs:51:5
+   |
+13 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+51 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/qr-code/src/plugin.rs:70:5
+   |
+13 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+70 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/qr-code/src/plugin.rs:89:5
+   |
+13 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+89 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/qr-code/src/plugin.rs:108:5
+    |
+13  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+108 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/qr-code/src/plugin.rs:127:5
+    |
+13  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+127 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/qr-code/src/plugin.rs:146:5
+    |
+13  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+146 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/eval-rs/src/plugin.rs:12:25
+   |
+12 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/eval-rs/src/plugin.rs:31:25
+   |
+31 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/eval-rs/src/plugin.rs:50:25
+   |
+50 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/eval-rs/src/plugin.rs:69:25
+   |
+69 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/eval-rs/src/plugin.rs:88:25
+   |
+88 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/eval-rs/src/plugin.rs:107:25
+    |
+107 |         let err = format\!("{e:?}");
+    |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/eval-rs/src/plugin.rs:126:25
+    |
+126 |         let err = format\!("{e:?}");
+    |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/eval-rs/src/plugin.rs:145:25
+    |
+145 |         let err = format\!("{e:?}");
+    |                         ^
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/eval-rs/src/plugin.rs:30:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+30 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/eval-rs/src/plugin.rs:49:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+49 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/eval-rs/src/plugin.rs:68:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+68 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/eval-rs/src/plugin.rs:87:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+87 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/eval-rs/src/plugin.rs:106:5
+    |
+11  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+106 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/eval-rs/src/plugin.rs:125:5
+    |
+11  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+125 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/eval-rs/src/plugin.rs:144:5
+    |
+11  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+144 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/time/src/pdk.rs:14:25
+   |
+14 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/time/src/pdk.rs:33:25
+   |
+33 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/time/src/pdk.rs:52:25
+   |
+52 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/time/src/pdk.rs:71:25
+   |
+71 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/time/src/pdk.rs:90:25
+   |
+90 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/time/src/pdk.rs:109:25
+    |
+109 |         let err = format\!("{e:?}");
+    |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/time/src/pdk.rs:128:25
+    |
+128 |         let err = format\!("{e:?}");
+    |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/time/src/pdk.rs:147:25
+    |
+147 |         let err = format\!("{e:?}");
+    |                         ^
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/time/src/pdk.rs:32:5
+   |
+13 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+32 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/time/src/pdk.rs:51:5
+   |
+13 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+51 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/time/src/pdk.rs:70:5
+   |
+13 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+70 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/time/src/pdk.rs:89:5
+   |
+13 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+89 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/time/src/pdk.rs:108:5
+    |
+13  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+108 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/time/src/pdk.rs:127:5
+    |
+13  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+127 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/time/src/pdk.rs:146:5
+    |
+13  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+146 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/ip/src/plugin.rs:12:25
+   |
+12 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/ip/src/plugin.rs:31:25
+   |
+31 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/ip/src/plugin.rs:50:25
+   |
+50 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/ip/src/plugin.rs:69:25
+   |
+69 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/ip/src/plugin.rs:88:25
+   |
+88 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/ip/src/plugin.rs:107:25
+    |
+107 |         let err = format\!("{e:?}");
+    |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/ip/src/plugin.rs:126:25
+    |
+126 |         let err = format\!("{e:?}");
+    |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/ip/src/plugin.rs:145:25
+    |
+145 |         let err = format\!("{e:?}");
+    |                         ^
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/ip/src/plugin.rs:30:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+30 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/ip/src/plugin.rs:49:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+49 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/ip/src/plugin.rs:68:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+68 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/ip/src/plugin.rs:87:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+87 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/ip/src/plugin.rs:106:5
+    |
+11  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+106 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/ip/src/plugin.rs:125:5
+    |
+11  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+125 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/ip/src/plugin.rs:144:5
+    |
+11  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+144 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/eval-py/src/plugin.rs:12:25
+   |
+12 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/eval-py/src/plugin.rs:31:25
+   |
+31 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/eval-py/src/plugin.rs:50:25
+   |
+50 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/eval-py/src/plugin.rs:69:25
+   |
+69 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/eval-py/src/plugin.rs:88:25
+   |
+88 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/eval-py/src/plugin.rs:107:25
+    |
+107 |         let err = format\!("{e:?}");
+    |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/eval-py/src/plugin.rs:126:25
+    |
+126 |         let err = format\!("{e:?}");
+    |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/eval-py/src/plugin.rs:145:25
+    |
+145 |         let err = format\!("{e:?}");
+    |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/browser/src/pdk.rs:12:25
+   |
+12 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/browser/src/pdk.rs:31:25
+   |
+31 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/browser/src/pdk.rs:50:25
+   |
+50 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/browser/src/pdk.rs:69:25
+   |
+69 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/browser/src/pdk.rs:88:25
+   |
+88 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/browser/src/pdk.rs:107:25
+    |
+107 |         let err = format\!("{e:?}");
+    |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/browser/src/pdk.rs:126:25
+    |
+126 |         let err = format\!("{e:?}");
+    |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/browser/src/pdk.rs:145:25
+    |
+145 |         let err = format\!("{e:?}");
+    |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/hash/src/plugin.rs:12:25
+   |
+12 |         let err = format\!("{e:?}");
+   |                         ^
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/eval-py/src/plugin.rs:30:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+30 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/eval-py/src/plugin.rs:49:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+49 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/eval-py/src/plugin.rs:68:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+68 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/hash/src/plugin.rs:31:25
+   |
+31 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/hash/src/plugin.rs:50:25
+   |
+50 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/hash/src/plugin.rs:69:25
+   |
+69 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/hash/src/plugin.rs:88:25
+   |
+88 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/hash/src/plugin.rs:107:25
+    |
+107 |         let err = format\!("{e:?}");
+    |                         ^
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/eval-py/src/plugin.rs:87:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+87 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/hash/src/plugin.rs:126:25
+    |
+126 |         let err = format\!("{e:?}");
+    |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/hash/src/plugin.rs:145:25
+    |
+145 |         let err = format\!("{e:?}");
+    |                         ^
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/eval-py/src/plugin.rs:106:5
+    |
+11  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+106 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/eval-py/src/plugin.rs:125:5
+    |
+11  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+125 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/eval-py/src/plugin.rs:144:5
+    |
+11  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+144 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/browser/src/pdk.rs:30:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+30 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/browser/src/pdk.rs:49:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+49 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/browser/src/pdk.rs:68:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+68 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/browser/src/pdk.rs:87:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+87 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/browser/src/pdk.rs:106:5
+    |
+11  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+106 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/browser/src/pdk.rs:125:5
+    |
+11  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+125 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/browser/src/pdk.rs:144:5
+    |
+11  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+144 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/fs/src/plugin.rs:12:25
+   |
+12 |         let err = format\!("{e:?}");
+   |                         ^
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/hash/src/plugin.rs:30:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+30 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/hash/src/plugin.rs:49:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+49 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/hash/src/plugin.rs:68:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+68 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/hash/src/plugin.rs:87:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+87 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/fs/src/plugin.rs:31:25
+   |
+31 |         let err = format\!("{e:?}");
+   |                         ^
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/hash/src/plugin.rs:106:5
+    |
+11  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+106 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/fs/src/plugin.rs:50:25
+   |
+50 |         let err = format\!("{e:?}");
+   |                         ^
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/hash/src/plugin.rs:125:5
+    |
+11  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+125 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/fs/src/plugin.rs:69:25
+   |
+69 |         let err = format\!("{e:?}");
+   |                         ^
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/hash/src/plugin.rs:144:5
+    |
+11  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+144 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/fs/src/plugin.rs:88:25
+   |
+88 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/fs/src/plugin.rs:107:25
+    |
+107 |         let err = format\!("{e:?}");
+    |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/fs/src/plugin.rs:126:25
+    |
+126 |         let err = format\!("{e:?}");
+    |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/fs/src/plugin.rs:145:25
+    |
+145 |         let err = format\!("{e:?}");
+    |                         ^
+
+    Checking sweetmcp-daemon v0.2.0 (/Volumes/samsung_t9/projects/y/sweetmcp/sweetmcp-daemon)
+error: unknown start of token: \
+  --> sweetmcp-plugins/eval-sh/src/plugin.rs:12:25
+   |
+12 |         let err = format\!("{e:?}");
+   |                         ^
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/fs/src/plugin.rs:30:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+30 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/fs/src/plugin.rs:49:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+49 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/fs/src/plugin.rs:68:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+68 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/fs/src/plugin.rs:87:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+87 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/fs/src/plugin.rs:106:5
+    |
+11  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+106 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/fs/src/plugin.rs:125:5
+    |
+11  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+125 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/fs/src/plugin.rs:144:5
+    |
+11  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+144 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/eval-sh/src/plugin.rs:31:25
+   |
+31 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/eval-sh/src/plugin.rs:50:25
+   |
+50 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/eval-sh/src/plugin.rs:69:25
+   |
+69 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/eval-sh/src/plugin.rs:88:25
+   |
+88 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/eval-sh/src/plugin.rs:107:25
+    |
+107 |         let err = format\!("{e:?}");
+    |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/eval-sh/src/plugin.rs:126:25
+    |
+126 |         let err = format\!("{e:?}");
+    |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/eval-sh/src/plugin.rs:145:25
+    |
+145 |         let err = format\!("{e:?}");
+    |                         ^
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/eval-sh/src/plugin.rs:30:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+30 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/eval-sh/src/plugin.rs:49:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+49 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/eval-sh/src/plugin.rs:68:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+68 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/eval-sh/src/plugin.rs:87:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+87 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/eval-sh/src/plugin.rs:106:5
+    |
+11  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+106 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/eval-sh/src/plugin.rs:125:5
+    |
+11  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+125 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/eval-sh/src/plugin.rs:144:5
+    |
+11  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+144 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/fetch/src/pdk.rs:12:25
+   |
+12 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/fetch/src/pdk.rs:31:25
+   |
+31 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/fetch/src/pdk.rs:50:25
+   |
+50 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/fetch/src/pdk.rs:69:25
+   |
+69 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+  --> sweetmcp-plugins/fetch/src/pdk.rs:88:25
+   |
+88 |         let err = format\!("{e:?}");
+   |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/fetch/src/pdk.rs:107:25
+    |
+107 |         let err = format\!("{e:?}");
+    |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/fetch/src/pdk.rs:126:25
+    |
+126 |         let err = format\!("{e:?}");
+    |                         ^
+
+error: unknown start of token: \
+   --> sweetmcp-plugins/fetch/src/pdk.rs:145:25
+    |
+145 |         let err = format\!("{e:?}");
+    |                         ^
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/fetch/src/pdk.rs:30:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+30 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/fetch/src/pdk.rs:49:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+49 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/fetch/src/pdk.rs:68:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+68 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+  --> sweetmcp-plugins/fetch/src/pdk.rs:87:5
+   |
+11 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+87 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+   |
+   = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/fetch/src/pdk.rs:106:5
+    |
+11  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+106 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/fetch/src/pdk.rs:125:5
+    |
+11  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+125 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+error[E0428]: the name `return_error` is defined multiple times
+   --> sweetmcp-plugins/fetch/src/pdk.rs:144:5
+    |
+11  |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ------------------------------------------------------- previous definition of the value `return_error` here
+...
+144 |     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `return_error` redefined here
+    |
+    = note: `return_error` must be defined only once in the value namespace of this module
+
+For more information about this error, try `rustc --explain E0428`.
+error: could not compile `sweetmcp-plugin-qr-code` (lib) due to 15 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `sweetmcp-plugin-ip` (lib) due to 15 previous errors
+error: could not compile `sweetmcp-plugin-time` (lib) due to 15 previous errors
+error: could not compile `sweetmcp-plugin-hash` (lib) due to 15 previous errors
+error: could not compile `sweetmcp-plugin-browser` (lib) due to 15 previous errors
+error: could not compile `sweetmcp-plugin-fs` (lib) due to 15 previous errors
+warning: method `arg` is never used
+   --> sweetmcp-daemon/src/install/builder.rs:145:12
+    |
+135 | impl CommandBuilder {
+    | ------------------- method in this implementation
+...
+145 |     pub fn arg(mut self, arg: impl Into<String>) -> Self {
+    |            ^^^
+    |
+    = note: `#[warn(dead_code)]` on by default
+
+warning: associated function `get_helper_path` is never used
+   --> sweetmcp-daemon/src/install/macos.rs:405:12
+    |
+19  | impl PlatformExecutor {
+    | --------------------- associated function in this implementation
+...
+405 |     pub fn get_helper_path() -> Result<&'static PathBuf, InstallerError> {
+    |            ^^^^^^^^^^^^^^^
+
+warning: field `name` is never read
+  --> sweetmcp-daemon/src/service/autoconfig.rs:11:5
+   |
+10 | pub struct AutoConfigService {
+   |            ----------------- field in this struct
+11 |     name: String,
+   |     ^^^^
+
+warning: `sweetmcp-daemon` (lib) generated 3 warnings
+error: could not compile `sweetmcp-plugin-eval-rs` (lib) due to 15 previous errors
+error: could not compile `sweetmcp-plugin-eval-py` (lib) due to 15 previous errors
+error: could not compile `sweetmcp-plugin-eval-sh` (lib) due to 15 previous errors
+error: could not compile `sweetmcp-plugin-eval-js` (lib) due to 15 previous errors
+error: could not compile `sweetmcp-plugin-fetch` (lib) due to 15 previous errors
+warning: associated function `new` is never used
+  --> sweetmcp-memory/src/graph/graph_db.rs:45:8
+   |
+44 | impl PendingNode {
+   | ---------------- associated function in this implementation
+45 |     fn new(rx: oneshot::Receiver<Result<NodeId>>) -> Self {
+   |        ^^^
+   |
+   = note: `#[warn(dead_code)]` on by default
+
+warning: associated function `new` is never used
+  --> sweetmcp-memory/src/graph/graph_db.rs:70:8
+   |
+69 | impl NodeQuery {
+   | -------------- associated function in this implementation
+70 |     fn new(rx: oneshot::Receiver<Result<Option<Node>>>) -> Self {
+   |        ^^^
+
+warning: associated function `new` is never used
+  --> sweetmcp-memory/src/graph/graph_db.rs:95:8
+   |
+94 | impl NodeUpdate {
+   | --------------- associated function in this implementation
+95 |     fn new(rx: oneshot::Receiver<Result<()>>) -> Self {
+   |        ^^^
+
+warning: associated function `new` is never used
+   --> sweetmcp-memory/src/graph/graph_db.rs:120:8
+    |
+119 | impl NodeStream {
+    | --------------- associated function in this implementation
+120 |     fn new(rx: tokio::sync::mpsc::Receiver<Result<Node>>) -> Self {
+    |        ^^^
+
+warning: field `config` is never read
+   --> sweetmcp-memory/src/memory/query.rs:111:5
+    |
+109 | pub struct MemoryQueryExecutor {
+    |            ------------------- field in this struct
+110 |     /// Query configuration
+111 |     config: QueryConfig,
+    |     ^^^^^^
+
+warning: field `vector_store` is never read
+  --> sweetmcp-memory/src/memory/retrieval.rs:70:5
+   |
+69 | pub struct HybridRetrieval<V: VectorStore> {
+   |            --------------- field in this struct
+70 |     vector_store: V,
+   |     ^^^^^^^^^^^^
+
+warning: field `time_decay_factor` is never read
+   --> sweetmcp-memory/src/memory/retrieval.rs:220:5
+    |
+219 | pub struct TemporalRetrieval {
+    |            ----------------- field in this struct
+220 |     time_decay_factor: f32,
+    |     ^^^^^^^^^^^^^^^^^
+
+warning: field `vector_store` is never read
+   --> sweetmcp-memory/src/memory/retrieval.rs:256:5
+    |
+253 | pub struct RetrievalManager<V: VectorStore> {
+    |            ---------------- field in this struct
+...
+256 |     vector_store: V,
+    |     ^^^^^^^^^^^^
+
+warning: field `config` is never read
+   --> sweetmcp-memory/src/vector/vector_index.rs:159:5
+    |
+158 | pub struct HNSWIndex {
+    |            --------- field in this struct
+159 |     config: VectorIndexConfig,
+    |     ^^^^^^
+
+warning: `sweetmcp-memory` (lib) generated 9 warnings

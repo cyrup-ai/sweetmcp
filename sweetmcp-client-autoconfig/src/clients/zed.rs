@@ -1,7 +1,7 @@
 use crate::config::ConfigMerger;
 use crate::{ClientConfigPlugin, ConfigFormat, ConfigPath, Platform};
 use anyhow::Result;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 pub struct ZedPlugin;
 
@@ -79,7 +79,7 @@ impl ClientConfigPlugin for ZedPlugin {
         configs
     }
 
-    fn is_installed(&self, path: &PathBuf) -> bool {
+    fn is_installed(&self, path: &Path) -> bool {
         path.exists() && path.is_dir()
     }
 

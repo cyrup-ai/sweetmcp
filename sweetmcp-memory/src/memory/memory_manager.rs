@@ -282,27 +282,27 @@ impl SurrealDBMemoryManager {
         self.db
             .query("DEFINE TABLE memory SCHEMALESS")
             .await
-            .map_err(Error::Database)?;
+            .map_err(|e| Error::Database(Box::new(e)))?;
 
         // Create relationship table - schemaless for flexibility
         self.db
             .query("DEFINE TABLE memory_relationship SCHEMALESS")
             .await
-            .map_err(Error::Database)?;
+            .map_err(|e| Error::Database(Box::new(e)))?;
 
         // Create indexes for efficient querying
         self.db
             .query("DEFINE INDEX memory_type_idx ON TABLE memory COLUMNS memory_type")
             .await
-            .map_err(Error::Database)?;
+            .map_err(|e| Error::Database(Box::new(e)))?;
 
         self.db.query("DEFINE INDEX memory_relationship_source_idx ON TABLE memory_relationship COLUMNS source_id")
             .await
-            .map_err(Error::Database)?;
+            .map_err(|e| Error::Database(Box::new(e)))?;
 
         self.db.query("DEFINE INDEX memory_relationship_target_idx ON TABLE memory_relationship COLUMNS target_id")
             .await
-            .map_err(Error::Database)?;
+            .map_err(|e| Error::Database(Box::new(e)))?;
 
         Ok(())
     }
@@ -348,7 +348,7 @@ impl MemoryManager for SurrealDBMemoryManager {
             {
                 Ok(created) => created,
                 Err(e) => {
-                    let _ = tx.send(Err(Error::Database(e)));
+                    let _ = tx.send(Err(Error::Database(Box::new(e))));
                     return;
                 }
             };
@@ -373,7 +373,7 @@ impl MemoryManager for SurrealDBMemoryManager {
         tokio::spawn(async move {
             let result = match db.select::<Option<MemoryNodeSchema>>(("memory", id)).await {
                 Ok(result) => Ok(result.map(SurrealDBMemoryManager::from_schema)),
-                Err(e) => Err(Error::Database(e)),
+                Err(e) => Err(Error::Database(Box::new(e))),
             };
 
             let _ = tx.send(result);
@@ -396,7 +396,7 @@ impl MemoryManager for SurrealDBMemoryManager {
                 match db.update(("memory", &id)).content(memory_content).await {
                     Ok(updated) => updated,
                     Err(e) => {
-                        let _ = tx.send(Err(Error::Database(e)));
+                        let _ = tx.send(Err(Error::Database(Box::new(e))));
                         return;
                     }
                 };
@@ -425,7 +425,7 @@ impl MemoryManager for SurrealDBMemoryManager {
                 .await
             {
                 Ok(result) => Ok(result.is_some()),
-                Err(e) => Err(Error::Database(e)),
+                Err(e) => Err(Error::Database(Box::new(e))),
             };
 
             let _ = tx.send(result);
@@ -449,7 +449,7 @@ impl MemoryManager for SurrealDBMemoryManager {
             {
                 Ok(created) => created,
                 Err(e) => {
-                    let _ = tx.send(Err(Error::Database(e)));
+                    let _ = tx.send(Err(Error::Database(Box::new(e))));
                     return;
                 }
             };
@@ -499,7 +499,7 @@ impl MemoryManager for SurrealDBMemoryManager {
                     }
                 }
                 Err(e) => {
-                    let _ = tx.send(Err(Error::Database(e))).await;
+                    let _ = tx.send(Err(Error::Database(Box::new(e)))).await;
                 }
             }
         });
@@ -519,7 +519,7 @@ impl MemoryManager for SurrealDBMemoryManager {
                 .await
             {
                 Ok(result) => Ok(result.is_some()),
-                Err(e) => Err(Error::Database(e)),
+                Err(e) => Err(Error::Database(Box::new(e))),
             };
 
             let _ = tx.send(result);
@@ -559,7 +559,7 @@ impl MemoryManager for SurrealDBMemoryManager {
                     }
                 }
                 Err(e) => {
-                    let _ = tx.send(Err(Error::Database(e))).await;
+                    let _ = tx.send(Err(Error::Database(Box::new(e)))).await;
                 }
             }
         });
@@ -588,7 +588,7 @@ impl MemoryManager for SurrealDBMemoryManager {
                     }
                 }
                 Err(e) => {
-                    let _ = tx.send(Err(Error::Database(e))).await;
+                    let _ = tx.send(Err(Error::Database(Box::new(e)))).await;
                 }
             }
         });
@@ -627,7 +627,7 @@ impl MemoryManager for SurrealDBMemoryManager {
                     }
                 }
                 Err(e) => {
-                    let _ = tx.send(Err(Error::Database(e))).await;
+                    let _ = tx.send(Err(Error::Database(Box::new(e)))).await;
                 }
             }
         });
