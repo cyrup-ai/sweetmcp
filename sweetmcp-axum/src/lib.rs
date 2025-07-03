@@ -9,8 +9,6 @@ pub mod config; // Make module public
 // Declare context as a directory module
 pub mod context;
 
-mod daemon_integration;
-
 mod container_registry;
 pub mod db; // Make db module public
 pub mod notifications;

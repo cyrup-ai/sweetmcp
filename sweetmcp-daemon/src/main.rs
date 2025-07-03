@@ -73,7 +73,8 @@ async fn real_main() -> Result<()> {
             identity,
             verify,
             show_config,
-        } => handle_sign_command(binary, identity, verify, show_config).await,
+            self_sign,
+        } => handle_sign_command(binary, identity, verify, show_config, self_sign).await,
     }
 }
 
@@ -97,6 +98,7 @@ fn real_main_sync() -> Result<()> {
             identity,
         } => {
             // Use synchronous installation when runtime feature is disabled
+            // This integrates install_sync which calls install_daemon internally
             installer::install_sync(dry_run, sign, identity)
         }
         cli::Cmd::Uninstall { dry_run } => installer::uninstall(dry_run),
@@ -153,11 +155,33 @@ async fn handle_sign_command(
     identity: Option<String>,
     verify: bool,
     show_config: bool,
+    self_sign: bool,
 ) -> Result<()> {
+    // Check if signing is available on this platform
+    if !signing::is_signing_available() {
+        eprintln!("Code signing is not available on this platform");
+        return Ok(());
+    }
+
     if show_config {
         let sample = signing::config::create_sample_config()?;
         println!("Sample signing configuration:\n\n{}", sample);
         return Ok(());
+    }
+
+    // Handle self-signing
+    if self_sign {
+        println!("Self-signing current binary...");
+        match signing::sign_self() {
+            Ok(_) => {
+                println!("✓ Successfully self-signed");
+                return Ok(());
+            }
+            Err(e) => {
+                eprintln!("✗ Failed to self-sign: {}", e);
+                std::process::exit(1);
+            }
+        }
     }
 
     let binary_path = if let Some(path) = binary {

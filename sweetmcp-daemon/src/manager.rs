@@ -136,9 +136,12 @@ impl ServiceManager {
                     }
                 }
                 recv(health_tick) -> _ => {
-                    // Trigger health checks on all services
-                    for tx in self.workers.values() {
-                        tx.send(Cmd::TickHealth).ok();
+                    // Only trigger health checks if lifecycle is running
+                    if self.lifecycle.is_running() {
+                        // Trigger health checks on all services
+                        for tx in self.workers.values() {
+                            tx.send(Cmd::TickHealth).ok();
+                        }
                     }
                 }
                 recv(log_rotate_tick) -> _ => {

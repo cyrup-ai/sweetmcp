@@ -159,7 +159,7 @@ pub async fn prompts_list_handler(
 ) -> HandlerResult<Vec<Prompt>> {
     // Use PromptService instead of calling functions directly
     let service = PromptService::new(plugin_manager);
-    let stream = service.list(request.unwrap_or_default());
+    let stream = service.list(request.unwrap_or(ListPromptsRequest { filter: None }));
 
     // Collect results from stream
     let mut prompts = Vec::new();

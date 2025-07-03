@@ -281,10 +281,30 @@ async fn install_async_impl(dry: bool, sign: bool, identity: Option<String>) -> 
                         // Re-sign the installed binary
                         info!("Re-signing installed binary...");
                         let mut resign_config = signing::SigningConfig::new(installed_path.clone());
+                        
+                        // Import certificate if needed on macOS
+                        #[cfg(target_os = "macos")]
+                        if let Some(ref id) = identity {
+                            if id.ends_with(".p12") || id.ends_with(".pfx") {
+                                match signing::macos::import_certificate(std::path::Path::new(id), None) {
+                                    Ok(imported_id) => {
+                                        info!("Imported certificate with identity: {}", imported_id);
+                                        if let signing::PlatformConfig::MacOS { identity: cfg_id, .. } = &mut resign_config.platform {
+                                            *cfg_id = imported_id;
+                                        }
+                                    }
+                                    Err(e) => {
+                                        warn!("Failed to import certificate: {}", e);
+                                    }
+                                }
+                            } else if let signing::PlatformConfig::MacOS { identity: cfg_id, .. } = &mut resign_config.platform {
+                                *cfg_id = id.clone();
+                            }
+                        }
+                        
+                        #[cfg(not(target_os = "macos"))]
                         if let Some(id) = identity {
                             match &mut resign_config.platform {
-                                #[cfg(target_os = "macos")]
-                                signing::PlatformConfig::MacOS { identity, .. } => *identity = id,
                                 #[cfg(target_os = "windows")]
                                 signing::PlatformConfig::Windows { certificate, .. } => {
                                     *certificate = id
@@ -294,10 +314,17 @@ async fn install_async_impl(dry: bool, sign: bool, identity: Option<String>) -> 
                                 _ => {}
                             }
                         }
+                        
                         if let Err(e) = signing::sign_binary(&resign_config) {
                             warn!("Failed to re-sign installed binary: {}", e);
                         } else {
                             info!("Successfully re-signed installed binary");
+                            
+                            // Cleanup temporary keychain on macOS
+                            #[cfg(target_os = "macos")]
+                            if let Err(e) = signing::macos::cleanup_keychain() {
+                                warn!("Failed to cleanup temporary keychain: {}", e);
+                            }
                         }
                     }
                     Err(e) => warn!("Failed to verify installed binary signature: {}", e),

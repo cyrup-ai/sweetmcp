@@ -107,53 +107,6 @@ pub async fn run_server(
     plugin_manager: PluginManager,
     serve_args: ServeArgs,
 ) -> Result<()> {
-    // Initialize TLS manager for secure connections
-    let tls_manager = sweetmcp_pingora::tls::tls_manager::TlsManager::new().await
-        .context("Failed to initialize TLS manager")?;
-    
-    // Initialize CRL cache for certificate revocation checking
-    let crl_cache = sweetmcp_pingora::tls::tls_manager::CrlCache::new();
-    
-    // Test certificate validation with different usage types per MCP spec
-    if serve_args.tls_cert.is_some() && serve_args.tls_key.is_some() {
-        // Validate server certificate for TLS
-        let cert_path = serve_args.tls_cert.as_ref().unwrap();
-        let key_path = serve_args.tls_key.as_ref().unwrap();
-        
-        // Load and validate server certificate
-        match tls_manager.validate_certificate_chain(
-            cert_path,
-            sweetmcp_pingora::tls::tls_manager::CertificateUsage::ServerAuth,
-        ).await {
-            Ok(_) => info!("Server certificate validated for TLS authentication"),
-            Err(e) => warn!("Server certificate validation failed: {}", e),
-        }
-        
-        // Setup secure key material for TLS
-        let _secure_key = sweetmcp_pingora::tls::tls_manager::SecureKeyMaterial::new(
-            std::fs::read(key_path).context("Failed to read TLS key")?
-        );
-    }
-    
-    // Validate CA certificate if provided
-    if let Some(ca_path) = &serve_args.tls_ca {
-        match tls_manager.validate_certificate_chain(
-            ca_path,
-            sweetmcp_pingora::tls::tls_manager::CertificateUsage::CertificateAuthority,
-        ).await {
-            Ok(_) => info!("CA certificate validated for certificate authority usage"),
-            Err(e) => warn!("CA certificate validation failed: {}", e),
-        }
-    }
-    
-    // Test CRL cache operations
-    let _cache_entry = sweetmcp_pingora::tls::tls_manager::CrlCacheEntry {
-        crl_data: vec![],
-        download_time: std::time::SystemTime::now(),
-        next_update: None,
-    };
-    
-    info!("TLS manager initialized with certificate validation and CRL caching");
 
     // Initialize memory system if configured
     if let Some(db_config) = &config.database {
@@ -495,11 +448,8 @@ pub async fn roots_list(_request: Option<ListRootsRequest>) -> HandlerResult<Lis
 }
 
 /// Run the server as a system daemon using our sophisticated daemon manager
-async fn run_daemon(plugin_manager: PluginManager, serve_args: ServeArgs) -> Result<()> {
-    info!("Starting MCP JSON-RPC server with daemon manager");
-
-    // Use our sophisticated daemon manager
-    crate::daemon_integration::run_mcp_as_daemon(plugin_manager, serve_args)
+async fn run_daemon(_plugin_manager: PluginManager, _serve_args: ServeArgs) -> Result<()> {
+    Err(anyhow::anyhow!("Daemon mode is not supported in axum - use the daemon to run pingora"))
 }
 
 /// Create and run Unix domain socket listener
@@ -527,9 +477,6 @@ pub async fn create_socket_listener(
     fs::set_permissions(socket_path, permissions)?;
 
     info!("MCP daemon listening on socket: {}", socket_path.display());
-
-    // Initialize standalone mode
-    crate::daemon_integration::run_mcp_server_standalone(plugin_manager.clone(), socket_path).await?;
 
     // Accept connections
     loop {
