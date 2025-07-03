@@ -1,11 +1,13 @@
 pub mod clients;
+pub mod config;
 pub mod watcher;
-pub mod watcher_v2;
 
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
-use tracing::{debug, info, warn};
+use tracing::info;
+
+pub use config::ConfigMerger;
 
 /// Core trait for MCP client configuration plugins
 pub trait ClientConfigPlugin: Send + Sync {
@@ -26,6 +28,9 @@ pub trait ClientConfigPlugin: Send + Sync {
     
     /// Inject SweetMCP into existing config
     fn inject_sweetmcp(&self, config_content: &str, format: ConfigFormat) -> Result<String>;
+    
+    /// Get the default config format for this client
+    fn config_format(&self) -> ConfigFormat;
 }
 
 #[derive(Debug, Clone)]

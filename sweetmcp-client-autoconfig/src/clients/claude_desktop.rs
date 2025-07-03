@@ -24,8 +24,8 @@ impl ClientConfigPlugin for ClaudeDesktopPlugin {
                 }
             }
             Platform::MacOS => {
-                if let Some(home) = dirs::home_dir() {
-                    paths.push(home.join("Library/Application Support/Claude"));
+                if let Some(home) = directories::BaseDirs::new() {
+                    paths.push(home.home_dir().join("Library/Application Support/Claude"));
                 }
             }
             _ => {
@@ -52,9 +52,9 @@ impl ClientConfigPlugin for ClaudeDesktopPlugin {
                 }
             }
             Platform::MacOS => {
-                if let Some(home) = dirs::home_dir() {
+                if let Some(home) = directories::BaseDirs::new() {
                     configs.push(ConfigPath {
-                        path: home
+                        path: home.home_dir()
                             .join("Library/Application Support/Claude")
                             .join("claude_desktop_config.json"),
                         format: ConfigFormat::Json,
@@ -73,7 +73,12 @@ impl ClientConfigPlugin for ClaudeDesktopPlugin {
         path.exists() && path.is_dir()
     }
     
-    fn inject_sweetmcp(&self, config_content: &str, _format: ConfigFormat) -> Result<String> {
-        ConfigMerger::merge_json(config_content, self.client_id())
+    fn inject_sweetmcp(&self, config_content: &str, format: ConfigFormat) -> Result<String> {
+        let merger = ConfigMerger::new();
+        merger.merge(config_content, format)
+    }
+    
+    fn config_format(&self) -> ConfigFormat {
+        ConfigFormat::Json
     }
 }

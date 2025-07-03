@@ -5,7 +5,7 @@ use crossbeam_channel::{Receiver, Sender};
 use log::{error, info};
 use std::sync::Arc;
 use std::thread;
-use sweetmcp_client_autoconfig::{clients::all_clients, watcher_v2::ClientWatcherV2};
+use sweetmcp_client_autoconfig::{clients::all_clients, watcher::AutoConfigWatcher, ConfigMerger};
 
 /// Auto-configuration service that watches for MCP client installations
 pub struct AutoConfigService {
@@ -29,7 +29,8 @@ impl AutoConfigService {
         
         // Create the watcher with all client plugins
         let clients = all_clients();
-        let watcher = ClientWatcherV2::new(clients);
+        let merger = ConfigMerger::new();
+        let watcher = AutoConfigWatcher::new(clients, merger)?;
         
         // Spawn the watcher task
         let watcher_handle = rt.spawn({
@@ -44,7 +45,7 @@ impl AutoConfigService {
                     pid: std::process::id(),
                 });
                 
-                if let Err(e) = watcher.start().await {
+                if let Err(e) = watcher.run().await {
                     error!("Auto-config watcher failed: {}", e);
                     let _ = bus.send(Evt::Fatal {
                         service: name,

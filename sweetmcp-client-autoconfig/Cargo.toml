@@ -4,33 +4,41 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-# File watching with the LATEST watchexec for zero memory leaks
-watchexec = "8.0.1"
-watchexec-filterer-globset = "6.0.0"
-watchexec-events = "4.0.0"
+# File watching with latest watchexec
+watchexec = { workspace = true }
+watchexec-filterer-globset = { workspace = true }
+watchexec-events = { workspace = true }
+watchexec-signals = { workspace = true }
+miette = { workspace = true }
 
 # Config file handling
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-toml = "0.8"
+serde = { workspace = true }
+serde_json = { workspace = true }
+toml = { workspace = true }
 
 # Core utilities
-anyhow = "1.0"
-tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-tokio = { version = "1.35", features = ["full"] }
-dirs = "5.0"
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+tokio = { workspace = true }
+directories = { workspace = true }
+crossbeam-channel = { workspace = true }
+parking_lot = { workspace = true }
 
 # Plugin system
-extism = "1.4"
-extism-pdk = "1.2"
+extism = { workspace = true }
+extism-pdk = { workspace = true }
+
+# Workspace hack
+sweetmcp-workspace-hack = { path = "../sweetmcp-workspace-hack" }
 
 # Platform-specific features
 [target.'cfg(windows)'.dependencies]
-winreg = "0.52"
+winreg = { workspace = true }
 
 [target.'cfg(target_os = "macos")'.dependencies]
-plist = "1.6"
+plist = { workspace = true }
 
 [lib]
 name = "sweetmcp_client_autoconfig"

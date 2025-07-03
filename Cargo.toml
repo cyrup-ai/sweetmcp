@@ -25,6 +25,26 @@ members = [
 
 [workspace.dependencies]
 flate2 = { version = "1.1", default-features = false, features = ["rust_backend"] }
+watchexec = { version = "8.0.1" }
+watchexec-filterer-globset = { version = "8.0.0" }
+watchexec-events = { version = "6.0.0" }
+watchexec-signals = { version = "5.0.0" }
+miette = { version = "7.2" }
+anyhow = { version = "1.0" }
+thiserror = { version = "1.0" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0" }
+toml = { version = "0.8" }
+tracing = { version = "0.1" }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tokio = { version = "1", features = ["full"] }
+directories = { version = "6.0.0" }
+crossbeam-channel = { version = "0.5.15" }
+extism = { version = "1.11.1" }
+extism-pdk = { version = "1.4.1" }
+winreg = { version = "0.55.0" }
+plist = { version = "1.7.2" }
+parking_lot = { version = "0.12.4" }
 
 [workspace.package]
 version = "0.1.0"
