@@ -5,6 +5,7 @@ members = [
     "sweetmcp-pingora", 
     "sweetmcp-daemon",
     "sweetmcp-memory",
+    "sweetmcp-client-autoconfig",
     # WebAssembly plugins - now properly configured with extism-pdk 1.4.1
     "sweetmcp-plugins/arxiv",
     "sweetmcp-plugins/browser",

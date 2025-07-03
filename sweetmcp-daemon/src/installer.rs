@@ -76,6 +76,36 @@ pub async fn install(dry: bool, sign: bool, identity: Option<String>) -> Result<
         log_rotation: None,
         watch_dirs: Vec::new(),
         ephemeral_dir: None,
+        service_type: None,
+        memfs: None,
+    };
+    
+    // Create the autoconfig service definition
+    let autoconfig_service = crate::config::ServiceDefinition {
+        name: "sweetmcp-autoconfig".to_string(),
+        description: Some("Automatic MCP client configuration service".to_string()),
+        command: "internal:autoconfig".to_string(), // Special command handled internally
+        working_dir: None,
+        env_vars: {
+            let mut env = std::collections::HashMap::new();
+            env.insert("RUST_LOG".to_string(), "info".to_string());
+            env
+        },
+        auto_restart: true,
+        user: None, // Run as same user as daemon
+        group: None,
+        restart_delay_s: Some(10),
+        depends_on: vec!["sweetmcp-pingora".to_string()], // Start after pingora
+        health_check: Some(crate::config::HealthCheckConfig {
+            enabled: true,
+            interval_s: 300, // Check every 5 minutes
+            timeout_s: 30,
+            command: None,
+        }),
+        log_rotation: None,
+        watch_dirs: Vec::new(),
+        ephemeral_dir: None,
+        service_type: Some("autoconfig".to_string()),
         memfs: None,
     };
 
@@ -89,7 +119,8 @@ pub async fn install(dry: bool, sign: bool, identity: Option<String>) -> Result<
         .env("RUST_LOG", "info")
         .auto_restart(true)
         .network(true)
-        .service(pingora_service);
+        .service(pingora_service)
+        .service(autoconfig_service);
 
     // Platform-specific user/group settings
     #[cfg(target_os = "linux")]

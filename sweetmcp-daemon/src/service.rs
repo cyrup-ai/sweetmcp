@@ -1,3 +1,5 @@
+mod autoconfig;
+
 use crate::config::ServiceDefinition;
 use crate::ipc::{Cmd, Evt};
 use anyhow::{Context, Result};
@@ -131,5 +133,11 @@ impl ServiceWorker {
 
 /// Public function to spawn a service worker
 pub fn spawn(def: ServiceDefinition, bus: Sender<Evt>) -> Sender<Cmd> {
+    // Check if this is the special autoconfig service
+    if def.name == "sweetmcp-autoconfig" || def.service_type == Some("autoconfig".to_string()) {
+        return autoconfig::spawn_autoconfig(def, bus);
+    }
+    
+    // Otherwise spawn normal service
     ServiceWorker::spawn(def, bus)
 }

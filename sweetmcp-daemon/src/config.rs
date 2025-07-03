@@ -48,6 +48,8 @@ pub struct ServiceDefinition {
     #[serde(default)]
     pub watch_dirs: Vec<String>,
     pub ephemeral_dir: Option<String>,
+    /// Service type (e.g., "autoconfig" for special handling)
+    pub service_type: Option<String>,
     pub memfs: Option<MemoryFsConfig>,
 }
 

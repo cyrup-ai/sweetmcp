@@ -26,6 +26,9 @@ base64      = "0.22.0"
 flate2      = { workspace = true }
 async-recursion = "1.0.5"
 
+# Auto-configuration support
+sweetmcp-client-autoconfig = { path = "../sweetmcp-client-autoconfig" }
+
 # async support
 async-process = { version = "2.3", optional = true }
 tokio         = { version = "1.38.0", optional = true, features = ["process", "macros", "signal", "rt-multi-thread", "time", "fs"] }
