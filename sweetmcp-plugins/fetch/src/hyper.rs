@@ -105,7 +105,7 @@ impl HyperFetcher {
             .with_native_roots()?
             .with_no_client_auth();
         
-        let server_name = rustls::pki_types::ServerName::try_from(host)
+        let server_name = rustls::pki_types::ServerName::try_from(host.to_string())
             .map_err(|_| FetchError::Other("Invalid server name".to_string()))?;
         
         let connector = TlsConnector::from(std::sync::Arc::new(tls_config));
@@ -116,7 +116,9 @@ impl HyperFetcher {
         let io = TokioIo::new(tls_stream);
         
         // Use HTTP/2 with automatic protocol selection
-        let (mut sender, conn) = hyper::client::conn::http2::Builder::new()
+        let (mut sender, conn) = hyper::client::conn::http2::Builder::new(
+            hyper_util::rt::TokioExecutor::new()
+        )
             .adaptive_window(true)
             .max_frame_size(16_384)
             .max_send_buf_size(1024 * 1024)
