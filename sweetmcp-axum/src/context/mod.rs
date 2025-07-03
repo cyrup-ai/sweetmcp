@@ -93,7 +93,55 @@ impl ApplicationContext {
             let plugin_manager = crate::plugin::PluginManager::new();
 
             // Initialize memory system
-            let memory_config = sweetmcp_memory::MemoryConfig::default();
+            let memory_config = sweetmcp_memory::MemoryConfig {
+                database: sweetmcp_memory::utils::config::DatabaseConfig {
+                    db_type: sweetmcp_memory::utils::config::DatabaseType::SurrealDB,
+                    connection_string: "surrealkv://./data/mcp_context_memory.db".to_string(),
+                    namespace: "mcp".to_string(),
+                    database: "context_memory".to_string(),
+                    username: None,
+                    password: None,
+                    pool_size: Some(10),
+                    options: None,
+                },
+                vector_store: sweetmcp_memory::utils::config::VectorStoreConfig {
+                    store_type: sweetmcp_memory::utils::config::VectorStoreType::SurrealDB,
+                    embedding_model: sweetmcp_memory::utils::config::EmbeddingModelConfig {
+                        model_type: sweetmcp_memory::utils::config::EmbeddingModelType::Custom,
+                        model_name: "nomic-embed-text".to_string(),
+                        api_key: None,
+                        api_base: Some("http://localhost:11434/api/embeddings".to_string()),
+                        options: None,
+                    },
+                    dimension: 768,
+                    connection_string: None,
+                    api_key: None,
+                    options: None,
+                },
+                llm: sweetmcp_memory::utils::config::LLMConfig {
+                    provider: sweetmcp_memory::utils::config::LLMProvider::Custom,
+                    model_name: "llama2".to_string(),
+                    api_key: None,
+                    api_base: Some("http://localhost:11434/api/generate".to_string()),
+                    temperature: Some(0.7),
+                    max_tokens: Some(2048),
+                    options: None,
+                },
+                cache: sweetmcp_memory::utils::config::CacheConfig {
+                    enabled: true,
+                    cache_type: sweetmcp_memory::utils::config::CacheType::Memory,
+                    size: Some(10000),
+                    ttl: Some(3600),
+                    options: None,
+                },
+                logging: sweetmcp_memory::utils::config::LoggingConfig {
+                    level: sweetmcp_memory::utils::config::LogLevel::Info,
+                    file: Some("./logs/mcp_context_memory.log".to_string()),
+                    console: true,
+                    options: None,
+                },
+                api: None,
+            };
             let memory_adapter = Arc::new(
                 MemoryContextAdapter::new(memory_config)
                     .await

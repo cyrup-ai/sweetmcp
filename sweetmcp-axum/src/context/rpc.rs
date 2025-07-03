@@ -7,7 +7,6 @@ use serde_json::Value;
 // e.g., use super::store::CONTEXT_STORE;
 
 // Import common types used in RPC definitions
-use super::MemoryContextAdapter;
 use crate::types::MetaParams;
 
 /// Request to retrieve context for an AI response generation
@@ -126,8 +125,47 @@ pub struct ContextChangedNotification {
 pub async fn context_get(request: GetContextRequest) -> HandlerResult<GetContextResult> {
     log::info!("Received context/get request: {:?}", request);
 
-    // TODO: Initialize memory adapter from global context
-    // For now, return empty results with proper structure
+    // Get memory adapter from global application context
+    if let Some(app_context) = crate::context::APPLICATION_CONTEXT.get() {
+        let memory_adapter = app_context.memory_adapter();
+        
+        // Search for relevant context using the memory system
+        match memory_adapter.search_contexts(&request.query).await {
+            Ok(search_results) => {
+                let mut items = Vec::new();
+                let max_results = request.max_results.unwrap_or(10) as usize;
+                
+                for (key, value) in search_results.into_iter().take(max_results) {
+                    let item = ContextItem {
+                        id: key.clone(),
+                        source: "memory".to_string(),
+                        title: Some(key),
+                        content: ContextContent {
+                            type_: "text".to_string(),
+                            text: Some(value.to_string()),
+                            data: None,
+                            mime_type: Some("application/json".to_string()),
+                        },
+                        metadata: Some(value),
+                        relevance: None,
+                    };
+                    items.push(item);
+                }
+                
+                let result = GetContextResult {
+                    items,
+                    next_cursor: None,
+                };
+                
+                return Ok(result);
+            }
+            Err(e) => {
+                log::error!("Error searching context: {}", e);
+            }
+        }
+    }
+
+    // Fallback to empty results if memory system unavailable
     let result = GetContextResult {
         items: vec![],
         next_cursor: None,
@@ -144,20 +182,31 @@ pub async fn context_subscribe(
 
     let subscription_id = uuid::Uuid::new_v4().to_string();
 
-    // Store subscription in global state
-    if let Some(_context) = crate::context::APPLICATION_CONTEXT.get() {
-        // TODO: Use context.memory_adapter() to store subscription in memory system
-        let sampling_context = crate::context::SAMPLING_CONTEXT.get().unwrap();
-        sampling_context
-            .register_session(
-                subscription_id.clone(),
-                serde_json::json!({
-                    "type": "context_subscription",
-                    "scopes": request.scopes,
-                    "created_at": chrono::Utc::now().to_rfc3339()
-                }),
-            )
-            .await;
+    // Store subscription in memory system
+    if let Some(app_context) = crate::context::APPLICATION_CONTEXT.get() {
+        let memory_adapter = app_context.memory_adapter();
+        
+        // Store subscription metadata in memory system
+        let subscription_data = serde_json::json!({
+            "type": "context_subscription",
+            "scopes": request.scopes,
+            "created_at": chrono::Utc::now().to_rfc3339(),
+            "subscription_id": subscription_id
+        });
+        
+        if let Err(e) = memory_adapter.store_context(
+            format!("subscription:{}", subscription_id),
+            subscription_data
+        ).await {
+            log::error!("Failed to store subscription in memory system: {}", e);
+        }
+        
+        // Also add to subscription tracking
+        for scope in &request.scopes {
+            if let Err(e) = memory_adapter.add_subscription(scope.clone()).await {
+                log::error!("Failed to add subscription for scope {}: {}", scope, e);
+            }
+        }
     }
 
     log::info!("Created subscription with ID: {}", subscription_id);

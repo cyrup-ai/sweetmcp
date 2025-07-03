@@ -8,7 +8,7 @@ use std::sync::Arc;
 use tokio::sync::RwLock;
 
 use sweetmcp_memory::{
-    MemoryConfig, MemoryManager, MemoryNode, MemoryType, SurrealDBMemoryManager, initialize,
+    MemoryConfig, MemoryManager, MemoryNode, MemoryType,
 };
 
 /// Adapter that bridges MCP context API with the memory system
