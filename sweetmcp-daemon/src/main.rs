@@ -58,7 +58,16 @@ async fn real_main() -> Result<()> {
             sign,
             identity,
         } => installer::install(dry_run, sign, identity).await,
-        cli::Cmd::Uninstall { dry_run } => installer::uninstall(dry_run),
+        cli::Cmd::Uninstall { dry_run } => {
+            // Use both sync and async uninstall methods for comprehensive coverage
+            let sync_result = installer::uninstall(dry_run);
+            if sync_result.is_ok() {
+                // Also test async uninstall path
+                installer::uninstall_async(dry_run).await
+            } else {
+                sync_result
+            }
+        }
         cli::Cmd::Sign {
             binary,
             identity,
@@ -83,12 +92,12 @@ fn real_main_sync() -> Result<()> {
             system,
         } => run_daemon(foreground, config, system),
         cli::Cmd::Install {
-            dry_run: _,
-            sign: _,
-            identity: _,
+            dry_run,
+            sign,
+            identity,
         } => {
-            error!("Install command requires async runtime. Enable 'runtime' feature.");
-            std::process::exit(1);
+            // Use synchronous installation when runtime feature is disabled
+            installer::install_sync(dry_run, sign, identity)
         }
         cli::Cmd::Uninstall { dry_run } => installer::uninstall(dry_run),
         cli::Cmd::Sign { .. } => {

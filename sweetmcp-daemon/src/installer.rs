@@ -1,4 +1,4 @@
-use crate::install::{install_daemon, install_daemon_async, uninstall_daemon, uninstall_daemon_async, InstallerBuilder, InstallerError};
+use crate::install::{install_daemon_async, uninstall_daemon, InstallerBuilder, InstallerError};
 use crate::signing;
 use anyhow::{Context, Result};
 use log::{info, warn};
@@ -10,6 +10,68 @@ use std::time::{Duration, SystemTime};
 
 /// Install the daemon using elevated_daemon_installer with GUI authorization.
 pub async fn install(dry: bool, sign: bool, identity: Option<String>) -> Result<()> {
+    install_async_impl(dry, sign, identity).await
+}
+
+/// Synchronous installation fallback for non-async contexts
+pub fn install_sync(dry: bool, _sign: bool, _identity: Option<String>) -> Result<()> {
+    // Create config directory and file in user-specific location
+    let config_dir = dirs::config_dir()
+        .ok_or_else(|| anyhow::anyhow!("Could not determine config directory"))?
+        .join("cyrupd");
+
+    let config_path = config_dir.join("cyrupd.toml");
+
+    // Create config if it doesn't exist
+    if !config_path.exists() {
+        info!("Creating default config at {}", config_path.display());
+        if !dry {
+            fs::create_dir_all(&config_dir)?;
+            let def = crate::config::ServiceConfig::default();
+            fs::write(&config_path, toml::to_string_pretty(&def)?)?;
+        }
+    }
+
+    // Get the current executable path and validate it exists
+    let exe_path = std::env::current_exe().context("current_exe()")?;
+    if !exe_path.exists() {
+        return Err(crate::install::InstallerError::MissingExecutable(
+            exe_path.to_string_lossy().to_string()
+        ).into());
+    }
+
+    if dry {
+        info!("[dry run] Would install daemon:");
+        info!("  - Binary: {}", exe_path.display());
+        info!("  - Config: {}", config_path.display());
+        info!("  - Service: cyrupd");
+        return Ok(());
+    }
+
+    // Build the installer configuration using both arg and args methods
+    let installer = InstallerBuilder::new("cyrupd", exe_path)
+        .description("Cyrup Service Manager")
+        .args(["run", "--foreground", "--config", config_path.to_str().unwrap()])
+        .env("RUST_LOG", "info")
+        .auto_restart(true)
+        .network(true);
+
+    // Install using synchronous installer
+    match crate::install::install_daemon(installer) {
+        Ok(()) => {
+            info!("Daemon installed successfully (sync mode)");
+            Ok(())
+        }
+        Err(crate::install::InstallerError::Cancelled) => Err(anyhow::anyhow!("Installation cancelled by user")),
+        Err(crate::install::InstallerError::PermissionDenied) => Err(anyhow::anyhow!(
+            "Permission denied. Please provide administrator credentials."
+        )),
+        Err(e) => Err(e.into()),
+    }
+}
+
+/// Async implementation of installation
+async fn install_async_impl(dry: bool, sign: bool, identity: Option<String>) -> Result<()> {
     // Create config directory and file in user-specific location
     let config_dir = dirs::config_dir()
         .ok_or_else(|| anyhow::anyhow!("Could not determine config directory"))?
@@ -262,6 +324,26 @@ pub fn uninstall(dry: bool) -> Result<()> {
     match uninstall_daemon("cyrupd") {
         Ok(()) => {
             info!("Daemon uninstalled successfully");
+            Ok(())
+        }
+        Err(InstallerError::Cancelled) => Err(anyhow::anyhow!("Uninstallation cancelled by user")),
+        Err(InstallerError::PermissionDenied) => Err(anyhow::anyhow!(
+            "Permission denied. Please provide administrator credentials."
+        )),
+        Err(e) => Err(e.into()),
+    }
+}
+
+/// Async uninstallation for contexts requiring async operations
+pub async fn uninstall_async(dry: bool) -> Result<()> {
+    if dry {
+        info!("[dry run] Would uninstall daemon: cyrupd (async)");
+        return Ok(());
+    }
+
+    match crate::install::uninstall_daemon_async("cyrupd").await {
+        Ok(()) => {
+            info!("Daemon uninstalled successfully (async mode)");
             Ok(())
         }
         Err(InstallerError::Cancelled) => Err(anyhow::anyhow!("Uninstallation cancelled by user")),

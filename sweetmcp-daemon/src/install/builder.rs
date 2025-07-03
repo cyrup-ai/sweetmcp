@@ -141,14 +141,19 @@ impl CommandBuilder {
         }
     }
 
-    /// Add a command line argument.
-    pub fn arg(mut self, arg: impl Into<String>) -> Self {
-        self.args.push(arg.into());
+    /// Add multiple command line arguments.
+    pub fn args<I, S>(mut self, args: I) -> Self
+    where
+        I: IntoIterator<Item = S>,
+        S: Into<String>,
+    {
+        self.args.extend(args.into_iter().map(Into::into));
         self
     }
 
-    /// Add multiple command line arguments.
-    pub fn args<I, S>(mut self, args: I) -> Self
+    /// Add multiple command line arguments from InstallerBuilder (integration method).
+    #[allow(dead_code)]
+    pub fn args_from_installer<I, S>(mut self, args: I) -> Self
     where
         I: IntoIterator<Item = S>,
         S: Into<String>,

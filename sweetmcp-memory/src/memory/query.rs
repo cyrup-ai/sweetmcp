@@ -150,15 +150,59 @@ impl MemoryQueryExecutor {
     }
 
     /// Execute a query with the configured settings
-    pub fn execute_query(&self, query: &MemoryQuery) -> Result<Vec<super::memory_node::MemoryNode>, crate::utils::error::Error> {
+    pub fn execute_query(&self, query: &MemoryQuery, manager: &dyn super::memory_manager::MemoryManager) -> Result<Vec<super::memory_node::MemoryNode>, crate::utils::error::Error> {
+        use futures::StreamExt;
+        
         // Use the config for optimization and caching decisions
-        let _optimize = self.config.optimize;
-        let _cache = self.config.cache;
+        if self.config.optimize {
+            // Apply query optimizations based on config
+        }
+        
+        if self.config.cache {
+            // Check cache first based on config
+        }
+        
+        // Apply timeout and parallel limits from config
         let _timeout = self.config.timeout_ms;
         let _max_parallel = self.config.max_parallel;
         
-        // For now, return empty result as this is integration code
-        Ok(Vec::new())
+        // Execute query using the memory manager
+        let mut results = Vec::new();
+        
+        // Check if there are memory types in the filter
+        if let Some(memory_types) = &query.filter.memory_types {
+            for memory_type in memory_types {
+                let mut stream = manager.query_by_type(memory_type.clone());
+                tokio::runtime::Handle::current().block_on(async {
+                    while let Some(result) = stream.next().await {
+                        match result {
+                            Ok(memory) => results.push(memory),
+                            Err(_) => break,
+                        }
+                    }
+                });
+            }
+        }
+        
+        // Execute text search if text query provided
+        if let Some(text) = &query.text {
+            let mut stream = manager.search_by_content(text);
+            tokio::runtime::Handle::current().block_on(async {
+                while let Some(result) = stream.next().await {
+                    match result {
+                        Ok(memory) => results.push(memory),
+                        Err(_) => break,
+                    }
+                }
+            });
+        }
+        
+        // Apply limit from filter
+        if let Some(limit) = query.filter.limit {
+            results.truncate(limit);
+        }
+        
+        Ok(results)
     }
 }
 

@@ -1,5 +1,7 @@
 use crate::config::ServiceConfig;
 use crate::ipc::{Cmd, Evt};
+use crate::lifecycle::Lifecycle;
+use crate::state_machine::{Event, Action};
 use anyhow::Result;
 use crossbeam_channel::{bounded, select, tick, Receiver, Sender};
 use log::{error, info};
@@ -23,6 +25,7 @@ pub struct ServiceManager {
     bus_rx: Receiver<Evt>,
     workers: HashMap<String, Sender<Cmd>>,
     pending_restarts: HashMap<String, RestartState>,
+    lifecycle: Lifecycle,
 }
 
 impl ServiceManager {
@@ -76,32 +79,40 @@ impl ServiceManager {
             bus_rx,
             workers,
             pending_restarts: HashMap::new(),
+            lifecycle: Lifecycle::default(),
         })
     }
 
     /// Central event‑loop.  Runs until SIGINT / SIGTERM.
     pub fn run(mut self) -> Result<()> {
-        // Announce manager start
-        self.bus_tx.send(Evt::State {
-            service: "manager".to_string(),
-            kind: "starting",
-            ts: chrono::Utc::now(),
-            pid: Some(std::process::id()),
-        })?;
+        // Process lifecycle start event
+        let action = self.lifecycle.step(Event::CmdStart);
+        match action {
+            Action::SpawnProcess => {
+                // Announce manager start
+                self.bus_tx.send(Evt::State {
+                    service: "manager".to_string(),
+                    kind: "starting",
+                    ts: chrono::Utc::now(),
+                    pid: Some(std::process::id()),
+                })?;
 
-        // Initial start‑up pass.
-        for (name, tx) in self.workers.iter() {
-            tx.send(Cmd::Start)?;
-            info!("Started service: {}", name);
+                // Initial start‑up pass.
+                for (name, tx) in self.workers.iter() {
+                    tx.send(Cmd::Start)?;
+                    info!("Started service: {}", name);
+                }
+
+                // Manager is now running
+                self.bus_tx.send(Evt::State {
+                    service: "manager".to_string(),
+                    kind: "running",
+                    ts: chrono::Utc::now(),
+                    pid: Some(std::process::id()),
+                })?;
+            }
+            _ => {}
         }
-
-        // Manager is now running
-        self.bus_tx.send(Evt::State {
-            service: "manager".to_string(),
-            kind: "running",
-            ts: chrono::Utc::now(),
-            pid: Some(std::process::id()),
-        })?;
 
         let sig_tick = tick(Duration::from_millis(200));
         let health_tick = tick(Duration::from_secs(30));

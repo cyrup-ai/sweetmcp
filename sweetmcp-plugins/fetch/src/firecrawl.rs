@@ -88,15 +88,31 @@ impl FirecrawlFetcher {
 
     // In a real implementation, this would make a request using the Firecrawl API
     async fn fetch_with_firecrawl(url: &str) -> Result<String, FirecrawlError> {
-        // Simulate network delay
-        tokio::time::sleep(Duration::from_millis(500)).await;
+        // Validate URL format
+        if !url.starts_with("http://") && !url.starts_with("https://") {
+            return Err(FirecrawlError::Parse(format!("Invalid URL format: {}", url)));
+        }
 
-        // This is a placeholder for the real Firecrawl implementation
-        // In a real scenario, we would make an actual request to a Firecrawl endpoint
+        // Simulate timeout for very long URLs (placeholder logic)
+        if url.len() > 200 {
+            return Err(FirecrawlError::Timeout(format!("URL too long, request timed out: {}", url)));
+        }
 
-        // Sample response HTML
-        let sample_html = format!(
-            "
+        // Simulate network delay with timeout
+        let fetch_future = async {
+            tokio::time::sleep(Duration::from_millis(500)).await;
+
+            // This is a placeholder for the real Firecrawl implementation
+            // In a real scenario, we would make an actual request to a Firecrawl endpoint
+
+            // Simulate internal error for certain patterns
+            if url.contains("internal-error") {
+                return Err(FirecrawlError::Internal("Simulated internal processing error".to_string()));
+            }
+
+            // Sample response HTML
+            let sample_html = format!(
+                "
 <!DOCTYPE html>
 <html>
 <head>
@@ -123,11 +139,18 @@ impl FirecrawlFetcher {
     </div>
 </body>
 </html>
-        ",
-            url, url
-        );
+            ",
+                url, url
+            );
 
-        Ok(sample_html)
+            Ok(sample_html)
+        };
+
+        // Apply timeout to the fetch operation
+        match tokio::time::timeout(Duration::from_secs(10), fetch_future).await {
+            Ok(result) => result,
+            Err(_) => Err(FirecrawlError::Timeout("Firecrawl request timed out".to_string())),
+        }
     }
 }
 

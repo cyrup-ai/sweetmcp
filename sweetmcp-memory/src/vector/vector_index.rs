@@ -178,7 +178,7 @@ impl HNSWIndex {
     /// Update index with configuration parameters
     pub fn optimize_with_config(&mut self) -> Result<()> {
         // Use config parameters for optimization
-        let _dimension = self.config.dimension;
+        let _dimensions = self.config.dimensions;
         let _metric = &self.config.metric;
         
         // Apply configuration-based optimizations

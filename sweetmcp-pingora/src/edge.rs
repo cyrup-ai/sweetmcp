@@ -8,6 +8,7 @@ use crate::{
     metrics,
     peer_discovery::{PeerRegistry, PeersResponse, RegisterRequest, BUILD_ID},
     rate_limit::AdvancedRateLimitManager,
+    shutdown::{ShutdownCoordinator, ShutdownAware, RequestGuard},
 };
 use bytes::Bytes;
 use pingora::http::{Method, ResponseHeader, StatusCode};
@@ -31,6 +32,7 @@ pub struct EdgeService {
     bridge_tx: Sender<crate::mcp_bridge::BridgeMsg>,
     peer_registry: PeerRegistry,
     rate_limit_manager: Arc<AdvancedRateLimitManager>,
+    shutdown_coordinator: Arc<ShutdownCoordinator>,
 }
 
 impl EdgeService {
@@ -63,12 +65,16 @@ impl EdgeService {
 
         // Note: cleanup task will be started lazily when first rate limit check occurs
 
+        // Initialize shutdown coordinator
+        let shutdown_coordinator = Arc::new(ShutdownCoordinator::new());
+        
         Self {
             auth: JwtAuth::new(cfg.jwt_secret.clone(), cfg.jwt_expiry),
             picker: Arc::new(MetricPicker::from_backends(&backends)),
             load: Arc::new(Mutex::new(Load::new())),
             peer_registry,
             rate_limit_manager,
+            shutdown_coordinator,
             cfg,
             bridge_tx,
         }

@@ -157,8 +157,9 @@ pub async fn prompts_list_handler(
     plugin_manager: PluginManager,
     request: Option<ListPromptsRequest>,
 ) -> HandlerResult<Vec<Prompt>> {
-    // Create a stream
-    let stream = prompts_list(request, plugin_manager);
+    // Use PromptService instead of calling functions directly
+    let service = PromptService::new(plugin_manager);
+    let stream = service.list(request.unwrap_or_default());
 
     // Collect results from stream
     let mut prompts = Vec::new();
@@ -187,8 +188,9 @@ pub async fn prompts_get_handler(
     plugin_manager: PluginManager,
     request: GetPromptRequest,
 ) -> HandlerResult<PromptResult> {
-    // Create a future
-    let pending = prompts_get(request, plugin_manager);
+    // Use PromptService instead of calling functions directly
+    let service = PromptService::new(plugin_manager);
+    let pending = service.get(request);
 
     // Await the result
     pending.await

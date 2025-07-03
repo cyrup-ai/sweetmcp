@@ -90,6 +90,7 @@ pub struct ParsedCertificate {
 }
 
 /// CRL cache entry for performance optimization
+#[allow(dead_code)]
 #[derive(Debug, Clone)]
 pub struct CrlCacheEntry {
     revoked_serials: HashSet<Vec<u8>>,
@@ -98,6 +99,7 @@ pub struct CrlCacheEntry {
 }
 
 /// CRL download and validation cache
+#[allow(dead_code)]
 #[derive(Clone)]
 pub struct CrlCache {
     cache: Arc<RwLock<HashMap<String, CrlCacheEntry>>>,
@@ -345,7 +347,7 @@ pub struct TlsManager {
 
 /// Secure key material that zeroes on drop
 #[derive(ZeroizeOnDrop)]
-struct SecureKeyMaterial {
+pub struct SecureKeyMaterial {
     data: Vec<u8>,
 }
 

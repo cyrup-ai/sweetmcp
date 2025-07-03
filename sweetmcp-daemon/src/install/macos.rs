@@ -45,7 +45,7 @@ impl PlatformExecutor {
         let chmod_cmd =
             CommandBuilder::new("chmod").args(["755", &format!("/usr/local/bin/{}", b.label)]);
 
-        let rm_cmd = CommandBuilder::new("rm").arg("-f").arg(&temp_path);
+        let rm_cmd = CommandBuilder::new("rm").args(["-f", &temp_path]);
 
         // Write files to temp location first, then move them in elevated context
         let temp_plist = format!("/tmp/{}.plist", b.label);
@@ -114,10 +114,11 @@ impl PlatformExecutor {
         }
 
         // Load the daemon using CommandBuilder
-        let load_daemon = CommandBuilder::new("launchctl")
-            .arg("load")
-            .arg("-w")
-            .arg(&format!("/Library/LaunchDaemons/{}.plist", b.label));
+        let load_daemon = CommandBuilder::new("launchctl").args([
+            "load",
+            "-w",
+            &format!("/Library/LaunchDaemons/{}.plist", b.label),
+        ]);
 
         script.push_str(&format!(" && {}", Self::command_to_script(&load_daemon)));
 
@@ -400,15 +401,9 @@ impl PlatformExecutor {
         }
     }
 
-    /// Get the path to the helper app, ensuring it's initialized
-    pub fn get_helper_path() -> Result<&'static PathBuf, InstallerError> {
-        Self::ensure_helper_path()?;
-        HELPER_PATH
-            .get()
-            .ok_or_else(|| InstallerError::System("Helper path not initialized".to_string()))
-    }
 
     pub fn uninstall(label: &str) -> Result<(), InstallerError> {
+        
         let script = format!(
             r#"
             set -e
@@ -503,6 +498,7 @@ impl PlatformExecutor {
     }
 
     fn run_osascript(script: &str) -> Result<(), InstallerError> {
+        
         // Escape the script for AppleScript
         let escaped_script = script.replace('\\', "\\\\").replace('"', "\\\"");
 

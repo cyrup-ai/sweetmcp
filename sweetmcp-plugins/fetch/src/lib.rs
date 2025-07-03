@@ -9,6 +9,7 @@ use std::str::FromStr;
 
 // use async_trait::async_trait;
 use chromiumoxide::ContentFetcher;
+use crate::hyper::HyperFetcher;
 use extism_pdk::*;
 use htmd::HtmlToMarkdown;
 use pdk::types::{
@@ -278,6 +279,13 @@ fn block_on_fetch(url: &str) -> Result<chromiumoxide::FetchResult, Error> {
             return Ok(result);
         }
 
+        // 2. Second attempt: Use hyper (HTTP client)
+        let hyper_result = HyperFetcher.fetch_content(url).await;
+
+        if let Ok(result) = hyper_result {
+            return Ok(result);
+        }
+
         // 3. Final contingency: Use firecrawl
         let firecrawl_result = firecrawl::FirecrawlFetcher.fetch_content(url).await;
 
@@ -332,7 +340,8 @@ fn process_fetch_result(
                 "url": options.url,
                 "title": extract_title(&result.content),
                 "text": text_content,
-                "timestamp": chrono::Utc::now().to_rfc3339()
+                "timestamp": chrono::Utc::now().to_rfc3339(),
+                "original_content_type": result.content_type
             });
 
             (json.to_string(), "application/json".to_string())

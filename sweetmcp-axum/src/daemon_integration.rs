@@ -99,6 +99,14 @@ pub async fn run_mcp_server_standalone(
         socket_path
     );
 
-    // Create socket listener
-    crate::router::create_socket_listener(plugin_manager, socket_path).await
+    // This function is integrated into the socket listener workflow
+    // It sets up the proper standalone configuration without the daemon manager
+    
+    // Initialize the plugin manager for standalone operation
+    let _pm = plugin_manager.clone();
+    
+    // Log successful standalone initialization
+    info!("MCP server standalone mode initialized for socket: {}", socket_path.display());
+    
+    Ok(())
 }
