@@ -1,0 +1,153 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Tool Configurator Plugin Interface",
+  "description": "Schema for SweetMCP tool auto-configuration plugins",
+  "type": "object",
+  "properties": {
+    "exports": {
+      "type": "object",
+      "properties": {
+        "get_metadata": {
+          "description": "Returns plugin metadata",
+          "input": "null",
+          "output": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Plugin name (e.g., 'claude-desktop')"
+              },
+              "version": {
+                "type": "string",
+                "description": "Plugin version"
+              },
+              "author": {
+                "type": "string",
+                "description": "Plugin author"
+              },
+              "description": {
+                "type": "string",
+                "description": "What this plugin configures"
+              },
+              "supported_platforms": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": ["windows", "macos", "linux"]
+                }
+              }
+            },
+            "required": ["name", "version", "description", "supported_platforms"]
+          }
+        },
+        "detect": {
+          "description": "Detect if the tool is installed",
+          "input": "null",
+          "output": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Tool name"
+              },
+              "version": {
+                "type": "string",
+                "description": "Tool version if detected"
+              },
+              "installed": {
+                "type": "boolean",
+                "description": "Whether the tool is installed"
+              },
+              "config_path": {
+                "type": "string",
+                "description": "Path to configuration file"
+              }
+            },
+            "required": ["name", "installed"]
+          }
+        },
+        "get_config_path": {
+          "description": "Get the configuration file path for current platform",
+          "input": "null",
+          "output": {
+            "type": "string",
+            "description": "Absolute path to configuration file"
+          }
+        },
+        "read_config": {
+          "description": "Read current configuration",
+          "input": "null",
+          "output": {
+            "type": "object",
+            "description": "Current configuration as JSON"
+          }
+        },
+        "update_config": {
+          "description": "Update configuration with SweetMCP server",
+          "input": {
+            "type": "object",
+            "properties": {
+              "server_name": {
+                "type": "string",
+                "description": "Name for the MCP server entry"
+              },
+              "server_config": {
+                "type": "object",
+                "properties": {
+                  "command": {
+                    "type": "string",
+                    "description": "Command to run"
+                  },
+                  "args": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Command arguments"
+                  },
+                  "env": {
+                    "type": "object",
+                    "description": "Environment variables"
+                  }
+                },
+                "required": ["command", "args"]
+              }
+            },
+            "required": ["server_name", "server_config"]
+          },
+          "output": {
+            "type": "object",
+            "properties": {
+              "success": {
+                "type": "boolean"
+              },
+              "message": {
+                "type": "string"
+              },
+              "restart_required": {
+                "type": "boolean"
+              }
+            },
+            "required": ["success", "message", "restart_required"]
+          }
+        },
+        "restart_tool": {
+          "description": "Restart or reload the tool",
+          "input": "null",
+          "output": {
+            "type": "string",
+            "description": "Result message"
+          }
+        }
+      },
+      "required": [
+        "get_metadata",
+        "detect",
+        "get_config_path",
+        "read_config",
+        "update_config",
+        "restart_tool"
+      ]
+    }
+  }
+}

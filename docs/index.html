@@ -109,9 +109,19 @@
             text-align: left;
         }
         
+        .feature-desc a {
+            color: #ffffff;
+            text-decoration: underline;
+            transition: opacity 0.3s ease;
+        }
+        
+        .feature-desc a:hover {
+            opacity: 0.8;
+        }
+        
         /* White section */
         .white-section {
-            background: radial-gradient(ellipse at center, #f5f1ed 0%, #f5f1ed 60%, #f7f4f0 100%);
+            background: linear-gradient(to bottom, #FFFFFF 0%, #EEEEEE 100%);
             color: #333;
             padding: 3rem 2rem;
             overflow: hidden;
@@ -191,7 +201,7 @@
         }
         
         .install-command {
-            background: #fef8f2;
+            background: #ffffff;
             border-radius: 12px;
             padding: 1.5rem 4rem 1.5rem 1.5rem;
             margin: 1.5rem auto;
@@ -235,7 +245,33 @@
         
         .copy-btn:hover {
             background: #15b188;
-            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(24, 202, 155, 0.3);
+        }
+        
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #18ca9b;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
         }
         
         .footer {
@@ -323,7 +359,7 @@
         
         <div class="installer-section">
             <div class="install-command" style="display: block;">
-                <button class="copy-btn" onclick="copyToClipboard()">Copy</button>
+                <button class="copy-btn" onclick="copyToClipboard(event)">COPY</button>
                 <code>curl -fsSL https://get.cyrup.ai/install | sh</code>
             </div>
         </div>
@@ -335,19 +371,19 @@
             <div class="feature-card">
                 <div class="feature-icon"><i class="fas fa-database"></i></div>
                 <div class="feature-title">SURREAL MEMORY</div>
-                <div class="feature-desc">A best-in-class, context-augmentation memory system (vector & graph relationships) backed by SurrealDB, with global and project local retention capabilities.  Full Obsidian knowledge-base support so you can see exactly what your agents have in context.</div>
+                <div class="feature-desc">A best-in-class, context-augmentation memory system (vector & graph relationships) backed by <a href="https://surrealdb.com/" target="_blank">SurrealDB</a>, with global and project local retention capabilities.  Full <a href="https://obsidian.md/" target="_blank">Obsidian</a> knowledge-base support so you can see exactly what your agents have in context.</div>
             </div>
             
             <div class="feature-card">
                 <div class="feature-icon"><i class="fas fa-lock"></i></div>
                 <div class="feature-title">CRYYPT</div>
-                <div class="feature-desc">Post-quantum, military-grade encryption vault and secret-store in pure Rust, allowing agents to execute security sensitive tasks without ever knowing your passwords. Zero-knowledge architecture with timing-based access controls for ultimate security.</div>
+                <div class="feature-desc"><a href="https://en.wikipedia.org/wiki/Post-quantum_cryptography" target="_blank">Post-quantum</a>, military-grade encryption vault and secret-store in pure Rust, allowing agents to execute security sensitive tasks without ever knowing your passwords. Zero-knowledge architecture with timing-based access controls for ultimate security.</div>
             </div>
             
             <div class="feature-card">
                 <div class="feature-icon"><i class="fas fa-microphone"></i></div>
                 <div class="feature-title">FLUENT VOICE</div>
-                <div class="feature-desc">A pure-Rust AI voice system with native wake word, fast-whisper STT that dictates and *predicts* what you're about to say. Pure-Rust Candle TTS port of Dia Voice for expressive voice narration and conversation capabilities.</div>
+                <div class="feature-desc">A pure-Rust AI voice system with native wake word, <a href="https://github.com/SYSTRAN/faster-whisper" target="_blank">fast-whisper</a> STT that dictates and <em>predicts</em> what you're about to say. Pure-Rust Candle TTS port of <a href="https://diaai.org/" target="_blank">Dia Voice</a> for expressive voice narration and conversation capabilities.</div>
             </div>
         </div>
         
@@ -355,19 +391,19 @@
             <div class="feature-card">
                 <div class="feature-icon"><i class="fas fa-bolt"></i></div>
                 <div class="feature-title">LOCAL AI</div>
-                <div class="feature-desc">Sweet MCP auto-configures best-in-class local AI agents ("ambient agents") that you never interface with but work behind the scenes, assisting your "primetime ai" by auto-optimizing prompts, de-composing tasks, procuring documentation, memorizing key facts and preferences.</div>
+                <div class="feature-desc">Sweet MCP auto-configures best-in-class local AI agents (<a href="https://arxiv.org/abs/2407.01502" target="_blank">"ambient agents"</a>) that you never interface with but work behind the scenes, assisting your "primetime ai" by auto-optimizing prompts, de-composing tasks, procuring documentation, memorizing key facts and preferences.</div>
             </div>
             
             <div class="feature-card">
                 <div class="feature-icon"><i class="fas fa-code"></i></div>
                 <div class="feature-title">CODE GENERATION</div>
-                <div class="feature-desc">Sweet MCP is packed with best-in-class reasoning, thinking, planning and autocoding AI tools. Built-in o1-pro reasoning chains, sequential thinking, deep research agents, and specialized code generation models that understand your entire codebase context.</div>
+                <div class="feature-desc">Sweet MCP is packed with best-in-class reasoning, thinking, planning and autocoding AI tools. Built-in deep reasoning chains, <a href="https://en.wikipedia.org/wiki/Monte_Carlo_tree_search" target="_blank">MCTS (Monte Carlo Tree Search)</a>, deep research agents, and specialized code generation models that understand your entire codebase context.</div>
             </div>
             
             <div class="feature-card">
                 <div class="feature-icon" style="font-family: 'Fira Code', monospace; font-weight: 600;">Ø</div>
                 <div class="feature-title">ZERO FRICTION</div>
-                <div class="feature-desc">Use the tools you love. Sweet MCP is immediately available in Claude Desktop, Claude Code, Windsurf, Cursor.AI, VSCode, Zed, Raycast, Cline, Roo Code, and thousands of others in a single click. No configuration required.</div>
+                <div class="feature-desc">Use the tools you love. Sweet MCP is immediately available in <a href="https://claude.ai/desktop" target="_blank">Claude Desktop</a>, <a href="https://claude.ai/code" target="_blank">Claude Code</a>, <a href="https://codeium.com/windsurf" target="_blank">Windsurf</a>, <a href="https://cursor.sh/" target="_blank">Cursor.AI</a>, <a href="https://code.visualstudio.com/" target="_blank">VSCode</a>, <a href="https://zed.dev/" target="_blank">Zed</a>, <a href="https://raycast.com/" target="_blank">Raycast</a>, <a href="https://github.com/cline/cline" target="_blank">Cline</a>, <a href="https://github.com/RooVetGit/Roo-Cline" target="_blank">Roo Code</a>, and thousands of others in a single click. No configuration required. All Operating Systems supported.</div>
             </div>
         </div>
     </div>
@@ -390,21 +426,77 @@
     </div>
 
     <script>
-        function copyToClipboard() {
+        function copyToClipboard(event) {
             const command = 'curl -fsSL https://get.cyrup.ai/install | sh';
             
-            navigator.clipboard.writeText(command).then(() => {
-                const btn = event.target;
-                const originalText = btn.textContent;
-                btn.textContent = 'Copied!';
-                btn.style.background = '#18ca9b';
-                setTimeout(() => {
-                    btn.textContent = originalText;
-                    btn.style.background = '';
-                }, 2000);
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-            });
+            // Try modern clipboard API first
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(command).then(() => {
+                    showToast('Command copied to clipboard!');
+                    updateButton(event.target);
+                }).catch(err => {
+                    console.error('Clipboard API failed: ', err);
+                    fallbackCopy(command, event.target);
+                });
+            } else {
+                // Fallback for older browsers or non-secure contexts
+                fallbackCopy(command, event.target);
+            }
+        }
+        
+        function fallbackCopy(text, btn) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showToast('Command copied to clipboard!');
+                updateButton(btn);
+            } catch (err) {
+                console.error('Fallback copy failed: ', err);
+                showToast('Please copy manually: curl -fsSL https://get.cyrup.ai/install | sh');
+            } finally {
+                document.body.removeChild(textArea);
+            }
+        }
+        
+        function updateButton(btn) {
+            const originalText = btn.textContent;
+            btn.textContent = 'COPIED!';
+            btn.style.background = '#15b188';
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '';
+            }, 1500);
+        }
+        
+        function showToast(message) {
+            // Remove existing toast if any
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+            
+            // Create new toast
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            // Show toast
+            setTimeout(() => toast.classList.add('show'), 100);
+            
+            // Hide and remove toast
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
         
         // Auto-select command on click

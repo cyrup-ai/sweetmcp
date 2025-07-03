@@ -11,6 +11,29 @@ green() { echo -e "\033[0;32m$1\033[0m"; }
 yellow() { echo -e "\033[0;33m$1\033[0m"; }
 blue() { echo -e "\033[0;34m$1\033[0m"; }
 
+# Get sudo access upfront
+blue "🍯 SweetMCP Installer - We Do It All!"
+blue "This installer needs administrator privileges to:"
+echo "  • Install system dependencies"
+echo "  • Install the SweetMCP daemon"
+echo "  • Configure certificates and services"
+echo ""
+
+# Get sudo privileges and keep them alive
+sudo -v
+# Keep sudo alive in background
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+SUDO_PID=$!
+
+# Cleanup function
+cleanup() {
+    # Kill the sudo keepalive process
+    if [[ -n "${SUDO_PID:-}" ]]; then
+        kill $SUDO_PID 2>/dev/null || true
+    fi
+}
+trap cleanup EXIT
+
 # Get config directory
 CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 SWEETMCP_HOME="$CONFIG_HOME/sweetmcp"
@@ -86,7 +109,6 @@ install_deps() {
 }
 
 # Main installation
-blue "🍯 SweetMCP Installer - We Do It All!"
 detect_os
 install_deps
 
@@ -128,8 +150,8 @@ if ! cargo build --release --package sweetmcp-daemon; then
     exit 1
 fi
 
-# Install with escalated privileges
-blue "Installing SweetMCP daemon (will request sudo)..."
+# Install with the sudo privileges we already have
+blue "Installing SweetMCP daemon..."
 if ! sudo ./target/release/sweetmcp-daemon install; then
     red "Installation failed"
     exit 1
