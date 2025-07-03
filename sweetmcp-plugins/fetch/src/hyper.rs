@@ -4,11 +4,11 @@ use std::fmt;
 use async_trait::async_trait;
 use base64::Engine;
 use hyper::{Request, Uri};
-use hyper::body::{Body, Bytes};
-use hyper_util::client::legacy::Client;
-use hyper_util::rt::TokioExecutor;
-use hyper_rustls::HttpsConnectorBuilder;
-use http_body_util::{BodyExt, Empty, Full};
+use hyper::body::Bytes;
+use hyper_util::rt::TokioIo;
+use http_body_util::{BodyExt, Empty};
+use hyper_rustls::ConfigBuilderExt;
+use tower_service::Service;
 
 use crate::chromiumoxide::{ContentFetcher, FetchResult};
 
@@ -17,6 +17,7 @@ pub enum FetchError {
     Hyper(hyper::Error),
     Http(hyper::http::Error),
     InvalidUri(hyper::http::uri::InvalidUri),
+    Io(std::io::Error),
     Other(String),
 }
 
@@ -26,6 +27,7 @@ impl fmt::Display for FetchError {
             FetchError::Hyper(e) => write!(f, "Hyper error: {}", e),
             FetchError::Http(e) => write!(f, "HTTP error: {}", e),
             FetchError::InvalidUri(e) => write!(f, "Invalid URI: {}", e),
+            FetchError::Io(e) => write!(f, "IO error: {}", e),
             FetchError::Other(e) => write!(f, "Error: {}", e),
         }
     }
@@ -37,6 +39,7 @@ impl StdError for FetchError {
             FetchError::Hyper(e) => Some(e),
             FetchError::Http(e) => Some(e),
             FetchError::InvalidUri(e) => Some(e),
+            FetchError::Io(e) => Some(e),
             FetchError::Other(_) => None,
         }
     }
@@ -60,33 +63,65 @@ impl From<hyper::http::uri::InvalidUri> for FetchError {
     }
 }
 
+impl From<std::io::Error> for FetchError {
+    fn from(e: std::io::Error) -> Self {
+        FetchError::Io(e)
+    }
+}
+
 pub struct HyperFetcher;
 
 impl HyperFetcher {
     pub async fn fetch(url: &str) -> Result<String, FetchError> {
         // Parse the URL
         let uri: Uri = url.parse()?;
+        
+        // Extract host and port
+        let host = uri.host()
+            .ok_or_else(|| FetchError::Other("URL must have a host".to_string()))?;
+        let port = uri.port_u16().unwrap_or(443);
+        let addr = format!("{}:{}", host, port);
 
-        // Create an HTTPS connector with rustls
-        let https = HttpsConnectorBuilder::new()
-            .with_native_roots()
-            .map_err(|e| FetchError::Other(format!("Failed to load native roots: {}", e)))?
+        // Create TLS connector
+        let tls_config = rustls::ClientConfig::builder()
+            .with_native_roots()?
+            .with_no_client_auth();
+        let connector = hyper_rustls::HttpsConnectorBuilder::new()
+            .with_tls_config(tls_config)
             .https_only()
             .enable_http1()
+            .enable_http2()
             .build();
+
+        // Connect to the server
+        let stream = tokio::net::TcpStream::connect(&addr).await?;
+        let io = TokioIo::new(stream);
         
-        let client: Client<_, Empty<Bytes>> = Client::builder(TokioExecutor::new())
-            .build(https);
+        let tls_stream = connector
+            .call(io)
+            .await
+            .map_err(|e| FetchError::Other(format!("TLS connection failed: {}", e)))?;
+
+        // Set up HTTP connection
+        let (mut sender, conn) = hyper::client::conn::http1::handshake(tls_stream).await?;
+        
+        // Spawn the connection handler
+        tokio::spawn(async move {
+            if let Err(e) = conn.await {
+                eprintln!("Connection error: {}", e);
+            }
+        });
 
         // Build the request
         let request = Request::builder()
             .uri(uri)
+            .header("Host", host)
             .header("User-Agent", "fetch-hyper/1.0")
             .method("GET")
             .body(Empty::<Bytes>::new())?;
 
         // Send the request
-        let response = client.request(request).await?;
+        let response = sender.send_request(request).await?;
 
         // Check if the request was successful
         if !response.status().is_success() {

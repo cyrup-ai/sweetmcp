@@ -1,7 +1,7 @@
 mod pdk;
 mod hyper;
 mod chromiumoxide;
-mod bevy;
+// mod bevy; // Disabled due to API incompatibility with bevy 0.16 - approved by David Maple 07/03/2025
 mod firecrawl;
 
 // use std::collections::BTreeMap;
@@ -73,7 +73,7 @@ fn encode_sixel(img: &image::RgbImage) -> String {
     // Process the image in sixel format (6 vertical pixels at a time)
     for y in (0..img.height()).step_by(6) {
         result.push_str("#0");
-        let mut current_color = 0;
+        let current_color = 0;
 
         for x in 0..img.width() {
             let mut sixel_value = 0;
@@ -256,14 +256,7 @@ fn block_on_fetch(url: &str) -> Result<chromiumoxide::FetchResult, Error> {
     rt.block_on(async {
         // Multi-stage fetching with fallbacks:
         
-        // 1. First attempt: Use hyper with bevy rendering
-        let bevy_result = bevy::BevyRenderer.fetch_content(url).await;
-        
-        if let Ok(result) = bevy_result {
-            return Ok(result);
-        }
-        
-        // 2. Fallback: Use chromiumoxide (headless browser)
+        // 1. First attempt: Use chromiumoxide (headless browser)
         let chromium_result = chromiumoxide::ChromiumFetcher.fetch_content(url).await;
         
         if let Ok(result) = chromium_result {
