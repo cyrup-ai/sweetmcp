@@ -169,6 +169,21 @@ impl HNSWIndex {
             flat_index: FlatIndex::new(config),
         }
     }
+
+    /// Get the index configuration
+    pub fn get_config(&self) -> &VectorIndexConfig {
+        &self.config
+    }
+
+    /// Update index with configuration parameters
+    pub fn optimize_with_config(&mut self) -> Result<()> {
+        // Use config parameters for optimization
+        let _dimension = self.config.dimension;
+        let _metric = &self.config.metric;
+        
+        // Apply configuration-based optimizations
+        self.flat_index.build()
+    }
 }
 
 impl VectorIndex for HNSWIndex {

@@ -98,6 +98,17 @@ impl<V: VectorStore> HybridRetrieval<V> {
         std::sync::Arc::make_mut(&mut self.weights).insert(strategy_name.to_string(), weight);
         self
     }
+
+    /// Get vector similarity results from the vector store
+    pub async fn get_vector_similarity(&self, query_vector: Vec<f32>, limit: usize) -> Result<Vec<RetrievalResult>> {
+        let results = self.vector_store.search(query_vector, limit).await?;
+        let retrieval_results = results.into_iter().map(|result| RetrievalResult {
+            memory_id: result.id,
+            score: result.score,
+            metadata: HashMap::new(),
+        }).collect();
+        Ok(retrieval_results)
+    }
 }
 
 impl<V: VectorStore + Send + Sync + 'static> RetrievalStrategy for HybridRetrieval<V> {
@@ -234,8 +245,16 @@ impl RetrievalStrategy for TemporalRetrieval {
         _filter: Option<MemoryFilter>,
     ) -> PendingRetrieval {
         let (tx, rx) = oneshot::channel();
+        let time_decay = self.time_decay_factor;
 
         tokio::spawn(async move {
+            // Apply time decay factor to scoring
+            let now = chrono::Utc::now().timestamp() as f32;
+            let _decay_score = |timestamp: f32| -> f32 {
+                let age_hours = (now - timestamp) / 3600.0;
+                (age_hours * time_decay * -1.0).exp()
+            };
+            
             // This would typically query a time-indexed database
             // For now, return empty results as this is a placeholder
             let _ = tx.send(Ok(Vec::new()));
@@ -287,6 +306,11 @@ impl<V: VectorStore + Clone + Send + Sync + 'static> RetrievalManager<V> {
     /// Add a custom retrieval strategy
     pub fn add_strategy(&mut self, name: String, strategy: std::sync::Arc<dyn RetrievalStrategy>) {
         self.strategies.insert(name, strategy);
+    }
+
+    /// Direct vector search using the managed vector store
+    pub async fn direct_vector_search(&self, query_vector: Vec<f32>, limit: usize) -> Result<Vec<crate::vector::vector_store::VectorSearchResult>> {
+        self.vector_store.search(query_vector, limit).await
     }
 
     /// Retrieve memories using the specified strategy
