@@ -20,7 +20,7 @@ pingora-load-balancing = { git = "https://github.com/cloudflare/pingora", packag
 clap = { version = "4.5", features = ["derive"] }
 
 # Async runtime
-tokio = { version = "1.45", features = ["macros", "rt-multi-thread", "sync", "fs", "net", "time", "signal"] }
+tokio = { version = "1.46", features = ["macros", "rt-multi-thread", "sync", "fs", "net", "time", "signal"] }
 
 # MCP SDK - removed, using sweetmcp-axum instead
 sweetmcp-axum = { path = "../sweetmcp-axum" }
@@ -73,7 +73,7 @@ prometheus-parser = "0.4"
 reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json", "stream"] }
 
 # DNS resolver for service discovery
-hickory-resolver = { version = "0.24", features = ["tokio"] }
+hickory-resolver = { version = "0.25", features = ["tokio"] }
 
 # Rate limiting
 governor = "0.10"

@@ -13,20 +13,20 @@ extism-pdk = "1.4.1"
 chrono = { version = "0.4", features = ["serde"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-base64-serde = "0.7"
+base64-serde = "0.8"
 base64 = "0.22.1"
-htmd = "0.1.6"
-hyper = { version = "0.14", features = ["client", "http1", "http2", "tcp"] }
+htmd = "0.2.2"
+hyper = { version = "1.6", features = ["client", "http1", "http2"] }
 tokio = { version = "1", features = ["rt", "macros", "sync", "time"] }
-url = "2.3"
-html5ever = "0.26"
-markup5ever_rcdom = "0.2"
-thiserror = "1.0"
+url = "2.5"
+html5ever = "0.35"
+markup5ever_rcdom = "0.3"
+thiserror = "2.0"
 chromiumoxide = { version = "0.7.0", default-features = false, features = ["tokio-runtime"] }
 futures = "0.3"
 async-trait = "0.1"
-bevy = { version = "0.12", default-features = false, features = ["bevy_asset", "bevy_core_pipeline", "bevy_sprite", "bevy_ui", "bevy_text"] }
-image = "0.24"
-syntect = "5.0"
+bevy = { version = "0.16", default-features = false, features = ["bevy_asset", "bevy_core_pipeline", "bevy_sprite", "bevy_ui", "bevy_text"] }
+image = "0.25"
+syntect = "5.2"
+hyper-rustls = { version = "0.27", features = ["webpki-tokio"] }
 sweetmcp-workspace-hack = { version = "0.1", path = "../../sweetmcp-workspace-hack" }
-hyper-rustls = { version = "0.24", features = ["webpki-tokio"] }

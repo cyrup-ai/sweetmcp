@@ -5,6 +5,7 @@ use anyhow::{Context, Result, bail};
 use std::path::Path;
 use std::process::Command;
 use which::which;
+use base64::{Engine as _, engine::general_purpose};
 
 /// Sign a binary on Windows using signtool
 pub fn sign(config: &SigningConfig) -> Result<()> {
@@ -175,7 +176,7 @@ pub fn import_certificate_from_base64(base64_cert: &str, password: &str) -> Resu
     use std::io::Write;
     
     // Decode base64
-    let cert_data = base64::decode(base64_cert)
+    let cert_data = general_purpose::STANDARD.decode(base64_cert)
         .context("Failed to decode base64 certificate")?;
     
     // Write to temporary file
