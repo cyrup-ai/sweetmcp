@@ -1,6 +1,7 @@
 use serde_json::Value;
 use tokio::sync::{mpsc, oneshot};
 use tracing::{error, info};
+use sweetmcp_axum::JSONRPC_VERSION;
 
 // Bridge message type for communication between Pingora and MCP handler
 pub type BridgeMsg = (
@@ -29,7 +30,7 @@ pub async fn run(mut rx: mpsc::Receiver<BridgeMsg>) {
                 Err(e) => {
                     error!("Failed to parse JSON response from Axum: {:?}", e);
                     serde_json::json!({
-                        "jsonrpc": "2.0",
+                        "jsonrpc": JSONRPC_VERSION,
                         "error": {
                             "code": -32603,
                             "message": "Internal error: invalid response from backend"
@@ -41,7 +42,7 @@ pub async fn run(mut rx: mpsc::Receiver<BridgeMsg>) {
             Err(e) => {
                 error!("Failed to forward request to Axum: {:?}", e);
                 serde_json::json!({
-                    "jsonrpc": "2.0",
+                    "jsonrpc": JSONRPC_VERSION,
                     "error": {
                         "code": -32603,
                         "message": "Internal error: backend unavailable"

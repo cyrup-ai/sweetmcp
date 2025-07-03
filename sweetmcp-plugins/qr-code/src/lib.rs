@@ -19,12 +19,12 @@ pub(crate) fn call(input: CallToolRequest) -> Result<CallToolResult, Error> {
             .cloned()
             .unwrap_or_else(|| json!(4))
             .as_number()
-            .unwrap()
+            .ok_or_else(|| Error::msg("`ecc` must be a number"))?
             .is_u64() as u8,
     );
 
     let data = match args.get("data") {
-        Some(v) => v.as_str().unwrap(),
+        Some(v) => v.as_str().ok_or_else(|| Error::msg("`data` must be a string"))?,
         None => return Err(Error::msg("`data` must be available")),
     };
 

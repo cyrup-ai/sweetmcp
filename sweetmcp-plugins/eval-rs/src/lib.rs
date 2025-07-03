@@ -27,7 +27,7 @@ impl StoredVirtualMachine {
 
         StoredVirtualMachine {
             interp,
-            scope: scope.unwrap(),
+            scope: scope.expect("Scope should be initialized in Interpreter::with_init"),
         }
     }
 }
@@ -43,7 +43,7 @@ fn get_or_create_vm(id: &str) -> Rc<StoredVirtualMachine> {
             let stored_vm = StoredVirtualMachine::new();
             vms.insert(id.to_string(), Rc::new(stored_vm));
         }
-        vms.get(id).unwrap().clone()
+        vms.get(id).expect("VM should exist after insertion").clone()
     })
 }
 
@@ -158,7 +158,7 @@ Perfect for Rust education, code testing, and safe experimentation. Note: Curren
                     "required": ["code"],
                 })
                 .as_object()
-                .unwrap()
+                .expect("JSON schema should be valid object")
                 .clone(),
             },
         ],

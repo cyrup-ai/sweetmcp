@@ -12,9 +12,19 @@ fn panic_if_key_missing() -> ! {
 pub(crate) mod internal {
     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
         let err = format!("{e:?}");
-        let mem = extism_pdk::Memory::from_bytes(&err).unwrap();
-        unsafe {
-            extism_pdk::extism::error_set(mem.offset());
+        match extism_pdk::Memory::from_bytes(&err) {
+            Ok(mem) => {
+                unsafe {
+                    extism_pdk::extism::error_set(mem.offset());
+                }
+            }
+            Err(_) => {
+                unsafe {
+                    if let Ok(mem) = extism_pdk::Memory::from_bytes(b"Internal error") {
+                        extism_pdk::extism::error_set(mem.offset());
+                    }
+                }
+            }
         }
         -1
     }

@@ -17,12 +17,12 @@ pub(crate) fn call(input: CallToolRequest) -> Result<CallToolResult, Error> {
     let args = input.params.arguments.unwrap_or_default();
 
     let data = match args.get("data") {
-        Some(v) => v.as_str().unwrap(),
+        Some(v) => v.as_str().ok_or_else(|| Error::msg("`data` must be a string"))?,
         None => return Err(Error::msg("`data` is required")),
     };
 
     let algorithm = match args.get("algorithm") {
-        Some(v) => v.as_str().unwrap(),
+        Some(v) => v.as_str().ok_or_else(|| Error::msg("`algorithm` must be a string"))?,
         None => return Err(Error::msg("`algorithm` is required")),
     };
 
@@ -95,7 +95,7 @@ Perfect for data integrity checks, password verification, API authentication, an
                     }
                 },
                 "required": ["data", "algorithm"]
-            }).as_object().unwrap().clone(),
+            }).as_object().expect("JSON schema should be valid object").clone(),
         }],
     })
 }

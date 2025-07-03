@@ -13,7 +13,6 @@ mod daemon_integration;
 
 mod container_registry;
 pub mod db; // Make db module public
-mod r#mod;
 pub mod notifications;
 pub mod plugin; // Ensure plugin module is declared and public
 mod prompt;

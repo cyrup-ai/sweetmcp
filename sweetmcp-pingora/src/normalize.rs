@@ -1,6 +1,7 @@
 //! Converts GraphQL, JSON-RPC, or Cap'n Proto payloads into standard JSON-RPC for MCP.
 
 use anyhow::{bail, Context, Result};
+use sweetmcp_axum::JSONRPC_VERSION;
 use async_graphql::parser::{parse_query, types::*};
 use async_graphql::{Name, Positioned};
 use async_graphql_value::Value;
@@ -29,7 +30,7 @@ pub fn to_json_rpc(_user: &str, body: &[u8]) -> Result<(ProtocolContext, serde_j
     if let Ok(v) = serde_json::from_slice::<serde_json::Value>(body) {
         if v.get("jsonrpc").is_some() {
             // Validate it's proper JSON-RPC
-            let method = v
+            let _method = v
                 .get("method")
                 .and_then(|m| m.as_str())
                 .ok_or_else(|| anyhow::anyhow!("JSON-RPC missing method"))?;
@@ -100,7 +101,7 @@ fn graphql_to_json_rpc(
     };
 
     let json_rpc = json!({
-        "jsonrpc": "2.0",
+        "jsonrpc": JSONRPC_VERSION,
         "method": method,
         "params": params,
         "id": request_id
@@ -206,7 +207,7 @@ fn graphql_value_to_json(value: &Value) -> serde_json::Value {
 }
 
 /// Convert Cap'n Proto to JSON-RPC
-fn capnp_to_json_rpc(body: &[u8]) -> Result<(ProtocolContext, serde_json::Value)> {
+fn capnp_to_json_rpc(_body: &[u8]) -> Result<(ProtocolContext, serde_json::Value)> {
     // TODO: Implement Cap'n Proto parsing based on MCP schema
     // For now, return error
     bail!("Cap'n Proto support not yet implemented")
@@ -228,7 +229,7 @@ pub fn from_json_rpc(
 }
 
 /// Convert JSON-RPC response to GraphQL response
-fn graphql_from_json_rpc(ctx: &ProtocolContext, response: &serde_json::Value) -> Result<Vec<u8>> {
+fn graphql_from_json_rpc(_ctx: &ProtocolContext, response: &serde_json::Value) -> Result<Vec<u8>> {
     let mut graphql_response = json!({
         "data": null
     });
