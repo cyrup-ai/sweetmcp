@@ -46,6 +46,9 @@ pub struct ApplicationContext {
 
     /// Database client (if configured)
     database_initialized: bool,
+
+    /// Memory system adapter
+    memory_adapter: Arc<MemoryContextAdapter>,
 }
 
 /// Sampling-specific context containing sampling-related services
@@ -88,6 +91,14 @@ impl ApplicationContext {
 
             // Initialize plugin manager
             let plugin_manager = crate::plugin::PluginManager::new();
+
+            // Initialize memory system
+            let memory_config = sweetmcp_memory::MemoryConfig::default();
+            let memory_adapter = Arc::new(
+                MemoryContextAdapter::new(memory_config)
+                    .await
+                    .map_err(|e| anyhow::anyhow!("Failed to initialize memory system: {}", e))?
+            );
 
             // Initialize database if configured
             let mut database_initialized = false;
@@ -143,6 +154,7 @@ impl ApplicationContext {
                 logger: Arc::new(logger),
                 plugin_manager: Arc::new(plugin_manager),
                 database_initialized,
+                memory_adapter,
             }))
         })
     }
@@ -166,6 +178,11 @@ impl ApplicationContext {
     /// Check if the database was successfully initialized
     pub fn is_database_initialized(&self) -> bool {
         self.database_initialized
+    }
+
+    /// Access the memory context adapter
+    pub fn memory_adapter(&self) -> Arc<MemoryContextAdapter> {
+        self.memory_adapter.clone()
     }
 }
 

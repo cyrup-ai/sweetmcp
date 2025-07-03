@@ -145,7 +145,8 @@ pub async fn context_subscribe(
     let subscription_id = uuid::Uuid::new_v4().to_string();
 
     // Store subscription in global state
-    if let Some(context) = crate::context::APPLICATION_CONTEXT.get() {
+    if let Some(_context) = crate::context::APPLICATION_CONTEXT.get() {
+        // TODO: Use context.memory_adapter() to store subscription in memory system
         let sampling_context = crate::context::SAMPLING_CONTEXT.get().unwrap();
         sampling_context
             .register_session(
