@@ -80,7 +80,7 @@ impl ServiceWorker {
         let pid = spawned.id();
         *child = Some(spawned);
         self.bus.send(Evt::State {
-            service: self.name,
+            service: self.name.to_string(),
             kind: "running",
             ts: Utc::now(),
             pid: Some(pid),
@@ -94,7 +94,7 @@ impl ServiceWorker {
             let pid = ch.id();
             ch.kill().ok();
             self.bus.send(Evt::State {
-                service: self.name,
+                service: self.name.to_string(),
                 kind: "stopped",
                 ts: Utc::now(),
                 pid: Some(pid),
@@ -110,7 +110,7 @@ impl ServiceWorker {
             .map(|c| c.try_wait().ok().flatten().is_none())
             .unwrap_or(false);
         self.bus.send(Evt::Health {
-            service: self.name,
+            service: self.name.to_string(),
             healthy,
             ts: Utc::now(),
         })?;
@@ -124,7 +124,7 @@ impl ServiceWorker {
     fn rotate_logs(&self) -> Result<()> {
         // (implementation stripped for brevity; same algorithm as original)
         self.bus.send(Evt::LogRotate {
-            service: self.name,
+            service: self.name.to_string(),
             ts: Utc::now(),
         })?;
         Ok(())

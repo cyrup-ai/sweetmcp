@@ -38,7 +38,7 @@ impl AutoConfigService {
             async move {
                 // Notify daemon we're starting
                 let _ = bus.send(Evt::State {
-                    service: &service_name,
+                    service: service_name.clone(),
                     kind: "running",
                     ts: chrono::Utc::now(),
                     pid: Some(std::process::id()),
@@ -47,7 +47,7 @@ impl AutoConfigService {
                 if let Err(e) = watcher.run().await {
                     error!("Auto-config watcher failed: {}", e);
                     let _ = bus.send(Evt::Fatal {
-                        service: &service_name,
+                        service: service_name.clone(),
                         msg: "Watcher error occurred",
                         ts: chrono::Utc::now(),
                     });

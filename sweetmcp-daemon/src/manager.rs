@@ -21,8 +21,8 @@ struct RestartState {
 pub struct ServiceManager {
     bus_tx: Sender<Evt>,
     bus_rx: Receiver<Evt>,
-    workers: HashMap<&'static str, Sender<Cmd>>,
-    pending_restarts: HashMap<&'static str, RestartState>,
+    workers: HashMap<String, Sender<Cmd>>,
+    pending_restarts: HashMap<String, RestartState>,
 }
 
 impl ServiceManager {
@@ -34,10 +34,7 @@ impl ServiceManager {
         // Load services from config file
         for def in cfg.services.clone() {
             let tx = crate::service::spawn(def.clone(), bus_tx.clone());
-            workers.insert(
-                Box::leak(def.name.clone().into_boxed_str()) as &'static str,
-                tx,
-            );
+            workers.insert(def.name.clone(), tx);
         }
 
         // Load services from services directory
@@ -56,11 +53,7 @@ impl ServiceManager {
                                             path.display()
                                         );
                                         let tx = crate::service::spawn(def.clone(), bus_tx.clone());
-                                        workers.insert(
-                                            Box::leak(def.name.clone().into_boxed_str())
-                                                as &'static str,
-                                            tx,
-                                        );
+                                        workers.insert(def.name.clone(), tx);
                                     }
                                     Err(e) => error!(
                                         "Failed to parse service file {}: {}",
@@ -90,7 +83,7 @@ impl ServiceManager {
     pub fn run(mut self) -> Result<()> {
         // Announce manager start
         self.bus_tx.send(Evt::State {
-            service: "manager",
+            service: "manager".to_string(),
             kind: "starting",
             ts: chrono::Utc::now(),
             pid: Some(std::process::id()),
@@ -104,7 +97,7 @@ impl ServiceManager {
 
         // Manager is now running
         self.bus_tx.send(Evt::State {
-            service: "manager",
+            service: "manager".to_string(),
             kind: "running",
             ts: chrono::Utc::now(),
             pid: Some(std::process::id()),
@@ -122,7 +115,7 @@ impl ServiceManager {
                     if let Some(sig) = check_signals() { // coarse polling ≈200 ms
                         info!("signal {:?} – orderly shutdown", sig);
                         self.bus_tx.send(Evt::State {
-                            service: "manager",
+                            service: "manager".to_string(),
                             kind: "stopping",
                             ts: chrono::Utc::now(),
                             pid: Some(std::process::id()),
@@ -144,7 +137,7 @@ impl ServiceManager {
                     }
                     // Announce log rotation
                     self.bus_tx.send(Evt::LogRotate {
-                        service: "manager",
+                        service: "manager".to_string(),
                         ts: chrono::Utc::now(),
                     }).ok();
                 }
@@ -158,7 +151,7 @@ impl ServiceManager {
         // Announce manager stopped
         self.bus_tx
             .send(Evt::State {
-                service: "manager",
+                service: "manager".to_string(),
                 kind: "stopped",
                 ts: chrono::Utc::now(),
                 pid: Some(std::process::id()),
@@ -205,7 +198,7 @@ impl ServiceManager {
                 let error_msg = format!("Service {} encountered fatal error: {}", service, msg);
                 self.bus_tx
                     .send(Evt::Fatal {
-                        service: "manager",
+                        service: "manager".to_string(),
                         msg: Box::leak(error_msg.into_boxed_str()) as &'static str,
                         ts: chrono::Utc::now(),
                     })
@@ -218,7 +211,7 @@ impl ServiceManager {
     }
 
     /// Schedule a service for restart after a delay
-    fn schedule_restart(&mut self, service: &'static str, delay_ms: u64) {
+    fn schedule_restart(&mut self, service: &str, delay_ms: u64) {
         if let Some(tx) = self.workers.get(service) {
             // Send stop command immediately
             tx.send(Cmd::Stop).ok();
@@ -232,7 +225,7 @@ impl ServiceManager {
                 .unwrap_or(1);
 
             self.pending_restarts.insert(
-                service,
+                service.to_string(),
                 RestartState {
                     stop_time: restart_time,
                     attempts,
@@ -254,7 +247,7 @@ impl ServiceManager {
         // Find services ready to restart
         for (service, state) in self.pending_restarts.iter() {
             if now >= state.stop_time {
-                to_restart.push(*service);
+                to_restart.push(service.clone());
             }
         }
 
@@ -266,7 +259,7 @@ impl ServiceManager {
                     tx.send(Cmd::Start).ok();
                     self.bus_tx
                         .send(Evt::State {
-                            service: "manager",
+                            service: "manager".to_string(),
                             kind: "restarted-service",
                             ts: chrono::Utc::now(),
                             pid: Some(std::process::id()),

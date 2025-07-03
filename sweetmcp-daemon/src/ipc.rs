@@ -15,22 +15,22 @@ pub enum Cmd {
 #[derive(Debug, Clone)]
 pub enum Evt {
     State {
-        service: &'static str,
+        service: String,
         kind: &'static str, // "running"|"stopped"|etc.
         ts: DateTime<Utc>,
         pid: Option<u32>,
     },
     Health {
-        service: &'static str,
+        service: String,
         healthy: bool,
         ts: DateTime<Utc>,
     },
     LogRotate {
-        service: &'static str,
+        service: String,
         ts: DateTime<Utc>,
     },
     Fatal {
-        service: &'static str,
+        service: String,
         msg: &'static str,
         ts: DateTime<Utc>,
     },

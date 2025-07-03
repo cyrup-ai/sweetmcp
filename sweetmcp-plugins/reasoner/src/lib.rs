@@ -256,16 +256,13 @@ pub fn process_thought(input: String) -> FnResult<String> {
     let stats = match reasoner.lock() {
         Ok(reasoner) => reasoner.get_stats(vec![&strategy]),
         Err(e) => {
-            return Ok(CallToolResult {
-                is_error: Some(true),
-                content: vec![Content {
-                    annotations: None,
-                    text: Some(format!("Failed to lock reasoner for stats: {}", e)),
-                    mime_type: None,
-                    r#type: ContentType::Text,
-                    data: None,
-                }],
-            });
+            return Ok(serde_json::json!({
+                "is_error": true,
+                "content": [{
+                    "type": "text",
+                    "text": format!("Failed to lock reasoner for stats: {}", e)
+                }]
+            }).to_string());
         }
     };
 
@@ -291,7 +288,7 @@ pub fn clear(_: String) -> FnResult<String> {
     let reasoner = get_reasoner();
     match reasoner.lock() {
         Ok(mut reasoner) => reasoner.clear(),
-        Err(e) => return Err(format!("Failed to lock reasoner for clearing: {}", e).into()),
+        Err(e) => return Err(extism_pdk::Error::msg(format!("Failed to lock reasoner for clearing: {}", e)).into()),
     };
 
     Ok("Reasoner state cleared".to_string())
