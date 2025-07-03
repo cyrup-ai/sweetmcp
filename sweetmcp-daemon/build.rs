@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
         
         // Link the helper executable
         let status = Command::new("cc")
-            .args(&[
+            .args([
                 "-o", path.to_str().unwrap(),
                 &format!("{}/libhelper.a", env::var("OUT_DIR")?),
                 "-framework", "ServiceManagement",
@@ -117,13 +117,12 @@ int main(int argc, char *argv[]) {
     <string>10.13</string>
     <key>SMAuthorizedClients</key>
     <array>
-        <string>identifier "com.cyrupd.sweetmcp" and certificate leaf[subject.OU] = "{}"</string>
+        <string>identifier "com.cyrupd.sweetmcp" and certificate leaf[subject.OU] = "{team_id}"</string>
     </array>
     <key>LSUIElement</key>
     <true/>
 </dict>
-</plist>"#,
-            team_id
+</plist>"#
         );
         
         fs::write(path, plist_content)?;
@@ -135,7 +134,7 @@ int main(int argc, char *argv[]) {
         if let Ok(cert_path) = env::var("APPLE_CERTIFICATE_PATH") {
             // For local development using the certificate file
             let output = Command::new("security")
-                .args(&["find-certificate", "-p", &cert_path])
+                .args(["find-certificate", "-p", &cert_path])
                 .output()?;
             
             if output.status.success() {
@@ -181,12 +180,12 @@ int main(int argc, char *argv[]) {
         
         // Create keychain
         Command::new("security")
-            .args(&["create-keychain", "-p", keychain_password, &keychain_name])
+            .args(["create-keychain", "-p", keychain_password, &keychain_name])
             .status()?;
         
         // Import certificate
         let status = Command::new("security")
-            .args(&[
+            .args([
                 "import", cert_path,
                 "-k", &keychain_name,
                 "-T", "/usr/bin/codesign",
@@ -197,14 +196,14 @@ int main(int argc, char *argv[]) {
         if !status.success() {
             // Clean up keychain
             let _ = Command::new("security")
-                .args(&["delete-keychain", &keychain_name])
+                .args(["delete-keychain", &keychain_name])
                 .status();
             return Err("Failed to import certificate".into());
         }
         
         // Get signing identity from the certificate
         let output = Command::new("security")
-            .args(&["find-identity", "-v", "-p", "codesigning", &keychain_name])
+            .args(["find-identity", "-v", "-p", "codesigning", &keychain_name])
             .output()?;
         
         let identity = if output.status.success() {
@@ -224,7 +223,7 @@ int main(int argc, char *argv[]) {
         
         // Clean up keychain
         let _ = Command::new("security")
-            .args(&["delete-keychain", &keychain_name])
+            .args(["delete-keychain", &keychain_name])
             .status();
         
         Ok(())
@@ -232,7 +231,7 @@ int main(int argc, char *argv[]) {
     
     fn sign_with_identity(helper_dir: &Path, identity: &str) -> Result<(), Box<dyn std::error::Error>> {
         let status = Command::new("codesign")
-            .args(&[
+            .args([
                 "--force",
                 "--sign", identity,
                 "--options", "runtime",

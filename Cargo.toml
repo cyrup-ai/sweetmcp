@@ -41,7 +41,6 @@ tokio = { version = "1", features = ["full"] }
 directories = { version = "6.0.0" }
 crossbeam-channel = { version = "0.5.15" }
 extism = { version = "1.11.1" }
-extism-pdk = { version = "1.4.1" }
 winreg = { version = "0.55.0" }
 plist = { version = "1.7.2" }
 parking_lot = { version = "0.12.4" }

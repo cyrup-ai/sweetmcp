@@ -60,7 +60,7 @@ pub async fn initialize(config: &MemoryConfig) -> Result<SurrealMemoryManager, E
     // Connect to the database using details from config
     let db = connect(&config.database.connection_string)
         .await
-        .map_err(|e| Error::Config(format!("Failed to connect to database: {}", e)))?;
+        .map_err(|e| Error::Config(format!("Failed to connect to database: {e}")))?;
 
     // Use namespace and database from config
     db.use_ns(&config.database.namespace)
@@ -80,7 +80,7 @@ pub async fn initialize(config: &MemoryConfig) -> Result<SurrealMemoryManager, E
             password: pass.as_str(),
         })
         .await
-        .map_err(|e| Error::Config(format!("Database sign-in failed: {}", e)))?;
+        .map_err(|e| Error::Config(format!("Database sign-in failed: {e}")))?;
     }
 
     // Create the memory manager

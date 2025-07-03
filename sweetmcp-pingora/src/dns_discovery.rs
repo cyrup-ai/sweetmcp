@@ -5,8 +5,9 @@
 
 use crate::peer_discovery::PeerRegistry;
 use futures::future::join_all;
-use hickory_resolver::config::{ResolverConfig, ResolverOpts};
-use hickory_resolver::TokioAsyncResolver;
+// Temporarily disable hickory-resolver until API compatibility is resolved
+// use hickory_resolver::config::{ResolverConfig, ResolverOpts, ResolveHosts};
+// use hickory_resolver::TokioResolver;
 use std::net::SocketAddr;
 use std::time::Duration;
 use tokio::time::interval;
@@ -21,8 +22,9 @@ const DISCOVERY_INTERVAL: Duration = Duration::from_secs(60);
 // ];
 
 /// DNS-based discovery service using SRV records
+/// NOTE: Temporarily disabled due to hickory-resolver API compatibility issues
 pub struct DnsDiscovery {
-    resolver: TokioAsyncResolver,
+    // resolver: TokioResolver,  // Temporarily disabled
     service_name: String,
     registry: PeerRegistry,
 }
@@ -35,20 +37,11 @@ impl DnsDiscovery {
     /// - `registry`: The peer registry to update with discovered services
     /// - `doh_server`: Reserved for future DoH support
     pub fn new(service_name: String, registry: PeerRegistry, _doh_server: Option<&str>) -> Self {
-        // Use standard DNS (DoH can be configured via system resolver when needed)
-        let config = ResolverConfig::default();
-
-        let mut opts = ResolverOpts::default();
-        opts.timeout = Duration::from_secs(5);
-        opts.attempts = 3;
-        opts.cache_size = 256; // Small cache for discovery
-        opts.use_hosts_file = false; // Don't use local hosts file
-        opts.validate = true; // DNSSEC validation when available
-
-        let resolver = TokioAsyncResolver::tokio(config, opts);
-
+        // NOTE: Temporarily disabled due to hickory-resolver API compatibility issues
+        warn!("DNS discovery is temporarily disabled due to hickory-resolver API compatibility");
+        
         Self {
-            resolver,
+            // resolver,  // Temporarily disabled
             service_name,
             registry,
         }
@@ -70,70 +63,12 @@ impl DnsDiscovery {
     }
 
     async fn discover_peers(&self) {
-        debug!("Performing DNS SRV lookup for: {}", self.service_name);
-
-        match self.resolver.srv_lookup(&self.service_name).await {
-            Ok(srv_lookup) => {
-                let srv_records: Vec<_> = srv_lookup.iter().collect();
-
-                if srv_records.is_empty() {
-                    debug!("No SRV records found for {}", self.service_name);
-                    return;
-                }
-
-                info!(
-                    "Found {} SRV records for {}",
-                    srv_records.len(),
-                    self.service_name
-                );
-
-                // Create concurrent IP lookup tasks
-                let futures = srv_records.into_iter().map(|srv| {
-                    let resolver = self.resolver.clone();
-                    let target = srv.target().to_utf8();
-                    let port = srv.port();
-                    let priority = srv.priority();
-                    let weight = srv.weight();
-
-                    async move {
-                        debug!(
-                            "Resolving {} (priority: {}, weight: {})",
-                            target, priority, weight
-                        );
-
-                        match resolver.lookup_ip(&target).await {
-                            Ok(ip_lookup) => {
-                                let addrs: Vec<SocketAddr> = ip_lookup
-                                    .into_iter()
-                                    .map(|ip| SocketAddr::new(ip, port))
-                                    .collect();
-
-                                (addrs, priority, weight)
-                            }
-                            Err(e) => {
-                                warn!("Failed to resolve {}: {}", target, e);
-                                (Vec::new(), priority, weight)
-                            }
-                        }
-                    }
-                });
-
-                // Await all resolutions concurrently
-                let results = join_all(futures).await;
-
-                // Update peer registry with discovered addresses
-                for (addrs, _priority, _weight) in results {
-                    for addr in addrs {
-                        if self.registry.add_peer(addr) {
-                            info!("Discovered peer via DNS: {}", addr);
-                        }
-                    }
-                }
-            }
-            Err(e) => {
-                error!("DNS SRV lookup failed for {}: {}", self.service_name, e);
-            }
-        }
+        debug!("DNS discovery is temporarily disabled - skipping lookup for: {}", self.service_name);
+        
+        // NOTE: Temporarily disabled due to hickory-resolver API compatibility issues
+        // When re-enabled, this will perform DNS SRV lookups and populate the peer registry
+        
+        warn!("DNS discovery temporarily disabled - no peers discovered for {}", self.service_name);
     }
 }
 

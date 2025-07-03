@@ -74,7 +74,7 @@ impl Config {
                 
                 if is_dev_mode {
                     // Generate random 32 bytes
-                    let mut rng = rand::thread_rng();
+                    let mut rng = rand::rng();
                     let mut secret_bytes = [0u8; 32];
                     rng.fill(&mut secret_bytes);
                     let generated_secret = base64_url::encode(&secret_bytes);

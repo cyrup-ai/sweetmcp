@@ -27,5 +27,14 @@ platforms = [
 [target.'cfg(target_arch = "wasm32")']
 enabled = false
 
+# Exclude WASM plugins from workspace-hack to prevent platform-specific deps
+[[hakari.dep-format-version]]
+omit-dev-dependencies = true
+
+[hakari.final-synthesized-target]
+omitted-packages = [
+    "sweetmcp-plugin-*",
+]
+
 # Write out exact versions rather than a semver range. (Defaults to false.)
 # exact-versions = true

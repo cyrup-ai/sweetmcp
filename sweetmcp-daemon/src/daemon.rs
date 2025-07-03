@@ -73,7 +73,7 @@ pub fn daemonise(pid_file: &Path) -> Result<()> {
     }
 
     // stdin, stdout, stderr → /dev/null
-    use std::os::unix::io::{AsRawFd, FromRawFd, OwnedFd};
+    use std::os::unix::io::{FromRawFd, OwnedFd};
     let devnull = std::fs::OpenOptions::new()
         .read(true)
         .write(true)

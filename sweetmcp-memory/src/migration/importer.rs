@@ -37,7 +37,7 @@ impl DataImporter {
     /// Import data from binary file
     pub async fn import_binary<T>(&self, path: &Path) -> Result<Vec<T>> 
     where
-        T: for<'de> Deserialize<'de> + bincode::Decode,
+        T: bincode::Decode<()>,
     {
         let mut file = File::open(path)?;
         let mut buffer = Vec::new();
@@ -51,7 +51,8 @@ impl DataImporter {
         Ok(data)
     }
 
-    /// Import with validation
+    /// Import with validation for JSON/CSV formats only
+    /// Note: Binary format requires separate validation due to different trait bounds
     pub async fn import_with_validation<T, F>(
         &self,
         path: &Path,
@@ -59,13 +60,17 @@ impl DataImporter {
         validator: F,
     ) -> Result<Vec<T>>
     where
-        T: for<'de> Deserialize<'de> + bincode::Decode,
+        T: for<'de> Deserialize<'de>,
         F: Fn(&T) -> Result<()>,
     {
         let data = match format {
             ImportFormat::Json => self.import_json(path).await?,
             ImportFormat::Csv => self.import_csv(path).await?,
-            ImportFormat::Binary => self.import_binary(path).await?,
+            ImportFormat::Binary => {
+                return Err(MigrationError::UnsupportedFormat(
+                    "Binary validation requires bincode::Decode trait - use import_binary directly".to_string()
+                ));
+            }
         };
 
         // Validate each item

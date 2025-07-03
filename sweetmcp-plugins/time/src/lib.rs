@@ -1,5 +1,4 @@
 mod pdk;
-mod plugin;
 
 use extism_pdk::*;
 use pdk::types::{CallToolRequest, CallToolResult, Content, ContentType, ListToolsResult, ToolDescription};
