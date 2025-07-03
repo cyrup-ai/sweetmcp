@@ -1,0 +1,5 @@
+/target
+*.journal
+.env
+/rchore_db
+src/secrets.rs
