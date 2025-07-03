@@ -73,15 +73,21 @@ pub fn daemonise(pid_file: &Path) -> Result<()> {
     }
 
     // stdin, stdout, stderr → /dev/null
-    use std::os::unix::io::AsRawFd;
+    use std::os::unix::io::{AsRawFd, FromRawFd, OwnedFd};
     let devnull = std::fs::OpenOptions::new()
         .read(true)
         .write(true)
         .open("/dev/null")
         .context("open /dev/null")?;
-    let null = devnull.as_raw_fd();
+    
+    // Redirect stdin, stdout, stderr to /dev/null
     for target in 0..=2 {
-        dup2(null, target).ok();
+        // Create an OwnedFd from the target fd
+        let mut target_fd = unsafe { OwnedFd::from_raw_fd(target) };
+        // Duplicate devnull to the target fd
+        dup2(&devnull, &mut target_fd).ok();
+        // Forget the OwnedFd to prevent it from closing the standard descriptors
+        std::mem::forget(target_fd);
     }
 
     // Write PID file *after* we are fully detached.

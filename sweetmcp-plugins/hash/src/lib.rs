@@ -55,7 +55,7 @@ pub(crate) fn call(input: CallToolRequest) -> Result<CallToolResult, Error> {
         "md5" => {
             format!("{:x}", md5::compute(data))
         }
-        "base32" => base32::encode(base32::Alphabet::RFC4648 { padding: true }, data.as_bytes()),
+        "base32" => base32::encode(base32::Alphabet::Rfc4648 { padding: true }, data.as_bytes()),
         "base64" | _ => base64::engine::general_purpose::STANDARD.encode(data),
     };
 

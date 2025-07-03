@@ -17,6 +17,8 @@ base64-serde = "0.8"
 base64 = "0.22.1"
 htmd = "0.2.2"
 hyper = { version = "1.6", features = ["client", "http1", "http2"] }
+hyper-util = { version = "0.1", features = ["client-legacy", "http1", "http2", "tokio"] }
+http-body-util = "0.1"
 tokio = { version = "1", features = ["rt", "macros", "sync", "time"] }
 url = "2.5"
 html5ever = "0.35"

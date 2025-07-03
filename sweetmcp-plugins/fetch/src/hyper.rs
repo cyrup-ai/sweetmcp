@@ -3,8 +3,12 @@ use std::fmt;
 
 use async_trait::async_trait;
 use base64::Engine;
-use hyper::{Body, Client, Request, Uri};
+use hyper::{Request, Uri};
+use hyper::body::{Body, Bytes};
+use hyper_util::client::legacy::Client;
+use hyper_util::rt::TokioExecutor;
 use hyper_rustls::HttpsConnectorBuilder;
+use http_body_util::{BodyExt, Empty, Full};
 
 use crate::chromiumoxide::{ContentFetcher, FetchResult};
 
@@ -66,17 +70,20 @@ impl HyperFetcher {
         // Create an HTTPS connector with rustls
         let https = HttpsConnectorBuilder::new()
             .with_native_roots()
+            .map_err(|e| FetchError::Other(format!("Failed to load native roots: {}", e)))?
             .https_only()
             .enable_http1()
             .build();
-        let client = Client::builder().build::<_, Body>(https);
+        
+        let client: Client<_, Empty<Bytes>> = Client::builder(TokioExecutor::new())
+            .build(https);
 
         // Build the request
         let request = Request::builder()
             .uri(uri)
             .header("User-Agent", "fetch-hyper/1.0")
             .method("GET")
-            .body(Body::empty())?;
+            .body(Empty::<Bytes>::new())?;
 
         // Send the request
         let response = client.request(request).await?;
@@ -90,11 +97,15 @@ impl HyperFetcher {
         }
 
         // Get the response body
-        let body_bytes = hyper::body::to_bytes(response.into_body()).await?;
-        let body = String::from_utf8(body_bytes.to_vec())
+        let body = response.into_body();
+        let body_bytes = body.collect().await
+            .map_err(|e| FetchError::Other(format!("Failed to collect body: {}", e)))?
+            .to_bytes();
+        
+        let body_string = String::from_utf8(body_bytes.to_vec())
             .map_err(|e| FetchError::Other(format!("Failed to decode response body: {}", e)))?;
 
-        Ok(body)
+        Ok(body_string)
     }
 
     pub fn clean_html(html: &str) -> String {

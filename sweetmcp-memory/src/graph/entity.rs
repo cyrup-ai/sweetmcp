@@ -578,24 +578,38 @@ impl<E: Entity + Clone + 'static> EntityRepository for SurrealEntityRepository<E
     ) -> EntityFuture<Vec<Box<dyn Entity>>> {
         // Clone necessary data for the async block
         let db = self.db.clone();
+        let table_name = self.table_name.clone();
         let entity_type_string = entity_type.to_string();
+        let limit = limit.unwrap_or(100);
+        let offset = offset.unwrap_or(0);
 
         // Return a boxed future
         Box::pin(async move {
-            // Get nodes by type from the database
-            // Note: limit and offset parameters are currently not supported by get_nodes_by_type
-            // They are kept in the signature for API compatibility
-            let mut node_stream = db.get_nodes_by_type(&entity_type_string);
+            // Build query with database-level pagination
+            let query = format!(
+                "SELECT * FROM {} WHERE entity_type = $entity_type LIMIT {} START {}",
+                table_name,
+                limit,
+                offset
+            );
 
-            // Convert the nodes to entities
-            let mut entities = Vec::new();
+            // Create query options with entity_type parameter
+            let mut options = GraphQueryOptions::new();
+            options.filters.insert(
+                "entity_type".to_string(),
+                serde_json::Value::String(entity_type_string),
+            );
+
+            // Execute query with pagination pushed to database
+            let mut results_stream = db.query(&query, Some(options));
+
+            // Collect results directly - no client-side filtering needed
+            let mut entities: Vec<Box<dyn Entity>> = Vec::with_capacity(limit);
             use futures::StreamExt;
-            while let Some(node_result) = node_stream.next().await {
+            while let Some(node_result) = results_stream.next().await {
                 let node = node_result?;
-                match E::from_node(node) {
-                    Ok(entity) => entities.push(Box::new(entity) as Box<dyn Entity>),
-                    Err(e) => return Err(e),
-                }
+                let entity = E::from_node(node)?;
+                entities.push(Box::new(entity) as Box<dyn Entity>);
             }
 
             Ok(entities)

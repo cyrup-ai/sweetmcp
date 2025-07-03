@@ -35,14 +35,19 @@ impl DataImporter {
     }
 
     /// Import data from binary file
-    pub async fn import_binary<T: for<'de> Deserialize<'de>>(&self, path: &Path) -> Result<Vec<T>> {
+    pub async fn import_binary<T>(&self, path: &Path) -> Result<Vec<T>> 
+    where
+        T: for<'de> Deserialize<'de> + bincode::Decode,
+    {
         let mut file = File::open(path)?;
         let mut buffer = Vec::new();
         file.read_to_end(&mut buffer)?;
 
-        let data: Vec<T> = bincode::deserialize(&buffer).map_err(|e| {
-            MigrationError::UnsupportedFormat(format!("Binary decoding failed: {}", e))
-        })?;
+        let data: Vec<T> = bincode::decode_from_slice(&buffer, bincode::config::standard())
+            .map_err(|e| {
+                MigrationError::UnsupportedFormat(format!("Binary decoding failed: {}", e))
+            })?
+            .0;
         Ok(data)
     }
 
@@ -54,7 +59,7 @@ impl DataImporter {
         validator: F,
     ) -> Result<Vec<T>>
     where
-        T: for<'de> Deserialize<'de>,
+        T: for<'de> Deserialize<'de> + bincode::Decode,
         F: Fn(&T) -> Result<()>,
     {
         let data = match format {

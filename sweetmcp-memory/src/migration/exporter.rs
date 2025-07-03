@@ -30,7 +30,10 @@ impl DataExporter {
     }
 
     /// Export data to file
-    pub async fn export_to_file<T: Serialize>(&self, data: &[T], path: &Path) -> Result<()> {
+    pub async fn export_to_file<T>(&self, data: &[T], path: &Path) -> Result<()> 
+    where
+        T: Serialize + bincode::Encode,
+    {
         match self.format {
             ExportFormat::Json => self.export_json(data, path),
             ExportFormat::Csv => self.export_csv(data, path),
@@ -79,8 +82,11 @@ impl DataExporter {
     }
 
     /// Export as binary
-    fn export_binary<T: Serialize>(&self, data: &[T], path: &Path) -> Result<()> {
-        let bytes = bincode::serialize(data).map_err(|e| {
+    fn export_binary<T>(&self, data: &[T], path: &Path) -> Result<()> 
+    where
+        T: Serialize + bincode::Encode,
+    {
+        let bytes = bincode::encode_to_vec(data, bincode::config::standard()).map_err(|e| {
             MigrationError::UnsupportedFormat(format!("Binary encoding failed: {}", e))
         })?;
         let mut file = File::create(path)?;

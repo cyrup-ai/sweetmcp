@@ -34,6 +34,7 @@ pub(crate) fn call(input: CallToolRequest) -> Result<CallToolResult, Error> {
     let args = input.params.arguments.clone().unwrap_or_default();
     match args.get("operation").and_then(|v| v.as_str()).unwrap_or_default() {
         "read" => read_file(input),
+        "read_multiple" => read_multiple_files(input),
         "write" => write_file(input),
         "edit" => edit_file(input),
         "mkdir" => create_dir(input),

@@ -5,6 +5,7 @@ mod macos_helper {
     use std::io::Write;
     use std::path::{Path, PathBuf};
     use std::process::Command;
+    use zip::write::FileOptions;
     // We'll use tauri-bundler after build for the main daemon signing
 
     pub fn build_and_sign_helper() -> Result<(), Box<dyn std::error::Error>> {
@@ -134,7 +135,7 @@ int main(int argc, char *argv[]) {
         if let Ok(cert_path) = env::var("APPLE_CERTIFICATE_PATH") {
             // For local development using the certificate file
             let output = Command::new("security")
-                .args(&["find-certificate", "-c", "Developer ID Application", "-p"])
+                .args(&["find-certificate", "-p", &cert_path])
                 .output()?;
             
             if output.status.success() {
@@ -290,7 +291,7 @@ int main(int argc, char *argv[]) {
         zip: &mut zip::ZipWriter<W>,
         dir: &Path,
         base: &Path,
-        options: &FileOptions,
+        options: &FileOptions<'static, ()>,
     ) -> Result<(), Box<dyn std::error::Error>> {
         for entry in fs::read_dir(dir)? {
             let entry = entry?;
@@ -333,9 +334,8 @@ fn main() {
             let zip_path = format!("{}/SweetMCPHelper.app.zip", out_dir);
             
             // Create empty ZIP
-            use std::io::Write;
             let file = std::fs::File::create(&zip_path).unwrap();
-            let mut zip = zip::ZipWriter::new(file);
+            let zip = zip::ZipWriter::new(file);
             zip.finish().unwrap();
         }
     }
