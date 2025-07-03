@@ -80,7 +80,7 @@ impl EdgeService {
     pub fn rate_limiter(&self) -> Arc<AdvancedRateLimitManager> {
         self.rate_limit_manager.clone()
     }
-    
+
     /// Get a reference to the metric picker for background service setup
     pub fn metric_picker(&self) -> Arc<MetricPicker> {
         self.picker.clone()
@@ -397,9 +397,10 @@ impl ProxyHttp for EdgeService {
             if path == "/health" {
                 let response_body = b"OK";
                 session
-                    .write_response_header(Box::new(
-                        ResponseHeader::build(StatusCode::OK, None)?
-                    ), true)
+                    .write_response_header(
+                        Box::new(ResponseHeader::build(StatusCode::OK, None)?),
+                        true,
+                    )
                     .await?;
                 session
                     .write_response_body(Some(Bytes::from_static(response_body)), true)

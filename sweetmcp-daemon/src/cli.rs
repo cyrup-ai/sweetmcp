@@ -49,15 +49,15 @@ pub enum Cmd {
         /// Path to binary to sign (defaults to current executable)
         #[arg(long)]
         binary: Option<String>,
-        
+
         /// Signing identity (macOS) or certificate (Windows)
         #[arg(long)]
         identity: Option<String>,
-        
+
         /// Verify signature only, don't sign
         #[arg(long)]
         verify: bool,
-        
+
         /// Show sample signing configuration
         #[arg(long)]
         show_config: bool,

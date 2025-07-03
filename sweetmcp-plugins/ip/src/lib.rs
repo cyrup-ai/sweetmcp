@@ -1,7 +1,9 @@
 mod plugin;
 
 use extism_pdk::*;
-use plugin::types::{CallToolRequest, CallToolResult, Content, ContentType, ListToolsResult, ToolDescription};
+use plugin::types::{
+    CallToolRequest, CallToolResult, Content, ContentType, ListToolsResult, ToolDescription,
+};
 use serde_json::json;
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
 
@@ -12,9 +14,9 @@ pub(crate) fn call(input: CallToolRequest) -> Result<CallToolResult, Error> {
         "IP plugin called with args: {:?}",
         input.params.arguments
     );
-    
+
     let args = input.params.arguments.unwrap_or_default();
-    
+
     match input.params.name.as_str() {
         "get_public_ip" => get_public_ip(),
         "validate_ip" => validate_ip(args),
@@ -24,7 +26,10 @@ pub(crate) fn call(input: CallToolRequest) -> Result<CallToolResult, Error> {
         "create_ipv4" => create_ipv4(args),
         "create_ipv6" => create_ipv6(args),
         "cidr_contains" => cidr_contains(args),
-        _ => Err(Error::msg(format!("Unknown IP operation: {}", input.params.name)))
+        _ => Err(Error::msg(format!(
+            "Unknown IP operation: {}",
+            input.params.name
+        ))),
     }
 }
 
@@ -46,10 +51,12 @@ fn get_public_ip() -> Result<CallToolResult, Error> {
 /// Validate IP address format
 fn validate_ip(args: serde_json::Map<String, serde_json::Value>) -> Result<CallToolResult, Error> {
     let ip_str = match args.get("ip") {
-        Some(v) => v.as_str().ok_or_else(|| Error::msg("ip must be a string"))?,
+        Some(v) => v
+            .as_str()
+            .ok_or_else(|| Error::msg("ip must be a string"))?,
         None => return Err(Error::msg("ip is required for validate_ip")),
     };
-    
+
     let result = match ip_str.parse::<IpAddr>() {
         Ok(ip) => {
             let ip_type = match ip {
@@ -61,7 +68,7 @@ fn validate_ip(args: serde_json::Map<String, serde_json::Value>) -> Result<CallT
                 "type": ip_type,
                 "address": ip_str
             })
-        },
+        }
         Err(_) => {
             json!({
                 "valid": false,
@@ -69,7 +76,7 @@ fn validate_ip(args: serde_json::Map<String, serde_json::Value>) -> Result<CallT
             })
         }
     };
-    
+
     Ok(CallToolResult {
         is_error: None,
         content: vec![Content {
@@ -85,13 +92,16 @@ fn validate_ip(args: serde_json::Map<String, serde_json::Value>) -> Result<CallT
 /// Get IP address information
 fn get_ip_info(args: serde_json::Map<String, serde_json::Value>) -> Result<CallToolResult, Error> {
     let ip_str = match args.get("ip") {
-        Some(v) => v.as_str().ok_or_else(|| Error::msg("ip must be a string"))?,
+        Some(v) => v
+            .as_str()
+            .ok_or_else(|| Error::msg("ip must be a string"))?,
         None => return Err(Error::msg("ip is required for ip_info")),
     };
-    
-    let ip = ip_str.parse::<IpAddr>()
+
+    let ip = ip_str
+        .parse::<IpAddr>()
         .map_err(|_| Error::msg("Invalid IP address format"))?;
-    
+
     let info = match ip {
         IpAddr::V4(ipv4) => {
             json!({
@@ -103,7 +113,7 @@ fn get_ip_info(args: serde_json::Map<String, serde_json::Value>) -> Result<CallT
                 "is_broadcast": ipv4.is_broadcast(),
                 "octets": ipv4.octets()
             })
-        },
+        }
         IpAddr::V6(ipv6) => {
             json!({
                 "address": ip_str,
@@ -114,7 +124,7 @@ fn get_ip_info(args: serde_json::Map<String, serde_json::Value>) -> Result<CallT
             })
         }
     };
-    
+
     Ok(CallToolResult {
         is_error: None,
         content: vec![Content {
@@ -128,25 +138,30 @@ fn get_ip_info(args: serde_json::Map<String, serde_json::Value>) -> Result<CallT
 }
 
 /// Check if IP is private
-fn check_private_ip(args: serde_json::Map<String, serde_json::Value>) -> Result<CallToolResult, Error> {
+fn check_private_ip(
+    args: serde_json::Map<String, serde_json::Value>,
+) -> Result<CallToolResult, Error> {
     let ip_str = match args.get("ip") {
-        Some(v) => v.as_str().ok_or_else(|| Error::msg("ip must be a string"))?,
+        Some(v) => v
+            .as_str()
+            .ok_or_else(|| Error::msg("ip must be a string"))?,
         None => return Err(Error::msg("ip is required for is_private")),
     };
-    
-    let ip = ip_str.parse::<IpAddr>()
+
+    let ip = ip_str
+        .parse::<IpAddr>()
         .map_err(|_| Error::msg("Invalid IP address format"))?;
-    
+
     let is_private = match ip {
         IpAddr::V4(ipv4) => ipv4.is_private(),
         IpAddr::V6(_) => false, // IPv6 private determination is more complex
     };
-    
+
     let result = json!({
         "address": ip_str,
         "is_private": is_private
     });
-    
+
     Ok(CallToolResult {
         is_error: None,
         content: vec![Content {
@@ -162,33 +177,39 @@ fn check_private_ip(args: serde_json::Map<String, serde_json::Value>) -> Result<
 /// Convert IP to binary representation
 fn ip_to_binary(args: serde_json::Map<String, serde_json::Value>) -> Result<CallToolResult, Error> {
     let ip_str = match args.get("ip") {
-        Some(v) => v.as_str().ok_or_else(|| Error::msg("ip must be a string"))?,
+        Some(v) => v
+            .as_str()
+            .ok_or_else(|| Error::msg("ip must be a string"))?,
         None => return Err(Error::msg("ip is required for ip_to_binary")),
     };
-    
-    let ip = ip_str.parse::<IpAddr>()
+
+    let ip = ip_str
+        .parse::<IpAddr>()
         .map_err(|_| Error::msg("Invalid IP address format"))?;
-    
+
     let binary_repr = match ip {
         IpAddr::V4(ipv4) => {
             let octets = ipv4.octets();
-            format!("{:08b}.{:08b}.{:08b}.{:08b}", 
-                octets[0], octets[1], octets[2], octets[3])
-        },
+            format!(
+                "{:08b}.{:08b}.{:08b}.{:08b}",
+                octets[0], octets[1], octets[2], octets[3]
+            )
+        }
         IpAddr::V6(ipv6) => {
             let segments = ipv6.segments();
-            segments.iter()
+            segments
+                .iter()
                 .map(|s| format!("{:016b}", s))
                 .collect::<Vec<_>>()
                 .join(":")
         }
     };
-    
+
     let result = json!({
         "address": ip_str,
         "binary": binary_repr
     });
-    
+
     Ok(CallToolResult {
         is_error: None,
         content: vec![Content {
@@ -205,22 +226,25 @@ fn ip_to_binary(args: serde_json::Map<String, serde_json::Value>) -> Result<Call
 fn create_ipv4(args: serde_json::Map<String, serde_json::Value>) -> Result<CallToolResult, Error> {
     let octets = match args.get("octets") {
         Some(v) => {
-            let arr = v.as_array().ok_or_else(|| Error::msg("octets must be an array"))?;
+            let arr = v
+                .as_array()
+                .ok_or_else(|| Error::msg("octets must be an array"))?;
             if arr.len() != 4 {
                 return Err(Error::msg("octets must contain exactly 4 values"));
             }
             let mut octets = [0u8; 4];
             for (i, val) in arr.iter().enumerate() {
-                octets[i] = val.as_u64()
+                octets[i] = val
+                    .as_u64()
                     .ok_or_else(|| Error::msg("octets must be numbers"))?
                     .try_into()
                     .map_err(|_| Error::msg("octets must be valid u8 values (0-255)"))?;
             }
             octets
-        },
+        }
         None => return Err(Error::msg("octets is required for create_ipv4")),
     };
-    
+
     let ipv4 = Ipv4Addr::new(octets[0], octets[1], octets[2], octets[3]);
     let result = json!({
         "address": ipv4.to_string(),
@@ -230,7 +254,7 @@ fn create_ipv4(args: serde_json::Map<String, serde_json::Value>) -> Result<CallT
         "is_multicast": ipv4.is_multicast(),
         "is_broadcast": ipv4.is_broadcast(),
     });
-    
+
     Ok(CallToolResult {
         is_error: None,
         content: vec![Content {
@@ -247,27 +271,36 @@ fn create_ipv4(args: serde_json::Map<String, serde_json::Value>) -> Result<CallT
 fn create_ipv6(args: serde_json::Map<String, serde_json::Value>) -> Result<CallToolResult, Error> {
     let segments = match args.get("segments") {
         Some(v) => {
-            let arr = v.as_array().ok_or_else(|| Error::msg("segments must be an array"))?;
+            let arr = v
+                .as_array()
+                .ok_or_else(|| Error::msg("segments must be an array"))?;
             if arr.len() != 8 {
                 return Err(Error::msg("segments must contain exactly 8 values"));
             }
             let mut segments = [0u16; 8];
             for (i, val) in arr.iter().enumerate() {
-                segments[i] = val.as_u64()
+                segments[i] = val
+                    .as_u64()
                     .ok_or_else(|| Error::msg("segments must be numbers"))?
                     .try_into()
                     .map_err(|_| Error::msg("segments must be valid u16 values (0-65535)"))?;
             }
             segments
-        },
+        }
         None => return Err(Error::msg("segments is required for create_ipv6")),
     };
-    
+
     let ipv6 = Ipv6Addr::new(
-        segments[0], segments[1], segments[2], segments[3],
-        segments[4], segments[5], segments[6], segments[7]
+        segments[0],
+        segments[1],
+        segments[2],
+        segments[3],
+        segments[4],
+        segments[5],
+        segments[6],
+        segments[7],
     );
-    
+
     let result = json!({
         "address": ipv6.to_string(),
         "segments": segments,
@@ -275,7 +308,7 @@ fn create_ipv6(args: serde_json::Map<String, serde_json::Value>) -> Result<CallT
         "is_multicast": ipv6.is_multicast(),
         "is_unspecified": ipv6.is_unspecified(),
     });
-    
+
     Ok(CallToolResult {
         is_error: None,
         content: vec![Content {
@@ -289,32 +322,41 @@ fn create_ipv6(args: serde_json::Map<String, serde_json::Value>) -> Result<CallT
 }
 
 /// Check if an IP is within a CIDR range
-fn cidr_contains(args: serde_json::Map<String, serde_json::Value>) -> Result<CallToolResult, Error> {
+fn cidr_contains(
+    args: serde_json::Map<String, serde_json::Value>,
+) -> Result<CallToolResult, Error> {
     let ip_str = match args.get("ip") {
-        Some(v) => v.as_str().ok_or_else(|| Error::msg("ip must be a string"))?,
+        Some(v) => v
+            .as_str()
+            .ok_or_else(|| Error::msg("ip must be a string"))?,
         None => return Err(Error::msg("ip is required for cidr_contains")),
     };
-    
+
     let cidr_str = match args.get("cidr") {
-        Some(v) => v.as_str().ok_or_else(|| Error::msg("cidr must be a string"))?,
+        Some(v) => v
+            .as_str()
+            .ok_or_else(|| Error::msg("cidr must be a string"))?,
         None => return Err(Error::msg("cidr is required for cidr_contains")),
     };
-    
-    let ip = ip_str.parse::<IpAddr>()
+
+    let ip = ip_str
+        .parse::<IpAddr>()
         .map_err(|_| Error::msg("Invalid IP address format"))?;
-    
+
     // Parse CIDR notation (e.g., "192.168.1.0/24")
     let parts: Vec<&str> = cidr_str.split('/').collect();
     if parts.len() != 2 {
         return Err(Error::msg("Invalid CIDR notation"));
     }
-    
-    let base_ip = parts[0].parse::<IpAddr>()
+
+    let base_ip = parts[0]
+        .parse::<IpAddr>()
         .map_err(|_| Error::msg("Invalid base IP in CIDR"))?;
-    
-    let prefix_len: u8 = parts[1].parse()
+
+    let prefix_len: u8 = parts[1]
+        .parse()
         .map_err(|_| Error::msg("Invalid prefix length in CIDR"))?;
-    
+
     let contains = match (base_ip, ip) {
         (IpAddr::V4(base), IpAddr::V4(test)) => {
             if prefix_len > 32 {
@@ -322,30 +364,34 @@ fn cidr_contains(args: serde_json::Map<String, serde_json::Value>) -> Result<Cal
             }
             let base_octets = base.octets();
             let test_octets = test.octets();
-            let mask = if prefix_len == 0 { 0 } else { !((1u32 << (32 - prefix_len)) - 1) };
-            
+            let mask = if prefix_len == 0 {
+                0
+            } else {
+                !((1u32 << (32 - prefix_len)) - 1)
+            };
+
             let base_u32 = u32::from_be_bytes(base_octets);
             let test_u32 = u32::from_be_bytes(test_octets);
-            
+
             (base_u32 & mask) == (test_u32 & mask)
-        },
+        }
         (IpAddr::V6(base), IpAddr::V6(test)) => {
             if prefix_len > 128 {
                 return Err(Error::msg("IPv6 prefix length must be 0-128"));
             }
             let base_segments = base.segments();
             let test_segments = test.segments();
-            
+
             let full_segments = (prefix_len / 16) as usize;
             let partial_bits = prefix_len % 16;
-            
+
             // Check full segments
             for i in 0..full_segments {
                 if base_segments[i] != test_segments[i] {
                     return Ok(make_result(false, ip_str, cidr_str));
                 }
             }
-            
+
             // Check partial segment
             if partial_bits > 0 && full_segments < 8 {
                 let mask = !((1u16 << (16 - partial_bits)) - 1);
@@ -353,12 +399,12 @@ fn cidr_contains(args: serde_json::Map<String, serde_json::Value>) -> Result<Cal
                     return Ok(make_result(false, ip_str, cidr_str));
                 }
             }
-            
+
             true
-        },
+        }
         _ => false, // IPv4 vs IPv6 mismatch
     };
-    
+
     Ok(make_result(contains, ip_str, cidr_str))
 }
 
@@ -368,7 +414,7 @@ fn make_result(contains: bool, ip: &str, cidr: &str) -> CallToolResult {
         "cidr": cidr,
         "contains": contains
     });
-    
+
     CallToolResult {
         is_error: None,
         content: vec![Content {

@@ -13,22 +13,22 @@ use std::path::PathBuf;
 pub trait ClientConfigPlugin: Send + Sync {
     /// Unique identifier (e.g., "claude-desktop", "windsurf", "cursor")
     fn client_id(&self) -> &str;
-    
+
     /// Human-readable name (e.g., "Claude Desktop")
     fn client_name(&self) -> &str;
-    
+
     /// Get all directories to watch for this client
     fn watch_paths(&self) -> Vec<PathBuf>;
-    
+
     /// Get the config file path(s) for this client
     fn config_paths(&self) -> Vec<ConfigPath>;
-    
+
     /// Check if config indicates client is installed
     fn is_installed(&self, path: &PathBuf) -> bool;
-    
+
     /// Inject SweetMCP into existing config
     fn inject_sweetmcp(&self, config_content: &str, format: ConfigFormat) -> Result<String>;
-    
+
     /// Get the default config format for this client
     fn config_format(&self) -> ConfigFormat;
 }
@@ -60,13 +60,13 @@ impl Platform {
     pub fn current() -> Self {
         #[cfg(target_os = "windows")]
         return Platform::Windows;
-        
+
         #[cfg(target_os = "macos")]
         return Platform::MacOS;
-        
+
         #[cfg(target_os = "linux")]
         return Platform::Linux;
-        
+
         #[cfg(not(any(target_os = "windows", target_os = "macos", target_os = "linux")))]
         return Platform::All;
     }
@@ -107,4 +107,3 @@ impl Default for SweetMCPHttpConfig {
         }
     }
 }
-

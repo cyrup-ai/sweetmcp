@@ -19,21 +19,21 @@ impl AutoConfigService {
             bus,
         }
     }
-    
+
     pub fn run(self, cmd_rx: Receiver<Cmd>) -> Result<()> {
         info!("🍯 Starting MCP client auto-configuration service");
-        
+
         // Create tokio runtime for the watcher
         let rt = tokio::runtime::Runtime::new()?;
-        
+
         // Create the watcher with all client plugins
         let clients = all_clients();
         let watcher = AutoConfigWatcher::new(clients)?;
-        
+
         // Spawn the watcher task
         let watcher_handle = rt.spawn({
             let bus = self.bus.clone();
-            
+
             async move {
                 // Notify daemon we're starting
                 let _ = bus.send(Evt::State {
@@ -42,7 +42,7 @@ impl AutoConfigService {
                     ts: chrono::Utc::now(),
                     pid: Some(std::process::id()),
                 });
-                
+
                 if let Err(e) = watcher.run().await {
                     error!("Auto-config watcher failed: {}", e);
                     let _ = bus.send(Evt::Fatal {
@@ -53,7 +53,7 @@ impl AutoConfigService {
                 }
             }
         });
-        
+
         // Handle control commands
         loop {
             match cmd_rx.recv()? {
@@ -77,7 +77,7 @@ impl AutoConfigService {
                 _ => {}
             }
         }
-        
+
         Ok(())
     }
 }
@@ -85,13 +85,13 @@ impl AutoConfigService {
 /// Spawn the auto-configuration service thread
 pub fn spawn_autoconfig(def: ServiceDefinition, bus: Sender<Evt>) -> Sender<Cmd> {
     let (cmd_tx, cmd_rx) = crossbeam_channel::bounded(16);
-    
+
     thread::spawn(move || {
         let service = AutoConfigService::new(def, bus);
         if let Err(e) = service.run(cmd_rx) {
             error!("Auto-config service error: {}", e);
         }
     });
-    
+
     cmd_tx
 }

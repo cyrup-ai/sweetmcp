@@ -30,7 +30,7 @@ use tokio::sync::mpsc;
 
 fn main() {
     env_logger::init();
-    
+
     if let Err(e) = run_server() {
         eprintln!("🚫 SweetMCP Server failed to start: {}", e);
         std::process::exit(1);
@@ -68,8 +68,13 @@ fn run_server() -> Result<()> {
         .unwrap_or(8443);
 
     // Create background services
-    let mcp_bridge = background_service("mcp-bridge", McpBridgeService { rx: Some(bridge_rx) });
-    
+    let mcp_bridge = background_service(
+        "mcp-bridge",
+        McpBridgeService {
+            rx: Some(bridge_rx),
+        },
+    );
+
     // Create discovery services based on configuration
     if let Some(service_name) = dns_discovery::should_use_dns_discovery() {
         let dns_discovery = dns_discovery::DnsDiscovery::new(
@@ -77,26 +82,35 @@ fn run_server() -> Result<()> {
             peer_registry.clone(),
             None, // Use default DoH servers
         );
-        let dns_service = background_service("dns-discovery", DnsDiscoveryService {
-            service_name,
-            discovery: dns_discovery,
-        });
+        let dns_service = background_service(
+            "dns-discovery",
+            DnsDiscoveryService {
+                service_name,
+                discovery: dns_discovery,
+            },
+        );
         server.add_service(dns_service);
     } else {
         // Fallback: mDNS for local network discovery
         let mdns_discovery = mdns_discovery::MdnsDiscovery::new(peer_registry.clone(), local_port);
-        let mdns_service = background_service("mdns-discovery", MdnsDiscoveryService {
-            discovery: mdns_discovery,
-        });
+        let mdns_service = background_service(
+            "mdns-discovery",
+            MdnsDiscoveryService {
+                discovery: mdns_discovery,
+            },
+        );
         server.add_service(mdns_service);
     }
 
     // Always start HTTP-based peer exchange for mesh formation
     let discovery_service = peer_discovery::DiscoveryService::new(peer_registry.clone());
-    let peer_service = background_service("peer-discovery", PeerDiscoveryService {
-        service: discovery_service,
-    });
-    
+    let peer_service = background_service(
+        "peer-discovery",
+        PeerDiscoveryService {
+            service: discovery_service,
+        },
+    );
+
     // Add background services
     server.add_service(mcp_bridge);
     server.add_service(peer_service);
@@ -104,19 +118,25 @@ fn run_server() -> Result<()> {
     // Create HTTP proxy service
     let edge_service =
         edge::EdgeService::new(cfg.clone(), bridge_tx.clone(), peer_registry.clone());
-    
+
     // Add rate limit cleanup service
-    let rate_limit_service = background_service("rate-limit-cleanup", RateLimitCleanupService {
-        rate_limiter: edge_service.rate_limiter(),
-    });
+    let rate_limit_service = background_service(
+        "rate-limit-cleanup",
+        RateLimitCleanupService {
+            rate_limiter: edge_service.rate_limiter(),
+        },
+    );
     server.add_service(rate_limit_service);
-    
+
     // Add metrics collector service
-    let metrics_service = background_service("metrics-collector", MetricsCollectorService {
-        metric_picker: edge_service.metric_picker(),
-    });
+    let metrics_service = background_service(
+        "metrics-collector",
+        MetricsCollectorService {
+            metric_picker: edge_service.metric_picker(),
+        },
+    );
     server.add_service(metrics_service);
-    
+
     let mut proxy_service = pingora_proxy::http_proxy_service(&server.configuration, edge_service);
 
     // Add TCP listener
@@ -131,14 +151,14 @@ fn run_server() -> Result<()> {
             log::info!("Created UDS directory {:?}", parent);
         }
     }
-    
+
     // Remove old socket file if it exists
     if std::path::Path::new(&cfg.uds_path).exists() {
         if let Err(e) = std::fs::remove_file(&cfg.uds_path) {
             log::warn!("Failed to remove old socket file: {}", e);
         }
     }
-    
+
     proxy_service.add_uds(&cfg.uds_path, None);
 
     // Add the proxy service to server
@@ -160,7 +180,6 @@ fn run_server() -> Result<()> {
     server.run_forever();
 }
 
-
 fn init_otel() -> Result<PrometheusExporter> {
     let exporter = opentelemetry_prometheus::exporter().build()?;
 
@@ -173,8 +192,8 @@ fn init_otel() -> Result<PrometheusExporter> {
 // Background service implementations
 use pingora::server::ShutdownWatch;
 use pingora::services::background::{background_service, BackgroundService};
-use std::pin::Pin;
 use std::future::Future;
+use std::pin::Pin;
 use std::time::Duration;
 
 struct McpBridgeService {
@@ -191,11 +210,11 @@ impl BackgroundService for McpBridgeService {
         Self: 'async_trait,
     {
         // This is safe because we only call start once
-        let rx = unsafe { 
+        let rx = unsafe {
             let this = self as *const Self as *mut Self;
             (*this).rx.take().expect("start called twice")
         };
-        
+
         Box::pin(async move {
             log::info!("🔌 Starting MCP bridge");
             tokio::select! {
@@ -226,10 +245,9 @@ impl BackgroundService for DnsDiscoveryService {
     {
         // We need to move the discovery out of self
         let service_name = self.service_name.clone();
-        let discovery = unsafe {
-            std::ptr::read(&self.discovery as *const dns_discovery::DnsDiscovery)
-        };
-        
+        let discovery =
+            unsafe { std::ptr::read(&self.discovery as *const dns_discovery::DnsDiscovery) };
+
         Box::pin(async move {
             log::info!("🌍 Starting DNS discovery for: {}", service_name);
             tokio::select! {
@@ -258,10 +276,9 @@ impl BackgroundService for MdnsDiscoveryService {
         Self: 'async_trait,
     {
         // We need to move the discovery out of self
-        let discovery = unsafe {
-            std::ptr::read(&self.discovery as *const mdns_discovery::MdnsDiscovery)
-        };
-        
+        let discovery =
+            unsafe { std::ptr::read(&self.discovery as *const mdns_discovery::MdnsDiscovery) };
+
         Box::pin(async move {
             log::info!("🔍 Starting mDNS local discovery");
             tokio::select! {
@@ -290,10 +307,9 @@ impl BackgroundService for PeerDiscoveryService {
         Self: 'async_trait,
     {
         // We need to move the service out of self
-        let service = unsafe {
-            std::ptr::read(&self.service as *const peer_discovery::DiscoveryService)
-        };
-        
+        let service =
+            unsafe { std::ptr::read(&self.service as *const peer_discovery::DiscoveryService) };
+
         Box::pin(async move {
             log::info!("🔄 Starting HTTP peer exchange");
             tokio::select! {
@@ -322,11 +338,11 @@ impl BackgroundService for RateLimitCleanupService {
         Self: 'async_trait,
     {
         let rate_limiter = self.rate_limiter.clone();
-        
+
         Box::pin(async move {
             log::info!("🧹 Starting rate limit cleanup service");
             let mut cleanup_interval = tokio::time::interval(Duration::from_secs(300)); // 5 minutes
-            
+
             loop {
                 tokio::select! {
                     _ = cleanup_interval.tick() => {
@@ -356,16 +372,16 @@ impl BackgroundService for MetricsCollectorService {
         Self: 'async_trait,
     {
         let metric_picker = self.metric_picker.clone();
-        
+
         Box::pin(async move {
             log::info!("📊 Starting metrics collector service");
             let client = reqwest::Client::builder()
                 .timeout(Duration::from_secs(2))
                 .build()
                 .unwrap_or_else(|_| reqwest::Client::new());
-                
+
             let mut scrape_interval = tokio::time::interval(Duration::from_secs(5));
-            
+
             loop {
                 tokio::select! {
                     _ = scrape_interval.tick() => {
@@ -373,7 +389,7 @@ impl BackgroundService for MetricsCollectorService {
                         for (idx, url) in targets {
                             let client_clone = client.clone();
                             let picker_clone = metric_picker.clone();
-                            
+
                             // Spawn individual metric fetches to run concurrently
                             tokio::spawn(async move {
                                 if let Ok(response) = client_clone.get(&url).send().await {

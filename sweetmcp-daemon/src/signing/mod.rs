@@ -1,18 +1,18 @@
 //! Code signing module for sweetmcp-daemon
-//! 
+//!
 //! Provides cross-platform code signing functionality using Tauri's bundler
 //! infrastructure for production-ready signing on macOS, Windows, and Linux.
 
-use std::path::{Path, PathBuf};
-use std::env;
 use anyhow::{Context, Result};
+use std::env;
+use std::path::{Path, PathBuf};
 
+#[cfg(target_os = "linux")]
+mod linux;
 #[cfg(target_os = "macos")]
 mod macos;
 #[cfg(target_os = "windows")]
 mod windows;
-#[cfg(target_os = "linux")]
-mod linux;
 
 pub mod config;
 
@@ -63,7 +63,7 @@ pub enum PlatformConfig {
 impl Default for SigningConfig {
     fn default() -> Self {
         let binary_path = env::current_exe().unwrap_or_else(|_| PathBuf::from("sweetmcp-daemon"));
-        
+
         Self {
             binary_path: binary_path.clone(),
             output_path: binary_path,
@@ -81,26 +81,25 @@ impl SigningConfig {
             platform: Self::default_platform_config(),
         }
     }
-    
+
     /// Load configuration from environment and config files
     pub fn load() -> Result<Self> {
         config::load_config()
     }
-    
+
     /// Get default platform configuration
     fn default_platform_config() -> PlatformConfig {
         #[cfg(target_os = "macos")]
         {
             PlatformConfig::MacOS {
-                identity: env::var("APPLE_SIGNING_IDENTITY")
-                    .unwrap_or_else(|_| "-".to_string()),
+                identity: env::var("APPLE_SIGNING_IDENTITY").unwrap_or_else(|_| "-".to_string()),
                 team_id: env::var("APPLE_TEAM_ID").ok(),
                 apple_id: env::var("APPLE_ID").ok(),
                 apple_password: env::var("APPLE_PASSWORD").ok(),
                 entitlements: None,
             }
         }
-        
+
         #[cfg(target_os = "windows")]
         {
             PlatformConfig::Windows {
@@ -113,7 +112,7 @@ impl SigningConfig {
                 digest_algorithm: "sha256".to_string(),
             }
         }
-        
+
         #[cfg(target_os = "linux")]
         {
             PlatformConfig::Linux {
@@ -121,7 +120,7 @@ impl SigningConfig {
                 detached: true,
             }
         }
-        
+
         #[cfg(not(any(target_os = "macos", target_os = "windows", target_os = "linux")))]
         {
             panic!("Unsupported platform for signing");
@@ -134,13 +133,13 @@ pub fn sign_binary(config: &SigningConfig) -> Result<()> {
     match &config.platform {
         #[cfg(target_os = "macos")]
         PlatformConfig::MacOS { .. } => macos::sign(config),
-        
+
         #[cfg(target_os = "windows")]
         PlatformConfig::Windows { .. } => windows::sign(config),
-        
+
         #[cfg(target_os = "linux")]
         PlatformConfig::Linux { .. } => linux::sign(config),
-        
+
         #[allow(unreachable_patterns)]
         _ => Err(anyhow::anyhow!("Platform signing not implemented")),
     }
@@ -150,13 +149,13 @@ pub fn sign_binary(config: &SigningConfig) -> Result<()> {
 pub fn verify_signature(binary_path: &Path) -> Result<bool> {
     #[cfg(target_os = "macos")]
     return macos::verify(binary_path);
-    
+
     #[cfg(target_os = "windows")]
     return windows::verify(binary_path);
-    
+
     #[cfg(target_os = "linux")]
     return linux::verify(binary_path);
-    
+
     #[cfg(not(any(target_os = "macos", target_os = "windows", target_os = "linux")))]
     return Ok(false);
 }
@@ -174,19 +173,19 @@ pub fn is_signing_available() -> bool {
         // Check if codesign is available
         which::which("codesign").is_ok()
     }
-    
+
     #[cfg(target_os = "windows")]
     {
         // Check if signtool is available
         which::which("signtool").is_ok()
     }
-    
+
     #[cfg(target_os = "linux")]
     {
         // Check if gpg is available
         which::which("gpg").is_ok() || which::which("gpg2").is_ok()
     }
-    
+
     #[cfg(not(any(target_os = "macos", target_os = "windows", target_os = "linux")))]
     {
         false
@@ -196,13 +195,13 @@ pub fn is_signing_available() -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn test_default_config() {
         let config = SigningConfig::default();
         assert!(!config.binary_path.as_os_str().is_empty());
     }
-    
+
     #[test]
     fn test_signing_available() {
         // This should at least not panic

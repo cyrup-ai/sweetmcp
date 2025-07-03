@@ -1,5 +1,5 @@
-use crate::{ClientConfigPlugin, ConfigFormat, ConfigPath, Platform};
 use crate::config::ConfigMerger;
+use crate::{ClientConfigPlugin, ConfigFormat, ConfigPath, Platform};
 use anyhow::Result;
 use std::path::PathBuf;
 
@@ -9,14 +9,14 @@ impl ClientConfigPlugin for ZedPlugin {
     fn client_id(&self) -> &str {
         "zed"
     }
-    
+
     fn client_name(&self) -> &str {
         "Zed"
     }
-    
+
     fn watch_paths(&self) -> Vec<PathBuf> {
         let mut paths = Vec::new();
-        
+
         match Platform::current() {
             Platform::MacOS => {
                 if let Some(base_dirs) = directories::BaseDirs::new() {
@@ -34,24 +34,29 @@ impl ClientConfigPlugin for ZedPlugin {
                 // Zed doesn't support Windows yet
             }
         }
-        
+
         paths
     }
-    
+
     fn config_paths(&self) -> Vec<ConfigPath> {
         let mut configs = Vec::new();
-        
+
         match Platform::current() {
             Platform::MacOS => {
                 if let Some(base_dirs) = directories::BaseDirs::new() {
                     configs.push(ConfigPath {
-                        path: base_dirs.home_dir().join(".config").join("zed").join("settings.json"),
+                        path: base_dirs
+                            .home_dir()
+                            .join(".config")
+                            .join("zed")
+                            .join("settings.json"),
                         format: ConfigFormat::Json,
                         platform: Platform::MacOS,
                     });
-                    
+
                     configs.push(ConfigPath {
-                        path: base_dirs.home_dir()
+                        path: base_dirs
+                            .home_dir()
                             .join("Library/Application Support/Zed")
                             .join("settings.json"),
                         format: ConfigFormat::Json,
@@ -70,19 +75,19 @@ impl ClientConfigPlugin for ZedPlugin {
             }
             _ => {}
         }
-        
+
         configs
     }
-    
+
     fn is_installed(&self, path: &PathBuf) -> bool {
         path.exists() && path.is_dir()
     }
-    
+
     fn inject_sweetmcp(&self, config_content: &str, format: ConfigFormat) -> Result<String> {
         let merger = ConfigMerger::new();
         merger.merge(config_content, format)
     }
-    
+
     fn config_format(&self) -> ConfigFormat {
         ConfigFormat::Json
     }

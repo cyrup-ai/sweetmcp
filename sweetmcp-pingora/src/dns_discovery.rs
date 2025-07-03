@@ -39,7 +39,7 @@ impl DnsDiscovery {
     pub fn new(service_name: String, registry: PeerRegistry, _doh_server: Option<&str>) -> Self {
         // NOTE: Temporarily disabled due to hickory-resolver API compatibility issues
         warn!("DNS discovery is temporarily disabled due to hickory-resolver API compatibility");
-        
+
         Self {
             // resolver,  // Temporarily disabled
             service_name,
@@ -63,12 +63,18 @@ impl DnsDiscovery {
     }
 
     async fn discover_peers(&self) {
-        debug!("DNS discovery is temporarily disabled - skipping lookup for: {}", self.service_name);
-        
+        debug!(
+            "DNS discovery is temporarily disabled - skipping lookup for: {}",
+            self.service_name
+        );
+
         // NOTE: Temporarily disabled due to hickory-resolver API compatibility issues
         // When re-enabled, this will perform DNS SRV lookups and populate the peer registry
-        
-        warn!("DNS discovery temporarily disabled - no peers discovered for {}", self.service_name);
+
+        warn!(
+            "DNS discovery temporarily disabled - no peers discovered for {}",
+            self.service_name
+        );
     }
 }
 

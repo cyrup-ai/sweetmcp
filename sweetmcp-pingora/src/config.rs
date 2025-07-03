@@ -1,9 +1,9 @@
 //! Configuration management for SweetMCP Server
 
 use anyhow::{Context, Result};
+use rand::Rng;
 use serde::{Deserialize, Serialize};
 use std::{env, sync::Arc, time::Duration};
-use rand::Rng;
 
 /// Main configuration structure for SweetMCP Server
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -71,24 +71,26 @@ impl Config {
             Err(_) => {
                 // Check if in development mode
                 let is_dev_mode = cfg!(debug_assertions) || env::var("SWEETMCP_DEV_MODE").is_ok();
-                
+
                 if is_dev_mode {
                     // Generate random 32 bytes
                     let mut rng = rand::rng();
                     let mut secret_bytes = [0u8; 32];
                     rng.fill(&mut secret_bytes);
                     let generated_secret = base64_url::encode(&secret_bytes);
-                    
+
                     // Print warning in dev mode only
                     eprintln!();
                     eprintln!("⚠️  Development Mode: Auto-generated JWT secret");
                     eprintln!("   SWEETMCP_JWT_SECRET={}", generated_secret);
                     eprintln!("   For production, set this environment variable explicitly!");
                     eprintln!();
-                    
+
                     generated_secret
                 } else {
-                    return Err(anyhow::anyhow!("SWEETMCP_JWT_SECRET environment variable is required"));
+                    return Err(anyhow::anyhow!(
+                        "SWEETMCP_JWT_SECRET environment variable is required"
+                    ));
                 }
             }
         };
@@ -121,11 +123,10 @@ impl Config {
         let tcp_bind = env::var("SWEETMCP_TCP_BIND").unwrap_or_else(|_| "0.0.0.0:8443".to_string());
 
         let uds_path = env::var("SWEETMCP_UDS_PATH").unwrap_or_else(|_| {
-            let xdg_config = env::var("XDG_CONFIG_HOME")
-                .unwrap_or_else(|_| {
-                    let home = env::var("HOME").unwrap_or_else(|_| "/tmp".to_string());
-                    format!("{}/.config", home)
-                });
+            let xdg_config = env::var("XDG_CONFIG_HOME").unwrap_or_else(|_| {
+                let home = env::var("HOME").unwrap_or_else(|_| "/tmp".to_string());
+                format!("{}/.config", home)
+            });
             format!("{}/sweetmcp/sugora.sock", xdg_config)
         });
 

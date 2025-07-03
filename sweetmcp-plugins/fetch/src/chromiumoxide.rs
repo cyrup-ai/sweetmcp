@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use base64::Engine;
-use chromiumoxide::{Browser, BrowserConfig, Page};
 use chromiumoxide::handler::viewport::Viewport;
+use chromiumoxide::{Browser, BrowserConfig, Page};
 use futures::StreamExt;
 use std::error::Error as StdError;
 use std::fmt;
@@ -38,7 +38,10 @@ pub struct FetchResult {
 
 #[async_trait]
 pub trait ContentFetcher {
-    async fn fetch_content(&self, url: &str) -> Result<FetchResult, Box<dyn StdError + Send + Sync>>;
+    async fn fetch_content(
+        &self,
+        url: &str,
+    ) -> Result<FetchResult, Box<dyn StdError + Send + Sync>>;
 }
 
 pub struct ChromiumFetcher;
@@ -54,16 +57,18 @@ impl ChromiumFetcher {
             is_landscape: false,
             has_touch: false,
         };
-        
+
         let config = BrowserConfig::builder()
             .viewport(viewport)
             .build()
-            .map_err(|e| ChromiumFetchError::Browser(format!("Failed to build browser config: {}", e)))?;
+            .map_err(|e| {
+                ChromiumFetchError::Browser(format!("Failed to build browser config: {}", e))
+            })?;
 
         let (browser, mut handler) = Browser::launch(config)
             .await
             .map_err(|e| ChromiumFetchError::Browser(format!("Failed to launch browser: {}", e)))?;
-        
+
         // Spawn the handler
         tokio::spawn(async move {
             while let Some(event) = handler.next().await {
@@ -79,12 +84,11 @@ impl ChromiumFetcher {
     // Take a screenshot of the page
     async fn take_screenshot(page: &Page) -> Result<String, ChromiumFetchError> {
         use chromiumoxide::cdp::browser_protocol::page::CaptureScreenshotParams;
-        
+
         let screenshot_params = CaptureScreenshotParams::default();
-        let screenshot_data = page
-            .screenshot(screenshot_params)
-            .await
-            .map_err(|e| ChromiumFetchError::Screenshot(format!("Failed to take screenshot: {}", e)))?;
+        let screenshot_data = page.screenshot(screenshot_params).await.map_err(|e| {
+            ChromiumFetchError::Screenshot(format!("Failed to take screenshot: {}", e))
+        })?;
 
         // Convert to base64
         let screenshot_base64 = base64::engine::general_purpose::STANDARD.encode(&screenshot_data);
@@ -119,7 +123,9 @@ impl ChromiumFetcher {
             .await
             .map_err(|e| ChromiumFetchError::Content(format!("Failed to get page content: {}", e)))?
             .into_value::<String>()
-            .map_err(|e| ChromiumFetchError::Content(format!("Failed to parse page content: {}", e)))?;
+            .map_err(|e| {
+                ChromiumFetchError::Content(format!("Failed to parse page content: {}", e))
+            })?;
 
         Ok(content)
     }
@@ -127,28 +133,34 @@ impl ChromiumFetcher {
 
 #[async_trait]
 impl ContentFetcher for ChromiumFetcher {
-    async fn fetch_content(&self, url: &str) -> Result<FetchResult, Box<dyn StdError + Send + Sync>> {
+    async fn fetch_content(
+        &self,
+        url: &str,
+    ) -> Result<FetchResult, Box<dyn StdError + Send + Sync>> {
         // Launch browser
         let mut browser = Self::create_browser().await?;
 
         // Create a new page
-        let page = browser.new_page("")
+        let page = browser
+            .new_page("")
             .await
             .map_err(|e| ChromiumFetchError::Browser(format!("Failed to create page: {}", e)))?;
 
         // Navigate to the URL with a timeout
-        let navigation_result = tokio::time::timeout(
-            Duration::from_secs(30),
-            page.goto(url),
-        ).await;
+        let navigation_result = tokio::time::timeout(Duration::from_secs(30), page.goto(url)).await;
 
         // Check for timeout or navigation error
         match navigation_result {
             Ok(result) => {
-                result.map_err(|e| ChromiumFetchError::Navigation(format!("Failed to navigate to URL: {}", e)))?;
-            },
+                result.map_err(|e| {
+                    ChromiumFetchError::Navigation(format!("Failed to navigate to URL: {}", e))
+                })?;
+            }
             Err(_) => {
-                return Err(Box::new(ChromiumFetchError::Timeout(format!("Navigation to {} timed out ", url))));
+                return Err(Box::new(ChromiumFetchError::Timeout(format!(
+                    "Navigation to {} timed out ",
+                    url
+                ))));
             }
         }
 
@@ -165,7 +177,9 @@ impl ContentFetcher for ChromiumFetcher {
         let content_type = "text/html".to_string();
 
         // Close browser
-        browser.close().await
+        browser
+            .close()
+            .await
             .map_err(|e| ChromiumFetchError::Browser(e.to_string()))?;
 
         Ok(FetchResult {

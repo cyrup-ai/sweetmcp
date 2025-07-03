@@ -1,14 +1,7 @@
 mod plugin;
 
-use rustpython_vm::{
-    self as vm, Settings,
-    scope::Scope,
-};
-use std::{
-    cell::RefCell,
-    collections::HashMap,
-    rc::Rc,
-};
+use rustpython_vm::{self as vm, Settings, scope::Scope};
+use std::{cell::RefCell, collections::HashMap, rc::Rc};
 
 use extism_pdk::*;
 use json::Value;
@@ -27,7 +20,7 @@ impl StoredVirtualMachine {
         let mut scope = None;
         let mut settings = Settings::default();
         settings.allow_external_library = false;
-        
+
         let interp = vm::Interpreter::with_init(settings, |vm| {
             scope = Some(vm.new_scope_with_builtins());
         });
@@ -74,7 +67,7 @@ fn eval_python(input: CallToolRequest) -> Result<CallToolResult, Error> {
     let args = input.params.arguments.unwrap_or_default();
     if let Some(Value::String(code)) = args.get("code") {
         let stored_vm = get_or_create_vm("eval_python");
-        
+
         let result = stored_vm.interp.enter(|vm| {
             match vm
                 .compile(code, vm::compiler::Mode::Single, "<eval>".to_owned())
@@ -83,33 +76,34 @@ fn eval_python(input: CallToolRequest) -> Result<CallToolResult, Error> {
             {
                 Ok(output) => {
                     if !vm.is_none(&output) {
-                        stored_vm.scope.globals.set_item("last", output.clone(), vm)?;
-                        
+                        stored_vm
+                            .scope
+                            .globals
+                            .set_item("last", output.clone(), vm)?;
+
                         match output.str(vm) {
                             Ok(s) => Ok(s.to_string()),
-                            Err(e) => Err(e)
+                            Err(e) => Err(e),
                         }
                     } else {
                         Ok("None".to_string())
                     }
-                },
-                Err(exc) => Err(exc)
+                }
+                Err(exc) => Err(exc),
             }
         });
 
         match result {
-            Ok(output) => {
-                Ok(CallToolResult {
-                    is_error: None,
-                    content: vec![Content {
-                        annotations: None,
-                        text: Some(output),
-                        mime_type: Some("text/plain".to_string()),
-                        r#type: ContentType::Text,
-                        data: None,
-                    }],
-                })
-            },
+            Ok(output) => Ok(CallToolResult {
+                is_error: None,
+                content: vec![Content {
+                    annotations: None,
+                    text: Some(output),
+                    mime_type: Some("text/plain".to_string()),
+                    r#type: ContentType::Text,
+                    data: None,
+                }],
+            }),
             Err(exc) => {
                 let mut error_msg = String::new();
                 stored_vm.interp.enter(|vm| {

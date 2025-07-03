@@ -20,7 +20,7 @@ use std::path::{Path, PathBuf};
 
 fn main() {
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
-    
+
     #[cfg(feature = "runtime")]
     {
         let rt = tokio::runtime::Runtime::new().expect("Failed to create Tokio runtime");
@@ -29,7 +29,7 @@ fn main() {
             std::process::exit(1);
         }
     }
-    
+
     #[cfg(not(feature = "runtime"))]
     {
         if let Err(e) = real_main_sync() {
@@ -59,9 +59,12 @@ async fn real_main() -> Result<()> {
             identity,
         } => installer::install(dry_run, sign, identity).await,
         cli::Cmd::Uninstall { dry_run } => installer::uninstall(dry_run),
-        cli::Cmd::Sign { binary, identity, verify, show_config } => {
-            handle_sign_command(binary, identity, verify, show_config).await
-        },
+        cli::Cmd::Sign {
+            binary,
+            identity,
+            verify,
+            show_config,
+        } => handle_sign_command(binary, identity, verify, show_config).await,
     }
 }
 
@@ -86,12 +89,12 @@ fn real_main_sync() -> Result<()> {
         } => {
             error!("Install command requires async runtime. Enable 'runtime' feature.");
             std::process::exit(1);
-        },
+        }
         cli::Cmd::Uninstall { dry_run } => installer::uninstall(dry_run),
         cli::Cmd::Sign { .. } => {
             error!("Sign command requires async runtime. Enable 'runtime' feature.");
             std::process::exit(1);
-        },
+        }
     }
 }
 
@@ -147,13 +150,13 @@ async fn handle_sign_command(
         println!("Sample signing configuration:\n\n{}", sample);
         return Ok(());
     }
-    
+
     let binary_path = if let Some(path) = binary {
         PathBuf::from(path)
     } else {
         std::env::current_exe()?
     };
-    
+
     if verify {
         // Verify signature
         match signing::verify_signature(&binary_path) {
@@ -162,7 +165,10 @@ async fn handle_sign_command(
                 Ok(())
             }
             Ok(false) => {
-                eprintln!("✗ {} is not signed or signature is invalid", binary_path.display());
+                eprintln!(
+                    "✗ {} is not signed or signature is invalid",
+                    binary_path.display()
+                );
                 std::process::exit(1);
             }
             Err(e) => {
@@ -175,7 +181,7 @@ async fn handle_sign_command(
         let mut config = signing::SigningConfig::load()?;
         config.binary_path = binary_path;
         config.output_path = config.binary_path.clone();
-        
+
         // Override identity if provided
         if let Some(id) = identity {
             match &mut config.platform {
@@ -185,23 +191,23 @@ async fn handle_sign_command(
                 signing::PlatformConfig::Windows { certificate, .. } => *certificate = id,
                 #[cfg(target_os = "linux")]
                 signing::PlatformConfig::Linux { key_id, .. } => *key_id = Some(id),
-                _ => {},
+                _ => {}
             }
         }
-        
+
         println!("Signing {}...", config.binary_path.display());
-        
+
         match signing::sign_binary(&config) {
             Ok(_) => {
                 println!("✓ Successfully signed {}", config.binary_path.display());
-                
+
                 // Verify the signature
                 if signing::verify_signature(&config.output_path)? {
                     println!("✓ Signature verified");
                 } else {
                     eprintln!("⚠️  Warning: Signature verification failed");
                 }
-                
+
                 Ok(())
             }
             Err(e) => {

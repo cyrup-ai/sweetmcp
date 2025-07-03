@@ -145,7 +145,7 @@ impl ApplicationContext {
             let memory_adapter = Arc::new(
                 MemoryContextAdapter::new(memory_config)
                     .await
-                    .map_err(|e| anyhow::anyhow!("Failed to initialize memory system: {}", e))?
+                    .map_err(|e| anyhow::anyhow!("Failed to initialize memory system: {}", e))?,
             );
 
             // Initialize database if configured

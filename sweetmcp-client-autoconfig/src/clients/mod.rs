@@ -1,8 +1,8 @@
 pub mod claude_desktop;
-pub mod windsurf;
 pub mod cursor;
-pub mod zed;
 pub mod roo_code;
+pub mod windsurf;
+pub mod zed;
 
 use crate::ClientConfigPlugin;
 use std::sync::Arc;

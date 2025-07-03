@@ -1,10 +1,10 @@
 // Import Extism PDK for plugin development
 use extism_pdk::*;
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 use std::collections::HashMap;
 use std::sync::Mutex;
 use std::sync::OnceLock;
+use uuid::Uuid;
 
 // Core types for the MCP reasoner
 
@@ -103,13 +103,15 @@ impl SimpleReasoner {
     pub fn process_thought(&mut self, request: ReasoningRequest) -> ReasoningResponse {
         // Generate a unique ID for this thought
         let node_id = Uuid::new_v4().to_string();
-        
+
         // Default strategy
-        let strategy = request.strategy_type.unwrap_or_else(|| "beam_search".to_string());
-        
+        let strategy = request
+            .strategy_type
+            .unwrap_or_else(|| "beam_search".to_string());
+
         // Calculate score (in a real implementation, this would use the selected strategy)
         let score = 0.7 + (request.thought_number as f64 * 0.05);
-        
+
         // Create the node
         let node = ThoughtNode {
             id: node_id.clone(),
@@ -120,17 +122,17 @@ impl SimpleReasoner {
             parent_id: request.parent_id.clone(),
             is_complete: !request.next_thought_needed,
         };
-        
+
         // Add to parent's children if it exists
         if let Some(parent_id) = &request.parent_id {
             if let Some(parent) = self.nodes.get_mut(parent_id) {
                 parent.children.push(node_id.clone());
             }
         }
-        
+
         // Store the node
         self.nodes.insert(node_id.clone(), node.clone());
-        
+
         // Generate response
         ReasoningResponse {
             node_id,
@@ -144,7 +146,7 @@ impl SimpleReasoner {
             strategy_used: Some(strategy),
         }
     }
-    
+
     pub fn get_stats(&self, strategy_types: Vec<&str>) -> ReasoningStats {
         let total_nodes = self.nodes.len();
         let average_score = if total_nodes > 0 {
@@ -152,9 +154,9 @@ impl SimpleReasoner {
         } else {
             0.0
         };
-        
+
         let max_depth = self.nodes.values().map(|n| n.depth).max().unwrap_or(0);
-        
+
         // Calculate branching factor
         let mut parent_counts = HashMap::new();
         for node in self.nodes.values() {
@@ -162,13 +164,13 @@ impl SimpleReasoner {
                 *parent_counts.entry(parent_id.clone()).or_insert(0) += 1;
             }
         }
-        
+
         let branching_factor = if parent_counts.is_empty() {
             0.0
         } else {
             parent_counts.values().sum::<usize>() as f64 / parent_counts.len() as f64
         };
-        
+
         // Create strategy metrics
         let mut strategy_metrics = HashMap::new();
         for strategy in strategy_types {
@@ -180,10 +182,10 @@ impl SimpleReasoner {
                 active: Some(true),
                 extra: HashMap::new(),
             };
-            
+
             strategy_metrics.insert(strategy.to_string(), metrics);
         }
-        
+
         ReasoningStats {
             total_nodes,
             average_score,
@@ -192,7 +194,7 @@ impl SimpleReasoner {
             strategy_metrics,
         }
     }
-    
+
     pub fn clear(&mut self) {
         self.nodes.clear();
     }
@@ -228,17 +230,20 @@ struct EnhancedResponse {
 pub fn process_thought(input: String) -> FnResult<String> {
     // Parse the input JSON
     let request: ReasoningRequest = serde_json::from_str(&input)?;
-    
+
     // Get the reasoner singleton
     let reasoner = get_reasoner();
-    
+
     // Process the thought
     let response = reasoner.lock().unwrap().process_thought(request.clone());
-    
+
     // Get stats for the used strategy
-    let strategy = response.strategy_used.clone().unwrap_or("beam_search".to_string());
+    let strategy = response
+        .strategy_used
+        .clone()
+        .unwrap_or("beam_search".to_string());
     let stats = reasoner.lock().unwrap().get_stats(vec![&strategy]);
-    
+
     // Create the enhanced response
     let enhanced_response = EnhancedResponse {
         thought_number: request.thought_number,
@@ -250,7 +255,7 @@ pub fn process_thought(input: String) -> FnResult<String> {
         strategy_used: strategy,
         stats,
     };
-    
+
     // Serialize and return
     Ok(serde_json::to_string(&enhanced_response)?)
 }
@@ -260,7 +265,7 @@ pub fn clear(_: String) -> FnResult<String> {
     // Get the reasoner singleton and clear it
     let reasoner = get_reasoner();
     reasoner.lock().unwrap().clear();
-    
+
     Ok("Reasoner state cleared".to_string())
 }
 
@@ -343,6 +348,6 @@ pub fn manifest(_: String) -> FnResult<String> {
             ]
         }
     });
-    
+
     Ok(serde_json::to_string(&manifest)?)
 }

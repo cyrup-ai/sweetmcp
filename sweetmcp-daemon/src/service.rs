@@ -137,7 +137,7 @@ pub fn spawn(def: ServiceDefinition, bus: Sender<Evt>) -> Sender<Cmd> {
     if def.name == "sweetmcp-autoconfig" || def.service_type == Some("autoconfig".to_string()) {
         return autoconfig::spawn_autoconfig(def, bus);
     }
-    
+
     // Otherwise spawn normal service
     ServiceWorker::spawn(def, bus)
 }

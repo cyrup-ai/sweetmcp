@@ -1,7 +1,9 @@
 mod pdk;
 
 use extism_pdk::*;
-use pdk::types::{CallToolRequest, CallToolResult, Content, ContentType, ListToolsResult, ToolDescription};
+use pdk::types::{
+    CallToolRequest, CallToolResult, Content, ContentType, ListToolsResult, ToolDescription,
+};
 use serde_json::json;
 use std::error::Error as StdError;
 
@@ -29,10 +31,13 @@ pub(crate) fn call(input: CallToolRequest) -> Result<CallToolResult, Error> {
             let rfc2822 = now.to_rfc2822().to_string();
             Ok(CallToolResult {
                 content: vec![Content {
-                    text: Some(json!({
-                        "utc_time": timestamp,
-                        "utc_time_rfc2822": rfc2822,
-                    }).to_string()),
+                    text: Some(
+                        json!({
+                            "utc_time": timestamp,
+                            "utc_time_rfc2822": rfc2822,
+                        })
+                        .to_string(),
+                    ),
                     r#type: ContentType::Text,
                     ..Default::default()
                 }],
@@ -46,10 +51,13 @@ pub(crate) fn call(input: CallToolRequest) -> Result<CallToolResult, Error> {
             let rfc2822 = t.to_rfc2822().to_string();
             Ok(CallToolResult {
                 content: vec![Content {
-                    text: Some(json!({
-                        "utc_time": timestamp,
-                        "utc_time_rfc2822": rfc2822,
-                    }).to_string()),
+                    text: Some(
+                        json!({
+                            "utc_time": timestamp,
+                            "utc_time_rfc2822": rfc2822,
+                        })
+                        .to_string(),
+                    ),
                     r#type: ContentType::Text,
                     ..Default::default()
                 }],
@@ -65,10 +73,13 @@ pub(crate) fn call(input: CallToolRequest) -> Result<CallToolResult, Error> {
             let rfc2822 = t2.to_rfc2822().to_string();
             Ok(CallToolResult {
                 content: vec![Content {
-                    text: Some(json!({
-                        "utc_time": timestamp,
-                        "utc_time_rfc2822": rfc2822,
-                    }).to_string()),
+                    text: Some(
+                        json!({
+                            "utc_time": timestamp,
+                            "utc_time_rfc2822": rfc2822,
+                        })
+                        .to_string(),
+                    ),
                     r#type: ContentType::Text,
                     ..Default::default()
                 }],

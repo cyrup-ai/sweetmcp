@@ -7,9 +7,7 @@ use serde_json::Value;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 
-use sweetmcp_memory::{
-    MemoryConfig, MemoryManager, MemoryNode, MemoryType,
-};
+use sweetmcp_memory::{MemoryConfig, MemoryManager, MemoryNode, MemoryType};
 
 /// Adapter that bridges MCP context API with the memory system
 pub struct MemoryContextAdapter {

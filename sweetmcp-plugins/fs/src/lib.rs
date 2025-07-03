@@ -10,8 +10,8 @@ use json::Value;
 use plugin::types::{
     CallToolRequest, CallToolResult, Content, ContentType, ListToolsResult, ToolDescription,
 };
-use serde_json::json;
 use serde::{Deserialize, Serialize};
+use serde_json::json;
 
 // Define structures mirroring host's Prompt types (or use a shared crate later)
 // These are simplified for the prototype
@@ -32,7 +32,11 @@ struct PluginPrompt {
 pub(crate) fn call(input: CallToolRequest) -> Result<CallToolResult, Error> {
     info!("call: {:?}", input);
     let args = input.params.arguments.clone().unwrap_or_default();
-    match args.get("operation").and_then(|v| v.as_str()).unwrap_or_default() {
+    match args
+        .get("operation")
+        .and_then(|v| v.as_str())
+        .unwrap_or_default()
+    {
         "read" => read_file(input),
         "read_multiple" => read_multiple_files(input),
         "write" => write_file(input),
@@ -140,10 +144,9 @@ fn read_multiple_files(input: CallToolRequest) -> Result<CallToolResult, Error> 
 
 fn write_file(input: CallToolRequest) -> Result<CallToolResult, Error> {
     let args = input.params.arguments.clone().unwrap_or_default();
-    if let (Some(Value::String(path)), Some(Value::String(content))) = (
-        args.get("path"),
-        args.get("content"),
-    ) {
+    if let (Some(Value::String(path)), Some(Value::String(content))) =
+        (args.get("path"), args.get("content"))
+    {
         match fs::write(path, content) {
             Ok(_) => Ok(CallToolResult {
                 is_error: None,
@@ -182,14 +185,10 @@ fn write_file(input: CallToolRequest) -> Result<CallToolResult, Error> {
 
 fn edit_file(input: CallToolRequest) -> Result<CallToolResult, Error> {
     let args = input.params.arguments.clone().unwrap_or_default();
-    if let (Some(Value::String(path)), Some(Value::String(content))) = (
-        args.get("path"),
-        args.get("content"),
-    ) {
-        let mut file = OpenOptions::new()
-            .write(true)
-            .truncate(true)
-            .open(path)?;
+    if let (Some(Value::String(path)), Some(Value::String(content))) =
+        (args.get("path"), args.get("content"))
+    {
+        let mut file = OpenOptions::new().write(true).truncate(true).open(path)?;
         file.write_all(content.as_bytes())?;
         Ok(CallToolResult {
             is_error: None,
@@ -312,10 +311,8 @@ fn list_dir(input: CallToolRequest) -> Result<CallToolResult, Error> {
 
 fn move_file(input: CallToolRequest) -> Result<CallToolResult, Error> {
     let args = input.params.arguments.clone().unwrap_or_default();
-    if let (Some(Value::String(from)), Some(Value::String(to))) = (
-        args.get("from"),
-        args.get("to"),
-    ) {
+    if let (Some(Value::String(from)), Some(Value::String(to))) = (args.get("from"), args.get("to"))
+    {
         match fs::rename(from, to) {
             Ok(_) => Ok(CallToolResult {
                 is_error: None,
@@ -354,10 +351,9 @@ fn move_file(input: CallToolRequest) -> Result<CallToolResult, Error> {
 
 fn search_files(input: CallToolRequest) -> Result<CallToolResult, Error> {
     let args = input.params.arguments.clone().unwrap_or_default();
-    if let (Some(Value::String(dir)), Some(Value::String(pattern))) = (
-        args.get("directory"),
-        args.get("pattern"),
-    ) {
+    if let (Some(Value::String(dir)), Some(Value::String(pattern))) =
+        (args.get("directory"), args.get("pattern"))
+    {
         let mut results = Vec::new();
         fn search_dir(dir: &Path, pattern: &str, results: &mut Vec<String>) -> io::Result<()> {
             for entry in fs::read_dir(dir)? {
@@ -705,17 +701,21 @@ pub fn mcp_list_prompts(_: ()) -> FnResult<Json<Vec<PluginPrompt>>> {
             arguments: Some(vec![
                 PluginPromptArgument {
                     name: "path".to_string(),
-                    description: Some("The directory path to list (defaults to current directory if omitted).".to_string()),
+                    description: Some(
+                        "The directory path to list (defaults to current directory if omitted)."
+                            .to_string(),
+                    ),
                     required: Some(false), // Make path optional
                 },
                 PluginPromptArgument {
                     name: "show_hidden".to_string(),
-                    description: Some("Include hidden files/directories (e.g., add -a flag)".to_string()),
+                    description: Some(
+                        "Include hidden files/directories (e.g., add -a flag)".to_string(),
+                    ),
                     required: Some(false),
                 },
             ]),
-        }
-        // Add more prompts specific to the 'fs' plugin here if needed
+        }, // Add more prompts specific to the 'fs' plugin here if needed
     ];
     Ok(Json(prompts))
 }
@@ -724,7 +724,10 @@ pub fn mcp_list_prompts(_: ()) -> FnResult<Json<Vec<PluginPrompt>>> {
 #[plugin_fn]
 pub fn mcp_get_prompt_template(Json(args): Json<Value>) -> FnResult<String> {
     // Expect args to be a JSON object like: {"name": "prompt_name"}
-    let prompt_name = args.get("name").and_then(|v| v.as_str()).ok_or_else(|| anyhow::anyhow!("Missing 'name' argument"))?;
+    let prompt_name = args
+        .get("name")
+        .and_then(|v| v.as_str())
+        .ok_or_else(|| anyhow::anyhow!("Missing 'name' argument"))?;
 
     match prompt_name {
         "list_directory" => {
@@ -735,7 +738,9 @@ List the contents of the directory '{{ path | default(".") }}'.
 "#;
             Ok(template.to_string())
         }
-        _ => Err(anyhow::anyhow!("Prompt template '{}' not found in fs plugin", prompt_name).into()),
+        _ => {
+            Err(anyhow::anyhow!("Prompt template '{}' not found in fs plugin", prompt_name).into())
+        }
     }
 }
 
@@ -746,7 +751,8 @@ pub fn main_handler(Json(input): Json<CallToolRequest>) -> FnResult<Json<CallToo
     match input.params.name.as_str() {
         "describe" => {
             // Assuming 'describe' is meant to list tools, call the existing describe function
-            let tools_result = describe().map_err(|e| anyhow::anyhow!("Error describing tools: {}", e))?;
+            let tools_result =
+                describe().map_err(|e| anyhow::anyhow!("Error describing tools: {}", e))?;
             // Need to wrap ListToolsResult in CallToolResult structure if possible,
             // or adjust how describe is handled by the host.
             // For now, returning a simple text representation or error.
@@ -754,18 +760,24 @@ pub fn main_handler(Json(input): Json<CallToolRequest>) -> FnResult<Json<CallToo
                 is_error: None,
                 content: vec![Content {
                     r#type: ContentType::Text,
-                    text: Some(format!("Describe called. Tools: {:?}", tools_result.tools.iter().map(|t| t.name.clone()).collect::<Vec<_>>())),
+                    text: Some(format!(
+                        "Describe called. Tools: {:?}",
+                        tools_result
+                            .tools
+                            .iter()
+                            .map(|t| t.name.clone())
+                            .collect::<Vec<_>>()
+                    )),
                     mime_type: None,
                     annotations: None,
                     data: None,
-                }]
+                }],
             }))
         }
         _ => {
-             // Delegate other operations to the 'call' function
+            // Delegate other operations to the 'call' function
             let result = call(input).map_err(|e| anyhow::anyhow!("Error calling tool: {}", e))?;
             Ok(Json(result))
         }
     }
-
 }

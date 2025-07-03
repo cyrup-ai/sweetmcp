@@ -1,5 +1,5 @@
-use crate::{ClientConfigPlugin, ConfigFormat, ConfigPath, Platform};
 use crate::config::ConfigMerger;
+use crate::{ClientConfigPlugin, ConfigFormat, ConfigPath, Platform};
 use anyhow::Result;
 use std::path::PathBuf;
 use tracing::debug;
@@ -10,14 +10,14 @@ impl ClientConfigPlugin for ClaudeDesktopPlugin {
     fn client_id(&self) -> &str {
         "claude-desktop"
     }
-    
+
     fn client_name(&self) -> &str {
         "Claude Desktop"
     }
-    
+
     fn watch_paths(&self) -> Vec<PathBuf> {
         let mut paths = Vec::new();
-        
+
         match Platform::current() {
             Platform::Windows => {
                 if let Ok(appdata) = std::env::var("APPDATA") {
@@ -33,13 +33,13 @@ impl ClientConfigPlugin for ClaudeDesktopPlugin {
                 debug!("Claude Desktop not supported on Linux yet");
             }
         }
-        
+
         paths
     }
-    
+
     fn config_paths(&self) -> Vec<ConfigPath> {
         let mut configs = Vec::new();
-        
+
         match Platform::current() {
             Platform::Windows => {
                 if let Ok(appdata) = std::env::var("APPDATA") {
@@ -55,7 +55,8 @@ impl ClientConfigPlugin for ClaudeDesktopPlugin {
             Platform::MacOS => {
                 if let Some(home) = directories::BaseDirs::new() {
                     configs.push(ConfigPath {
-                        path: home.home_dir()
+                        path: home
+                            .home_dir()
                             .join("Library/Application Support/Claude")
                             .join("claude_desktop_config.json"),
                         format: ConfigFormat::Json,
@@ -65,20 +66,20 @@ impl ClientConfigPlugin for ClaudeDesktopPlugin {
             }
             _ => {}
         }
-        
+
         configs
     }
-    
+
     fn is_installed(&self, path: &PathBuf) -> bool {
         // Claude is installed if the directory exists
         path.exists() && path.is_dir()
     }
-    
+
     fn inject_sweetmcp(&self, config_content: &str, format: ConfigFormat) -> Result<String> {
         let merger = ConfigMerger::new();
         merger.merge(config_content, format)
     }
-    
+
     fn config_format(&self) -> ConfigFormat {
         ConfigFormat::Json
     }

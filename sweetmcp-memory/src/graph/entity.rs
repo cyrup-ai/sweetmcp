@@ -588,9 +588,7 @@ impl<E: Entity + Clone + 'static> EntityRepository for SurrealEntityRepository<E
             // Build query with database-level pagination
             let query = format!(
                 "SELECT * FROM {} WHERE entity_type = $entity_type LIMIT {} START {}",
-                table_name,
-                limit,
-                offset
+                table_name, limit, offset
             );
 
             // Create query options with entity_type parameter

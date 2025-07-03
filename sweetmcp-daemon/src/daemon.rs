@@ -79,7 +79,7 @@ pub fn daemonise(pid_file: &Path) -> Result<()> {
         .write(true)
         .open("/dev/null")
         .context("open /dev/null")?;
-    
+
     // Redirect stdin, stdout, stderr to /dev/null
     for target in 0..=2 {
         // Create an OwnedFd from the target fd

@@ -35,7 +35,7 @@ impl DataImporter {
     }
 
     /// Import data from binary file
-    pub async fn import_binary<T>(&self, path: &Path) -> Result<Vec<T>> 
+    pub async fn import_binary<T>(&self, path: &Path) -> Result<Vec<T>>
     where
         T: bincode::Decode<()>,
     {
@@ -68,7 +68,8 @@ impl DataImporter {
             ImportFormat::Csv => self.import_csv(path).await?,
             ImportFormat::Binary => {
                 return Err(MigrationError::UnsupportedFormat(
-                    "Binary validation requires bincode::Decode trait - use import_binary directly".to_string()
+                    "Binary validation requires bincode::Decode trait - use import_binary directly"
+                        .to_string(),
                 ));
             }
         };

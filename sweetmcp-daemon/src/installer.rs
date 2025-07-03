@@ -29,13 +29,13 @@ pub async fn install(dry: bool, sign: bool, identity: Option<String>) -> Result<
 
     // Get the current executable path
     let exe_path = std::env::current_exe().context("current_exe()")?;
-    
+
     // Sign the binary BEFORE installation if requested
     if sign && !dry {
         info!("Signing daemon binary before installation...");
-        
+
         let mut sign_config = signing::SigningConfig::new(exe_path.clone());
-        
+
         // Override identity if provided
         if let Some(id) = identity.clone() {
             match &mut sign_config.platform {
@@ -45,14 +45,13 @@ pub async fn install(dry: bool, sign: bool, identity: Option<String>) -> Result<
                 signing::PlatformConfig::Windows { certificate, .. } => *certificate = id,
                 #[cfg(target_os = "linux")]
                 signing::PlatformConfig::Linux { key_id, .. } => *key_id = Some(id),
-                _ => {},
+                _ => {}
             }
         }
-        
+
         // Sign the binary
-        signing::sign_binary(&sign_config)
-            .context("Failed to sign daemon binary")?;
-        
+        signing::sign_binary(&sign_config).context("Failed to sign daemon binary")?;
+
         info!("Successfully signed daemon binary");
     }
 
@@ -63,11 +62,20 @@ pub async fn install(dry: bool, sign: bool, identity: Option<String>) -> Result<
         info!("  - Service: cyrupd");
         if sign {
             #[cfg(target_os = "macos")]
-            info!("  - macOS Codesign: {}", identity.as_deref().unwrap_or("Developer ID or ad-hoc"));
+            info!(
+                "  - macOS Codesign: {}",
+                identity.as_deref().unwrap_or("Developer ID or ad-hoc")
+            );
             #[cfg(target_os = "windows")]
-            info!("  - Windows Authenticode: {}", identity.as_deref().unwrap_or("Auto-select certificate"));
+            info!(
+                "  - Windows Authenticode: {}",
+                identity.as_deref().unwrap_or("Auto-select certificate")
+            );
             #[cfg(target_os = "linux")]
-            info!("  - Linux GPG Sign: {}", identity.as_deref().unwrap_or("Default GPG key"));
+            info!(
+                "  - Linux GPG Sign: {}",
+                identity.as_deref().unwrap_or("Default GPG key")
+            );
         }
         return Ok(());
     }
@@ -78,7 +86,7 @@ pub async fn install(dry: bool, sign: bool, identity: Option<String>) -> Result<
         .args(&["build", "--package", "sweetmcp-pingora"])
         .current_dir(std::env::current_dir()?)
         .status()?;
-    
+
     if !build_status.success() {
         return Err(anyhow::anyhow!("Failed to build sweetmcp-pingora"));
     }
@@ -94,8 +102,14 @@ pub async fn install(dry: bool, sign: bool, identity: Option<String>) -> Result<
             let mut env = std::collections::HashMap::new();
             env.insert("RUST_LOG".to_string(), "info".to_string());
             env.insert("SWEETMCP_TCP_BIND".to_string(), "0.0.0.0:8443".to_string());
-            env.insert("SWEETMCP_UDS_PATH".to_string(), "/run/sugora.sock".to_string());
-            env.insert("SWEETMCP_METRICS_BIND".to_string(), "127.0.0.1:9090".to_string());
+            env.insert(
+                "SWEETMCP_UDS_PATH".to_string(),
+                "/run/sugora.sock".to_string(),
+            );
+            env.insert(
+                "SWEETMCP_METRICS_BIND".to_string(),
+                "127.0.0.1:9090".to_string(),
+            );
             env.insert("SWEETMCP_DEV_MODE".to_string(), "true".to_string());
             env
         },
@@ -111,7 +125,7 @@ pub async fn install(dry: bool, sign: bool, identity: Option<String>) -> Result<
         service_type: None,
         memfs: None,
     };
-    
+
     // Create the autoconfig service definition
     let autoconfig_service = crate::config::ServiceDefinition {
         name: "sweetmcp-autoconfig".to_string(),
@@ -173,21 +187,19 @@ pub async fn install(dry: bool, sign: bool, identity: Option<String>) -> Result<
 
     // On macOS, run as root with wheel group for system daemon privileges
     #[cfg(target_os = "macos")]
-    let installer = installer
-        .user("root")
-        .group("wheel");
+    let installer = installer.user("root").group("wheel");
 
     // Install the daemon with GUI authorization
     match install_daemon(installer) {
         Ok(()) => {
             info!("Daemon installed successfully");
-            
+
             // Generate wildcard certificate and import to trust store
             if let Err(e) = generate_and_import_wildcard_certificate().await {
                 warn!("Failed to generate wildcard certificate and import: {}", e);
                 // Don't fail installation if certificate import fails
             }
-            
+
             // Add host entries for all SweetMCP domains pointing to 127.0.0.1
             if let Err(e) = add_sweetmcp_host_entries() {
                 warn!("Failed to add SweetMCP host entries: {}", e);
@@ -198,7 +210,10 @@ pub async fn install(dry: bool, sign: bool, identity: Option<String>) -> Result<
             if sign {
                 let installed_path = get_installed_daemon_path();
                 match signing::verify_signature(&installed_path) {
-                    Ok(true) => info!("Installed binary signature verified on {}", installed_path.display()),
+                    Ok(true) => info!(
+                        "Installed binary signature verified on {}",
+                        installed_path.display()
+                    ),
                     Ok(false) => {
                         warn!("Installed binary lost its signature during installation");
                         // Re-sign the installed binary
@@ -209,10 +224,12 @@ pub async fn install(dry: bool, sign: bool, identity: Option<String>) -> Result<
                                 #[cfg(target_os = "macos")]
                                 signing::PlatformConfig::MacOS { identity, .. } => *identity = id,
                                 #[cfg(target_os = "windows")]
-                                signing::PlatformConfig::Windows { certificate, .. } => *certificate = id,
+                                signing::PlatformConfig::Windows { certificate, .. } => {
+                                    *certificate = id
+                                }
                                 #[cfg(target_os = "linux")]
                                 signing::PlatformConfig::Linux { key_id, .. } => *key_id = Some(id),
-                                _ => {},
+                                _ => {}
                             }
                         }
                         if let Err(e) = signing::sign_binary(&resign_config) {
@@ -220,7 +237,7 @@ pub async fn install(dry: bool, sign: bool, identity: Option<String>) -> Result<
                         } else {
                             info!("Successfully re-signed installed binary");
                         }
-                    },
+                    }
                     Err(e) => warn!("Failed to verify installed binary signature: {}", e),
                 }
             }
@@ -258,15 +275,16 @@ pub fn uninstall(dry: bool) -> Result<()> {
 /// Generate wildcard certificate and import to system trust store
 async fn generate_and_import_wildcard_certificate() -> Result<()> {
     info!("Generating wildcard certificate and importing to system trust store");
-    
+
     // Get XDG config directory
     let xdg_config_home = dirs::config_dir()
         .ok_or_else(|| anyhow::anyhow!("Could not determine XDG config directory"))?;
-    
+
     // Generate wildcard certificate
-    generate_sweetmcp_wildcard_certificate(&xdg_config_home).await
+    generate_sweetmcp_wildcard_certificate(&xdg_config_home)
+        .await
         .context("Failed to generate wildcard certificate")?;
-    
+
     // Import certificate to system trust store
     let wildcard_cert_path = xdg_config_home.join("sweetmcp").join("wildcard.cyrup.pem");
     import_wildcard_certificate_to_system(&wildcard_cert_path)
@@ -275,20 +293,25 @@ async fn generate_and_import_wildcard_certificate() -> Result<()> {
 /// Generate SweetMCP wildcard certificate with multiple domain SAN entries
 async fn generate_sweetmcp_wildcard_certificate(xdg_config_home: &Path) -> Result<()> {
     let cert_dir = xdg_config_home.join("sweetmcp");
-    
+
     // Create cert directory if it doesn't exist
     #[cfg(feature = "runtime")]
-    tokio::fs::create_dir_all(&cert_dir).await.context("Failed to create certificate directory")?;
-    
+    tokio::fs::create_dir_all(&cert_dir)
+        .await
+        .context("Failed to create certificate directory")?;
+
     #[cfg(not(feature = "runtime"))]
     fs::create_dir_all(&cert_dir).context("Failed to create certificate directory")?;
 
     let wildcard_cert_path = cert_dir.join("wildcard.cyrup.pem");
-    
+
     // Check if certificate already exists and is valid
     if wildcard_cert_path.exists() {
         if validate_existing_wildcard_cert(&wildcard_cert_path).is_ok() {
-            info!("Valid wildcard certificate already exists at {}", wildcard_cert_path.display());
+            info!(
+                "Valid wildcard certificate already exists at {}",
+                wildcard_cert_path.display()
+            );
             return Ok(());
         }
         info!("Existing wildcard certificate is invalid, regenerating...");
@@ -296,8 +319,8 @@ async fn generate_sweetmcp_wildcard_certificate(xdg_config_home: &Path) -> Resul
 
     info!("Generating new SweetMCP wildcard certificate with multiple SAN entries");
 
-    let mut params = CertificateParams::new(Vec::default())
-        .context("Failed to create certificate params")?;
+    let mut params =
+        CertificateParams::new(Vec::default()).context("Failed to create certificate params")?;
 
     // Set as non-CA certificate
     params.is_ca = rcgen::IsCa::NoCa;
@@ -305,32 +328,68 @@ async fn generate_sweetmcp_wildcard_certificate(xdg_config_home: &Path) -> Resul
     // SweetMCP domains with wildcards for all domains
     params.subject_alt_names = vec![
         // Wildcard entries
-        SanType::DnsName("*.cyrup.dev".try_into()
-            .context("Invalid DNS name: *.cyrup.dev")?),
-        SanType::DnsName("*.cyrup.ai".try_into()
-            .context("Invalid DNS name: *.cyrup.ai")?),
-        SanType::DnsName("*.cyrup.cloud".try_into()
-            .context("Invalid DNS name: *.cyrup.cloud")?),
-        SanType::DnsName("*.cyrup.pro".try_into()
-            .context("Invalid DNS name: *.cyrup.pro")?),
+        SanType::DnsName(
+            "*.cyrup.dev"
+                .try_into()
+                .context("Invalid DNS name: *.cyrup.dev")?,
+        ),
+        SanType::DnsName(
+            "*.cyrup.ai"
+                .try_into()
+                .context("Invalid DNS name: *.cyrup.ai")?,
+        ),
+        SanType::DnsName(
+            "*.cyrup.cloud"
+                .try_into()
+                .context("Invalid DNS name: *.cyrup.cloud")?,
+        ),
+        SanType::DnsName(
+            "*.cyrup.pro"
+                .try_into()
+                .context("Invalid DNS name: *.cyrup.pro")?,
+        ),
         // Base domains
-        SanType::DnsName("cyrup.dev".try_into()
-            .context("Invalid DNS name: cyrup.dev")?),
-        SanType::DnsName("cyrup.ai".try_into()
-            .context("Invalid DNS name: cyrup.ai")?),
-        SanType::DnsName("cyrup.cloud".try_into()
-            .context("Invalid DNS name: cyrup.cloud")?),
-        SanType::DnsName("cyrup.pro".try_into()
-            .context("Invalid DNS name: cyrup.pro")?),
+        SanType::DnsName(
+            "cyrup.dev"
+                .try_into()
+                .context("Invalid DNS name: cyrup.dev")?,
+        ),
+        SanType::DnsName(
+            "cyrup.ai"
+                .try_into()
+                .context("Invalid DNS name: cyrup.ai")?,
+        ),
+        SanType::DnsName(
+            "cyrup.cloud"
+                .try_into()
+                .context("Invalid DNS name: cyrup.cloud")?,
+        ),
+        SanType::DnsName(
+            "cyrup.pro"
+                .try_into()
+                .context("Invalid DNS name: cyrup.pro")?,
+        ),
         // Specific SweetMCP entries (covered by wildcards but explicit for clarity)
-        SanType::DnsName("sweetmcp.cyrup.dev".try_into()
-            .context("Invalid DNS name: sweetmcp.cyrup.dev")?),
-        SanType::DnsName("sweetmcp.cyrup.ai".try_into()
-            .context("Invalid DNS name: sweetmcp.cyrup.ai")?),
-        SanType::DnsName("sweetmcp.cyrup.cloud".try_into()
-            .context("Invalid DNS name: sweetmcp.cyrup.cloud")?),
-        SanType::DnsName("sweetmcp.cyrup.pro".try_into()
-            .context("Invalid DNS name: sweetmcp.cyrup.pro")?),
+        SanType::DnsName(
+            "sweetmcp.cyrup.dev"
+                .try_into()
+                .context("Invalid DNS name: sweetmcp.cyrup.dev")?,
+        ),
+        SanType::DnsName(
+            "sweetmcp.cyrup.ai"
+                .try_into()
+                .context("Invalid DNS name: sweetmcp.cyrup.ai")?,
+        ),
+        SanType::DnsName(
+            "sweetmcp.cyrup.cloud"
+                .try_into()
+                .context("Invalid DNS name: sweetmcp.cyrup.cloud")?,
+        ),
+        SanType::DnsName(
+            "sweetmcp.cyrup.pro"
+                .try_into()
+                .context("Invalid DNS name: sweetmcp.cyrup.pro")?,
+        ),
     ];
 
     // Set distinguished name
@@ -345,10 +404,10 @@ async fn generate_sweetmcp_wildcard_certificate(xdg_config_home: &Path) -> Resul
     params.not_after = (now + Duration::from_secs(100 * 365 * 24 * 60 * 60)).into();
 
     // Generate key pair and self-signed certificate
-    let key_pair = KeyPair::generate()
-        .context("Failed to generate key pair")?;
-    
-    let cert = params.self_signed(&key_pair)
+    let key_pair = KeyPair::generate().context("Failed to generate key pair")?;
+
+    let cert = params
+        .self_signed(&key_pair)
         .context("Failed to generate certificate")?;
 
     // Create combined PEM file with certificate and private key
@@ -358,26 +417,31 @@ async fn generate_sweetmcp_wildcard_certificate(xdg_config_home: &Path) -> Resul
 
     // Write combined PEM file
     #[cfg(feature = "runtime")]
-    tokio::fs::write(&wildcard_cert_path, &combined_pem).await.context("Failed to write wildcard certificate")?;
-    
+    tokio::fs::write(&wildcard_cert_path, &combined_pem)
+        .await
+        .context("Failed to write wildcard certificate")?;
+
     #[cfg(not(feature = "runtime"))]
-    fs::write(&wildcard_cert_path, &combined_pem).context("Failed to write wildcard certificate")?;
+    fs::write(&wildcard_cert_path, &combined_pem)
+        .context("Failed to write wildcard certificate")?;
 
     // Set secure permissions on certificate file
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
-        
+
         #[cfg(feature = "runtime")]
         {
-            let mut perms = tokio::fs::metadata(&wildcard_cert_path).await
+            let mut perms = tokio::fs::metadata(&wildcard_cert_path)
+                .await
                 .context("Failed to get file metadata")?
                 .permissions();
             perms.set_mode(0o600); // Owner read/write only
-            tokio::fs::set_permissions(&wildcard_cert_path, perms).await
+            tokio::fs::set_permissions(&wildcard_cert_path, perms)
+                .await
                 .context("Failed to set file permissions")?;
         }
-        
+
         #[cfg(not(feature = "runtime"))]
         {
             let mut perms = fs::metadata(&wildcard_cert_path)
@@ -389,21 +453,23 @@ async fn generate_sweetmcp_wildcard_certificate(xdg_config_home: &Path) -> Resul
         }
     }
 
-    info!("SweetMCP wildcard certificate generated successfully at {}", wildcard_cert_path.display());
+    info!(
+        "SweetMCP wildcard certificate generated successfully at {}",
+        wildcard_cert_path.display()
+    );
     Ok(())
 }
 
 /// Validate existing wildcard certificate
 fn validate_existing_wildcard_cert(cert_path: &Path) -> Result<()> {
-    let cert_content = fs::read_to_string(cert_path)
-        .context("Failed to read certificate file")?;
+    let cert_content = fs::read_to_string(cert_path).context("Failed to read certificate file")?;
 
     // Basic validation - check if it contains the expected domains
     let required_domains = [
         "sweetmcp.cyrup.dev",
-        "sweetmcp.cyrup.ai", 
+        "sweetmcp.cyrup.ai",
         "sweetmcp.cyrup.cloud",
-        "sweetmcp.cyrup.pro"
+        "sweetmcp.cyrup.pro",
     ];
 
     for domain in &required_domains {
@@ -413,9 +479,12 @@ fn validate_existing_wildcard_cert(cert_path: &Path) -> Result<()> {
     }
 
     // Check if it has both certificate and private key
-    if !cert_content.contains("-----BEGIN CERTIFICATE-----") || 
-       !cert_content.contains("-----BEGIN PRIVATE KEY-----") {
-        return Err(anyhow::anyhow!("Invalid certificate format - missing certificate or private key"));
+    if !cert_content.contains("-----BEGIN CERTIFICATE-----")
+        || !cert_content.contains("-----BEGIN PRIVATE KEY-----")
+    {
+        return Err(anyhow::anyhow!(
+            "Invalid certificate format - missing certificate or private key"
+        ));
     }
 
     Ok(())
@@ -424,7 +493,7 @@ fn validate_existing_wildcard_cert(cert_path: &Path) -> Result<()> {
 /// Import wildcard certificate to system trust store
 fn import_wildcard_certificate_to_system(cert_path: &Path) -> Result<()> {
     let cert_str = cert_path.to_string_lossy();
-    
+
     cfg_if::cfg_if! {
         if #[cfg(target_os = "macos")] {
             import_wildcard_certificate_macos(&cert_str)
@@ -441,45 +510,47 @@ fn import_wildcard_certificate_to_system(cert_path: &Path) -> Result<()> {
 #[cfg(target_os = "macos")]
 fn import_wildcard_certificate_macos(cert_path: &str) -> Result<()> {
     info!("Importing SweetMCP wildcard certificate to macOS System keychain");
-    
+
     // Extract just the certificate part from the combined PEM file
-    let cert_content = std::fs::read_to_string(cert_path)
-        .context("Failed to read certificate file")?;
-    
+    let cert_content =
+        std::fs::read_to_string(cert_path).context("Failed to read certificate file")?;
+
     // Find the certificate part (everything before the private key)
     let cert_part = if let Some(key_start) = cert_content.find("-----BEGIN PRIVATE KEY-----") {
         &cert_content[..key_start]
     } else {
         &cert_content
     };
-    
+
     // Write certificate part to temporary file
     let temp_cert_path = format!("{}.cert", cert_path);
     std::fs::write(&temp_cert_path, cert_part.trim())
         .context("Failed to write temporary certificate file")?;
-    
+
     // Import to System keychain with trust settings for SSL
     let import_output = Command::new("security")
         .args(&[
             "add-trusted-cert",
-            "-d",              // Add to admin cert store
-            "-r", "trustRoot", // Trust as root certificate
-            "-k", "/Library/Keychains/System.keychain",
-            &temp_cert_path
+            "-d", // Add to admin cert store
+            "-r",
+            "trustRoot", // Trust as root certificate
+            "-k",
+            "/Library/Keychains/System.keychain",
+            &temp_cert_path,
         ])
         .output()
         .context("Failed to execute security add-trusted-cert")?;
-    
+
     // Clean up temporary file
     let _ = std::fs::remove_file(&temp_cert_path);
-    
+
     if !import_output.status.success() {
         return Err(anyhow::anyhow!(
             "Failed to import wildcard certificate: {}",
             String::from_utf8_lossy(&import_output.stderr)
         ));
     }
-    
+
     info!("SweetMCP wildcard certificate imported to macOS System keychain");
     Ok(())
 }
@@ -488,43 +559,43 @@ fn import_wildcard_certificate_macos(cert_path: &str) -> Result<()> {
 #[cfg(target_os = "linux")]
 fn import_wildcard_certificate_linux(cert_path: &str) -> Result<()> {
     info!("Importing SweetMCP wildcard certificate to Linux certificate store");
-    
+
     // Extract just the certificate part from the combined PEM file
-    let cert_content = std::fs::read_to_string(cert_path)
-        .context("Failed to read certificate file")?;
-    
+    let cert_content =
+        std::fs::read_to_string(cert_path).context("Failed to read certificate file")?;
+
     // Find the certificate part (everything before the private key)
     let cert_part = if let Some(key_start) = cert_content.find("-----BEGIN PRIVATE KEY-----") {
         &cert_content[..key_start]
     } else {
         &cert_content
     };
-    
+
     // Copy to system certificate directory
     let cert_dest = "/usr/local/share/ca-certificates/sweetmcp-wildcard.crt";
-    
+
     // Ensure directory exists
     Command::new("mkdir")
         .args(&["-p", "/usr/local/share/ca-certificates"])
         .output()
         .context("Failed to create certificate directory")?;
-    
+
     // Write certificate part to system directory
     std::fs::write(cert_dest, cert_part.trim())
         .context("Failed to write wildcard certificate to system directory")?;
-    
+
     // Update certificate store
     let update_output = Command::new("update-ca-certificates")
         .output()
         .context("Failed to execute update-ca-certificates")?;
-    
+
     if !update_output.status.success() {
         return Err(anyhow::anyhow!(
             "Failed to update certificate store: {}",
             String::from_utf8_lossy(&update_output.stderr)
         ));
     }
-    
+
     info!("SweetMCP wildcard certificate imported to Linux certificate store");
     Ok(())
 }
@@ -532,27 +603,26 @@ fn import_wildcard_certificate_linux(cert_path: &str) -> Result<()> {
 /// Add host entries for all SweetMCP domains pointing to 127.0.0.1
 fn add_sweetmcp_host_entries() -> Result<()> {
     info!("Adding SweetMCP host entries pointing to 127.0.0.1");
-    
+
     let hosts_file = if cfg!(target_os = "windows") {
         "C:\\Windows\\System32\\drivers\\etc\\hosts"
     } else {
         "/etc/hosts"
     };
-    
+
     // Read current hosts file
-    let current_hosts = fs::read_to_string(hosts_file)
-        .context("Failed to read hosts file")?;
-    
+    let current_hosts = fs::read_to_string(hosts_file).context("Failed to read hosts file")?;
+
     let sweetmcp_domains = [
         "sweetmcp.cyrup.dev",
-        "sweetmcp.cyrup.ai", 
+        "sweetmcp.cyrup.ai",
         "sweetmcp.cyrup.cloud",
-        "sweetmcp.cyrup.pro"
+        "sweetmcp.cyrup.pro",
     ];
-    
+
     let mut new_entries = Vec::new();
     let mut entries_added = false;
-    
+
     // Check which entries need to be added
     for domain in &sweetmcp_domains {
         if !current_hosts.contains(domain) {
@@ -562,12 +632,12 @@ fn add_sweetmcp_host_entries() -> Result<()> {
             info!("{} entry already exists in hosts file", domain);
         }
     }
-    
+
     if !entries_added {
         info!("All SweetMCP host entries already exist");
         return Ok(());
     }
-    
+
     // Append new entries
     let mut updated_hosts = current_hosts;
     if !updated_hosts.ends_with('\n') {
@@ -577,12 +647,14 @@ fn add_sweetmcp_host_entries() -> Result<()> {
     for entry in &new_entries {
         updated_hosts.push_str(&format!("{}\n", entry));
     }
-    
+
     // Write updated hosts file
-    fs::write(hosts_file, updated_hosts)
-        .context("Failed to write hosts file")?;
-    
-    info!("Successfully added {} SweetMCP host entries", new_entries.len());
+    fs::write(hosts_file, updated_hosts).context("Failed to write hosts file")?;
+
+    info!(
+        "Successfully added {} SweetMCP host entries",
+        new_entries.len()
+    );
     Ok(())
 }
 
@@ -593,17 +665,17 @@ fn get_installed_daemon_path() -> PathBuf {
         // Windows installs to Program Files or System32
         PathBuf::from("C:\\Program Files\\Cyrupd\\cyrupd.exe")
     }
-    
+
     #[cfg(target_os = "macos")]
     {
         PathBuf::from("/usr/local/bin/cyrupd")
     }
-    
+
     #[cfg(target_os = "linux")]
     {
         PathBuf::from("/usr/local/bin/cyrupd")
     }
-    
+
     #[cfg(not(any(target_os = "windows", target_os = "macos", target_os = "linux")))]
     {
         PathBuf::from("/usr/local/bin/cyrupd")

@@ -30,7 +30,7 @@ impl MetricPicker {
             load_values,
         }
     }
-    
+
     /// Get the backends and their URLs for metrics collection
     #[inline]
     pub fn get_metrics_targets(&self) -> Vec<(usize, String)> {
@@ -45,7 +45,7 @@ impl MetricPicker {
             })
             .collect()
     }
-    
+
     /// Update load value for a specific backend
     #[inline]
     pub fn update_load(&self, backend_idx: usize, load_value: f64) {

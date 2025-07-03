@@ -30,7 +30,7 @@ impl ServiceManager {
     pub fn new(cfg: &ServiceConfig) -> Result<Self> {
         let (bus_tx, bus_rx) = bounded::<Evt>(BUS_BOUND);
         let mut workers = HashMap::new();
-        
+
         // Load services from config file
         for def in cfg.services.clone() {
             let tx = crate::service::spawn(def.clone(), bus_tx.clone());
@@ -39,7 +39,7 @@ impl ServiceManager {
                 tx,
             );
         }
-        
+
         // Load services from services directory
         if let Some(services_dir) = &cfg.services_dir {
             if let Ok(entries) = std::fs::read_dir(services_dir) {
@@ -50,23 +50,34 @@ impl ServiceManager {
                             Ok(content) => {
                                 match toml::from_str::<crate::config::ServiceDefinition>(&content) {
                                     Ok(def) => {
-                                        info!("Loading service '{}' from {}", def.name, path.display());
+                                        info!(
+                                            "Loading service '{}' from {}",
+                                            def.name,
+                                            path.display()
+                                        );
                                         let tx = crate::service::spawn(def.clone(), bus_tx.clone());
                                         workers.insert(
-                                            Box::leak(def.name.clone().into_boxed_str()) as &'static str,
+                                            Box::leak(def.name.clone().into_boxed_str())
+                                                as &'static str,
                                             tx,
                                         );
                                     }
-                                    Err(e) => error!("Failed to parse service file {}: {}", path.display(), e),
+                                    Err(e) => error!(
+                                        "Failed to parse service file {}: {}",
+                                        path.display(),
+                                        e
+                                    ),
                                 }
                             }
-                            Err(e) => error!("Failed to read service file {}: {}", path.display(), e),
+                            Err(e) => {
+                                error!("Failed to read service file {}: {}", path.display(), e)
+                            }
                         }
                     }
                 }
             }
         }
-        
+
         Ok(Self {
             bus_tx,
             bus_rx,
@@ -84,13 +95,13 @@ impl ServiceManager {
             ts: chrono::Utc::now(),
             pid: Some(std::process::id()),
         })?;
-        
+
         // Initial start‑up pass.
         for (name, tx) in self.workers.iter() {
             tx.send(Cmd::Start)?;
             info!("Started service: {}", name);
         }
-        
+
         // Manager is now running
         self.bus_tx.send(Evt::State {
             service: "manager",
@@ -103,7 +114,7 @@ impl ServiceManager {
         let health_tick = tick(Duration::from_secs(30));
         let log_rotate_tick = tick(Duration::from_secs(3600));
         let restart_tick = tick(Duration::from_millis(100));
-        
+
         loop {
             select! {
                 recv(self.bus_rx) -> evt => self.handle_event(evt?)?,
@@ -143,21 +154,28 @@ impl ServiceManager {
                 }
             }
         }
-        
+
         // Announce manager stopped
-        self.bus_tx.send(Evt::State {
-            service: "manager",
-            kind: "stopped",
-            ts: chrono::Utc::now(),
-            pid: Some(std::process::id()),
-        }).ok();
-        
+        self.bus_tx
+            .send(Evt::State {
+                service: "manager",
+                kind: "stopped",
+                ts: chrono::Utc::now(),
+                pid: Some(std::process::id()),
+            })
+            .ok();
+
         Ok(())
     }
 
     fn handle_event(&mut self, evt: Evt) -> Result<()> {
         match &evt {
-            Evt::State { service, kind, ts, pid } => {
+            Evt::State {
+                service,
+                kind,
+                ts,
+                pid,
+            } => {
                 info!("{} → {} (pid: {:?}, ts: {})", service, kind, pid, ts);
                 // Check if any service has died unexpectedly
                 if *kind == "stopped" && service != &"manager" {
@@ -165,7 +183,11 @@ impl ServiceManager {
                     self.schedule_restart(service, 0);
                 }
             }
-            Evt::Health { service, healthy, ts } => {
+            Evt::Health {
+                service,
+                healthy,
+                ts,
+            } => {
                 if *healthy {
                     info!("{} health check OK at {}", service, ts);
                 } else {
@@ -181,63 +203,75 @@ impl ServiceManager {
                 error!("{} FATAL at {}: {}", service, ts, msg);
                 // Notify about fatal error
                 let error_msg = format!("Service {} encountered fatal error: {}", service, msg);
-                self.bus_tx.send(Evt::Fatal {
-                    service: "manager",
-                    msg: Box::leak(error_msg.into_boxed_str()) as &'static str,
-                    ts: chrono::Utc::now(),
-                }).ok();
+                self.bus_tx
+                    .send(Evt::Fatal {
+                        service: "manager",
+                        msg: Box::leak(error_msg.into_boxed_str()) as &'static str,
+                        ts: chrono::Utc::now(),
+                    })
+                    .ok();
                 // Schedule restart with longer delay
                 self.schedule_restart(service, 1000);
             }
         }
         Ok(())
     }
-    
+
     /// Schedule a service for restart after a delay
     fn schedule_restart(&mut self, service: &'static str, delay_ms: u64) {
         if let Some(tx) = self.workers.get(service) {
             // Send stop command immediately
             tx.send(Cmd::Stop).ok();
-            
+
             // Schedule the restart
             let restart_time = Instant::now() + Duration::from_millis(delay_ms);
-            let attempts = self.pending_restarts.get(service)
+            let attempts = self
+                .pending_restarts
+                .get(service)
                 .map(|s| s.attempts + 1)
                 .unwrap_or(1);
-            
-            self.pending_restarts.insert(service, RestartState {
-                stop_time: restart_time,
-                attempts,
-            });
-            
-            info!("Scheduled restart for {} in {}ms (attempt #{})", service, delay_ms, attempts);
+
+            self.pending_restarts.insert(
+                service,
+                RestartState {
+                    stop_time: restart_time,
+                    attempts,
+                },
+            );
+
+            info!(
+                "Scheduled restart for {} in {}ms (attempt #{})",
+                service, delay_ms, attempts
+            );
         }
     }
-    
+
     /// Process pending restarts that are ready
     fn process_pending_restarts(&mut self) {
         let now = Instant::now();
         let mut to_restart = Vec::new();
-        
+
         // Find services ready to restart
         for (service, state) in self.pending_restarts.iter() {
             if now >= state.stop_time {
                 to_restart.push(*service);
             }
         }
-        
+
         // Restart ready services
         for service in to_restart {
             if let Some(state) = self.pending_restarts.remove(&service) {
                 if let Some(tx) = self.workers.get(&service) {
                     info!("Restarting {} (attempt #{})", service, state.attempts);
                     tx.send(Cmd::Start).ok();
-                    self.bus_tx.send(Evt::State {
-                        service: "manager",
-                        kind: "restarted-service",
-                        ts: chrono::Utc::now(),
-                        pid: Some(std::process::id()),
-                    }).ok();
+                    self.bus_tx
+                        .send(Evt::State {
+                            service: "manager",
+                            kind: "restarted-service",
+                            ts: chrono::Utc::now(),
+                            pid: Some(std::process::id()),
+                        })
+                        .ok();
                 }
             }
         }

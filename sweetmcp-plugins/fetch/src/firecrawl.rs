@@ -60,24 +60,24 @@ impl FirecrawlFetcher {
 
         for line in html.lines() {
             let lower = line.to_lowercase();
-            
+
             if lower.contains("<script") {
                 in_script = true;
             }
-            
+
             if lower.contains("<style") {
                 in_style = true;
             }
-            
+
             if !in_script && !in_style {
                 result.push_str(line);
                 result.push('\n');
             }
-            
+
             if lower.contains("</script>") {
                 in_script = false;
             }
-            
+
             if lower.contains("</style>") {
                 in_style = false;
             }
@@ -93,9 +93,10 @@ impl FirecrawlFetcher {
 
         // This is a placeholder for the real Firecrawl implementation
         // In a real scenario, we would make an actual request to a Firecrawl endpoint
-        
+
         // Sample response HTML
-        let sample_html = format!("
+        let sample_html = format!(
+            "
 <!DOCTYPE html>
 <html>
 <head>
@@ -122,7 +123,9 @@ impl FirecrawlFetcher {
     </div>
 </body>
 </html>
-        ", url, url);
+        ",
+            url, url
+        );
 
         Ok(sample_html)
     }
@@ -130,19 +133,22 @@ impl FirecrawlFetcher {
 
 #[async_trait]
 impl ContentFetcher for FirecrawlFetcher {
-    async fn fetch_content(&self, url: &str) -> Result<FetchResult, Box<dyn StdError + Send + Sync>> {
+    async fn fetch_content(
+        &self,
+        url: &str,
+    ) -> Result<FetchResult, Box<dyn StdError + Send + Sync>> {
         // Fetch content using Firecrawl
         let html_content = Self::fetch_with_firecrawl(url)
             .await
             .map_err(|e| FirecrawlError::Network(format!("Failed to fetch content: {}", e)))?;
-        
+
         // Clean the HTML (remove scripts and styles)
         let cleaned_html = Self::clean_html(&html_content);
-        
+
         // Generate a screenshot placeholder
         // In a real implementation, this might use a screenshot capability
         let screenshot_base64 = Self::generate_placeholder_screenshot();
-        
+
         Ok(FetchResult {
             content: cleaned_html,
             screenshot_base64,

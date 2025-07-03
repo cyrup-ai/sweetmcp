@@ -31,18 +31,17 @@ impl DataExporter {
 
     /// Export data to file for JSON/CSV formats
     /// Note: Binary format requires bincode::Encode trait - use export_binary directly
-    pub async fn export_to_file<T>(&self, data: &[T], path: &Path) -> Result<()> 
+    pub async fn export_to_file<T>(&self, data: &[T], path: &Path) -> Result<()>
     where
         T: Serialize,
     {
         match self.format {
             ExportFormat::Json => self.export_json(data, path),
             ExportFormat::Csv => self.export_csv(data, path),
-            ExportFormat::Binary => {
-                Err(crate::migration::MigrationError::UnsupportedFormat(
-                    "Binary export requires bincode::Encode trait - use export_binary directly".to_string()
-                ))
-            }
+            ExportFormat::Binary => Err(crate::migration::MigrationError::UnsupportedFormat(
+                "Binary export requires bincode::Encode trait - use export_binary directly"
+                    .to_string(),
+            )),
         }
     }
 
@@ -87,7 +86,7 @@ impl DataExporter {
     }
 
     /// Export as binary
-    pub fn export_binary<T>(&self, data: &[T], path: &Path) -> Result<()> 
+    pub fn export_binary<T>(&self, data: &[T], path: &Path) -> Result<()>
     where
         T: bincode::Encode,
     {

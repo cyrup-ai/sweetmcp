@@ -1,5 +1,5 @@
-use std::{collections::HashMap, path::PathBuf};
 use crate::config::ServiceDefinition;
+use std::{collections::HashMap, path::PathBuf};
 
 /// Builder for daemon installation metadata.
 ///
@@ -116,10 +116,7 @@ impl InstallerBuilder {
     pub fn service(self, service: ServiceDefinition) -> Self {
         let mut services = self.services;
         services.push(service);
-        Self {
-            services,
-            ..self
-        }
+        Self { services, ..self }
     }
 }
 

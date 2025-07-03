@@ -4,7 +4,7 @@ use base64::Engine;
 use extism_pdk::*;
 use plugin::types::*;
 use qrcode_png::{Color, QrCode, QrCodeEcc};
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 
 // Called when the tool is invoked.
 pub(crate) fn call(input: CallToolRequest) -> Result<CallToolResult, Error> {

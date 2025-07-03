@@ -382,7 +382,6 @@ impl AdvancedRateLimitManager {
 
     /// Check if request should be allowed
     pub fn check_request(&self, endpoint: &str, peer_ip: Option<&str>, tokens: u32) -> bool {
-        
         let config = match self.endpoint_configs.get(endpoint) {
             Some(config) => config.clone(),
             None => {

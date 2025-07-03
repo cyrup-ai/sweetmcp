@@ -128,13 +128,13 @@ pub async fn context_get(request: GetContextRequest) -> HandlerResult<GetContext
     // Get memory adapter from global application context
     if let Some(app_context) = crate::context::APPLICATION_CONTEXT.get() {
         let memory_adapter = app_context.memory_adapter();
-        
+
         // Search for relevant context using the memory system
         match memory_adapter.search_contexts(&request.query).await {
             Ok(search_results) => {
                 let mut items = Vec::new();
                 let max_results = request.max_results.unwrap_or(10) as usize;
-                
+
                 for (key, value) in search_results.into_iter().take(max_results) {
                     let item = ContextItem {
                         id: key.clone(),
@@ -151,12 +151,12 @@ pub async fn context_get(request: GetContextRequest) -> HandlerResult<GetContext
                     };
                     items.push(item);
                 }
-                
+
                 let result = GetContextResult {
                     items,
                     next_cursor: None,
                 };
-                
+
                 return Ok(result);
             }
             Err(e) => {
@@ -185,7 +185,7 @@ pub async fn context_subscribe(
     // Store subscription in memory system
     if let Some(app_context) = crate::context::APPLICATION_CONTEXT.get() {
         let memory_adapter = app_context.memory_adapter();
-        
+
         // Store subscription metadata in memory system
         let subscription_data = serde_json::json!({
             "type": "context_subscription",
@@ -193,14 +193,17 @@ pub async fn context_subscribe(
             "created_at": chrono::Utc::now().to_rfc3339(),
             "subscription_id": subscription_id
         });
-        
-        if let Err(e) = memory_adapter.store_context(
-            format!("subscription:{}", subscription_id),
-            subscription_data
-        ).await {
+
+        if let Err(e) = memory_adapter
+            .store_context(
+                format!("subscription:{}", subscription_id),
+                subscription_data,
+            )
+            .await
+        {
             log::error!("Failed to store subscription in memory system: {}", e);
         }
-        
+
         // Also add to subscription tracking
         for scope in &request.scopes {
             if let Err(e) = memory_adapter.add_subscription(scope.clone()).await {

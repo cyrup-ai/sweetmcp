@@ -1,11 +1,11 @@
 //! Signing configuration management
 
-use super::{SigningConfig, PlatformConfig};
+use super::{PlatformConfig, SigningConfig};
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
-use std::path::{Path, PathBuf};
-use std::fs;
 use std::env;
+use std::fs;
+use std::path::{Path, PathBuf};
 
 /// Signing configuration file structure
 #[derive(Debug, Serialize, Deserialize)]
@@ -13,11 +13,11 @@ pub struct SigningConfigFile {
     /// macOS signing configuration
     #[serde(skip_serializing_if = "Option::is_none")]
     pub macos: Option<MacOSConfig>,
-    
+
     /// Windows signing configuration
     #[serde(skip_serializing_if = "Option::is_none")]
     pub windows: Option<WindowsConfig>,
-    
+
     /// Linux signing configuration
     #[serde(skip_serializing_if = "Option::is_none")]
     pub linux: Option<LinuxConfig>,
@@ -56,15 +56,15 @@ pub struct LinuxConfig {
 /// Load signing configuration from file and environment
 pub fn load_config() -> Result<SigningConfig> {
     let mut config = SigningConfig::default();
-    
+
     // Try to load from config file
     if let Ok(file_config) = load_config_file() {
         merge_config(&mut config, file_config);
     }
-    
+
     // Override with environment variables
     override_from_env(&mut config);
-    
+
     Ok(config)
 }
 
@@ -83,19 +83,19 @@ fn load_config_file() -> Result<SigningConfigFile> {
         // System config
         PathBuf::from("/etc/sweetmcp/signing.toml"),
     ];
-    
+
     for path in search_paths {
         if path.exists() {
             let content = fs::read_to_string(&path)
                 .with_context(|| format!("Failed to read config file: {}", path.display()))?;
-            
+
             let config: SigningConfigFile = toml::from_str(&content)
                 .with_context(|| format!("Failed to parse config file: {}", path.display()))?;
-            
+
             return Ok(config);
         }
     }
-    
+
     // No config file found, return empty config
     Ok(SigningConfigFile {
         macos: None,
@@ -108,7 +108,12 @@ fn load_config_file() -> Result<SigningConfigFile> {
 fn merge_config(config: &mut SigningConfig, file_config: SigningConfigFile) {
     match &mut config.platform {
         #[cfg(target_os = "macos")]
-        PlatformConfig::MacOS { identity, team_id, entitlements, .. } => {
+        PlatformConfig::MacOS {
+            identity,
+            team_id,
+            entitlements,
+            ..
+        } => {
             if let Some(mac_config) = file_config.macos {
                 if let Some(id) = mac_config.identity {
                     *identity = id;
@@ -121,9 +126,14 @@ fn merge_config(config: &mut SigningConfig, file_config: SigningConfigFile) {
                 }
             }
         }
-        
+
         #[cfg(target_os = "windows")]
-        PlatformConfig::Windows { certificate, timestamp_url, digest_algorithm, .. } => {
+        PlatformConfig::Windows {
+            certificate,
+            timestamp_url,
+            digest_algorithm,
+            ..
+        } => {
             if let Some(win_config) = file_config.windows {
                 if let Some(cert) = win_config.certificate {
                     *certificate = cert;
@@ -136,7 +146,7 @@ fn merge_config(config: &mut SigningConfig, file_config: SigningConfigFile) {
                 }
             }
         }
-        
+
         #[cfg(target_os = "linux")]
         PlatformConfig::Linux { key_id, detached } => {
             if let Some(linux_config) = file_config.linux {
@@ -148,7 +158,7 @@ fn merge_config(config: &mut SigningConfig, file_config: SigningConfigFile) {
                 }
             }
         }
-        
+
         #[allow(unreachable_patterns)]
         _ => {}
     }
@@ -163,7 +173,7 @@ fn override_from_env(config: &mut SigningConfig) {
     if let Ok(out_path) = env::var("SWEETMCP_OUTPUT_PATH") {
         config.output_path = PathBuf::from(out_path);
     }
-    
+
     // Platform-specific overrides are already handled in SigningConfig::default_platform_config()
     // This is where we'd add any additional environment overrides
 }
@@ -187,7 +197,6 @@ pub fn create_sample_config() -> Result<String> {
             detached: Some(true),
         }),
     };
-    
-    toml::to_string_pretty(&sample)
-        .context("Failed to serialize sample config")
+
+    toml::to_string_pretty(&sample).context("Failed to serialize sample config")
 }
