@@ -1,4 +1,5 @@
-use crate::{ClientConfigPlugin, ConfigFormat, ConfigMerger, ConfigPath, Platform};
+use crate::{ClientConfigPlugin, ConfigFormat, ConfigPath, Platform};
+use crate::config::ConfigMerger;
 use anyhow::Result;
 use std::path::PathBuf;
 
@@ -24,13 +25,13 @@ impl ClientConfigPlugin for RooCodePlugin {
                 }
             }
             Platform::MacOS => {
-                if let Some(home) = dirs::home_dir() {
-                    paths.push(home.join("Library/Application Support/Code"));
+                if let Some(base_dirs) = directories::BaseDirs::new() {
+                    paths.push(base_dirs.home_dir().join("Library/Application Support/Code"));
                 }
             }
             Platform::Linux => {
-                if let Some(config) = dirs::config_dir() {
-                    paths.push(config.join("Code"));
+                if let Some(base_dirs) = directories::BaseDirs::new() {
+                    paths.push(base_dirs.config_dir().join("Code"));
                 }
             }
             _ => {}
@@ -57,9 +58,9 @@ impl ClientConfigPlugin for RooCodePlugin {
                 }
             }
             Platform::MacOS => {
-                if let Some(home) = dirs::home_dir() {
+                if let Some(base_dirs) = directories::BaseDirs::new() {
                     configs.push(ConfigPath {
-                        path: home
+                        path: base_dirs.home_dir()
                             .join("Library/Application Support/Code")
                             .join("User")
                             .join("settings.json"),
@@ -69,9 +70,9 @@ impl ClientConfigPlugin for RooCodePlugin {
                 }
             }
             Platform::Linux => {
-                if let Some(config) = dirs::config_dir() {
+                if let Some(base_dirs) = directories::BaseDirs::new() {
                     configs.push(ConfigPath {
-                        path: config
+                        path: base_dirs.config_dir()
                             .join("Code")
                             .join("User")
                             .join("settings.json"),
@@ -92,8 +93,12 @@ impl ClientConfigPlugin for RooCodePlugin {
         path.exists() && path.is_dir()
     }
     
-    fn inject_sweetmcp(&self, config_content: &str, _format: ConfigFormat) -> Result<String> {
-        // Roo Code uses HTTP transport
-        ConfigMerger::merge_json(config_content, self.client_id())
+    fn inject_sweetmcp(&self, config_content: &str, format: ConfigFormat) -> Result<String> {
+        let merger = ConfigMerger::new();
+        merger.merge(config_content, format)
+    }
+    
+    fn config_format(&self) -> ConfigFormat {
+        ConfigFormat::Json
     }
 }

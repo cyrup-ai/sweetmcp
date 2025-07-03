@@ -1,4 +1,5 @@
-use crate::{ClientConfigPlugin, ConfigFormat, ConfigMerger, ConfigPath, Platform};
+use crate::{ClientConfigPlugin, ConfigFormat, ConfigPath, Platform};
+use crate::config::ConfigMerger;
 use anyhow::Result;
 use std::path::PathBuf;
 
@@ -18,15 +19,15 @@ impl ClientConfigPlugin for ZedPlugin {
         
         match Platform::current() {
             Platform::MacOS => {
-                if let Some(home) = dirs::home_dir() {
-                    paths.push(home.join(".config").join("zed"));
+                if let Some(base_dirs) = directories::BaseDirs::new() {
+                    paths.push(base_dirs.home_dir().join(".config").join("zed"));
                     // Also check macOS-specific location
-                    paths.push(home.join("Library/Application Support/Zed"));
+                    paths.push(base_dirs.home_dir().join("Library/Application Support/Zed"));
                 }
             }
             Platform::Linux => {
-                if let Some(config) = dirs::config_dir() {
-                    paths.push(config.join("zed"));
+                if let Some(base_dirs) = directories::BaseDirs::new() {
+                    paths.push(base_dirs.config_dir().join("zed"));
                 }
             }
             _ => {
@@ -42,15 +43,15 @@ impl ClientConfigPlugin for ZedPlugin {
         
         match Platform::current() {
             Platform::MacOS => {
-                if let Some(home) = dirs::home_dir() {
+                if let Some(base_dirs) = directories::BaseDirs::new() {
                     configs.push(ConfigPath {
-                        path: home.join(".config").join("zed").join("settings.json"),
+                        path: base_dirs.home_dir().join(".config").join("zed").join("settings.json"),
                         format: ConfigFormat::Json,
                         platform: Platform::MacOS,
                     });
                     
                     configs.push(ConfigPath {
-                        path: home
+                        path: base_dirs.home_dir()
                             .join("Library/Application Support/Zed")
                             .join("settings.json"),
                         format: ConfigFormat::Json,
@@ -59,9 +60,9 @@ impl ClientConfigPlugin for ZedPlugin {
                 }
             }
             Platform::Linux => {
-                if let Some(config) = dirs::config_dir() {
+                if let Some(base_dirs) = directories::BaseDirs::new() {
                     configs.push(ConfigPath {
-                        path: config.join("zed").join("settings.json"),
+                        path: base_dirs.config_dir().join("zed").join("settings.json"),
                         format: ConfigFormat::Json,
                         platform: Platform::Linux,
                     });
@@ -77,8 +78,12 @@ impl ClientConfigPlugin for ZedPlugin {
         path.exists() && path.is_dir()
     }
     
-    fn inject_sweetmcp(&self, config_content: &str, _format: ConfigFormat) -> Result<String> {
-        // Zed uses "context_servers" instead of "mcpServers"
-        ConfigMerger::merge_json(config_content, self.client_id())
+    fn inject_sweetmcp(&self, config_content: &str, format: ConfigFormat) -> Result<String> {
+        let merger = ConfigMerger::new();
+        merger.merge(config_content, format)
+    }
+    
+    fn config_format(&self) -> ConfigFormat {
+        ConfigFormat::Json
     }
 }

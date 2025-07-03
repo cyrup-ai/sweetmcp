@@ -47,3 +47,6 @@ path = "src/lib.rs"
 [[bin]]
 name = "sweetmcp-autoconfig"
 path = "src/main.rs"
+
+[features]
+dirs = []

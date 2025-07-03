@@ -1,7 +1,6 @@
 use crate::ConfigFormat;
 use anyhow::{anyhow, Result};
 use serde_json::Value as JsonValue;
-use std::collections::HashMap;
 use toml::Value as TomlValue;
 
 /// Zero-allocation config merger for different formats
@@ -30,11 +29,16 @@ impl ConfigMerger {
                     }
                 }
             }),
-            toml_template: toml::toml! {
-                [mcpServers.sweetmcp]
-                command = "sweetmcp"
-                args = ["--daemon"]
-            },
+            toml_template: TomlValue::Table({
+                let mut map = toml::map::Map::new();
+                let mut mcp_servers = toml::map::Map::new();
+                let mut sweetmcp = toml::map::Map::new();
+                sweetmcp.insert("command".to_string(), TomlValue::String("sweetmcp".to_string()));
+                sweetmcp.insert("args".to_string(), TomlValue::Array(vec![TomlValue::String("--daemon".to_string())]));
+                mcp_servers.insert("sweetmcp".to_string(), TomlValue::Table(sweetmcp));
+                map.insert("mcpServers".to_string(), TomlValue::Table(mcp_servers));
+                map
+            }),
         };
         
         Self { sweetmcp_config }

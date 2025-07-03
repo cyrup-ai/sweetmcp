@@ -1,4 +1,5 @@
-use crate::{ClientConfigPlugin, ConfigFormat, ConfigMerger, ConfigPath, Platform};
+use crate::{ClientConfigPlugin, ConfigFormat, ConfigPath, Platform};
+use crate::config::ConfigMerger;
 use anyhow::Result;
 use std::path::PathBuf;
 use tracing::debug;

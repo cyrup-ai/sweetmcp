@@ -1,12 +1,11 @@
-mod clients;
-mod watcher;
-
 use anyhow::Result;
-use std::sync::Arc;
 use tracing::{info, Level};
 use tracing_subscriber;
 
-use crate::watcher::ClientWatcher;
+use sweetmcp_client_autoconfig::{
+    watcher::AutoConfigWatcher,
+    clients,
+};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -22,10 +21,10 @@ async fn main() -> Result<()> {
     
     // Create watcher with all client plugins
     let clients = clients::all_clients();
-    let watcher = Arc::new(ClientWatcher::new(clients));
+    let watcher = AutoConfigWatcher::new(clients)?;
     
     // Start watching for installations
-    watcher.start().await?;
+    watcher.run().await?;
     
     Ok(())
 }

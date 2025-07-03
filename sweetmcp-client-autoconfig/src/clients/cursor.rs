@@ -1,4 +1,5 @@
-use crate::{ClientConfigPlugin, ConfigFormat, ConfigMerger, ConfigPath, Platform};
+use crate::{ClientConfigPlugin, ConfigFormat, ConfigPath, Platform};
+use crate::config::ConfigMerger;
 use anyhow::Result;
 use std::path::PathBuf;
 
@@ -16,20 +17,18 @@ impl ClientConfigPlugin for CursorPlugin {
     fn watch_paths(&self) -> Vec<PathBuf> {
         let mut paths = Vec::new();
         
-        if let Some(home) = dirs::home_dir() {
+        if let Some(base_dirs) = directories::BaseDirs::new() {
             // Watch for global config
-            paths.push(home.join(".cursor"));
-        }
-        
-        // Also watch common project locations
-        if let Some(home) = dirs::home_dir() {
+            paths.push(base_dirs.home_dir().join(".cursor"));
+            
+            // Also watch common project locations
             // Common development directories
-            paths.push(home.join("Projects"));
-            paths.push(home.join("projects"));
-            paths.push(home.join("Development"));
-            paths.push(home.join("dev"));
-            paths.push(home.join("code"));
-            paths.push(home.join("workspace"));
+            paths.push(base_dirs.home_dir().join("Projects"));
+            paths.push(base_dirs.home_dir().join("projects"));
+            paths.push(base_dirs.home_dir().join("Development"));
+            paths.push(base_dirs.home_dir().join("dev"));
+            paths.push(base_dirs.home_dir().join("code"));
+            paths.push(base_dirs.home_dir().join("workspace"));
         }
         
         paths
@@ -38,10 +37,10 @@ impl ClientConfigPlugin for CursorPlugin {
     fn config_paths(&self) -> Vec<ConfigPath> {
         let mut configs = Vec::new();
         
-        if let Some(home) = dirs::home_dir() {
+        if let Some(base_dirs) = directories::BaseDirs::new() {
             // Global config
             configs.push(ConfigPath {
-                path: home.join(".cursor").join("mcp.json"),
+                path: base_dirs.home_dir().join(".cursor").join("mcp.json"),
                 format: ConfigFormat::Json,
                 platform: Platform::All,
             });
@@ -61,7 +60,12 @@ impl ClientConfigPlugin for CursorPlugin {
         cursor_dir.exists() && cursor_dir.is_dir()
     }
     
-    fn inject_sweetmcp(&self, config_content: &str, _format: ConfigFormat) -> Result<String> {
-        ConfigMerger::merge_json(config_content, self.client_id())
+    fn inject_sweetmcp(&self, config_content: &str, format: ConfigFormat) -> Result<String> {
+        let merger = ConfigMerger::new();
+        merger.merge(config_content, format)
+    }
+    
+    fn config_format(&self) -> ConfigFormat {
+        ConfigFormat::Json
     }
 }
