@@ -9,13 +9,18 @@ use std::{collections::HashMap, path::PathBuf, process::Command};
 
 pub(crate) struct PlatformExecutor;
 
-// For now, we'll use a placeholder for the signed helper
-// In production, this would contain the actual signed applet
+// Global helper path - initialized once, used everywhere
 static HELPER_PATH: OnceCell<PathBuf> = OnceCell::new();
-const APP_ZIP_PLACEHOLDER: &[u8] = b"PLACEHOLDER_FOR_SIGNED_HELPER";
+
+// Embedded ZIP data for the signed helper app
+// This is generated at build time by build.rs which creates a proper signed macOS helper
+const APP_ZIP_DATA: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/SweetMCPHelper.app.zip"));
 
 impl PlatformExecutor {
     pub fn install(b: InstallerBuilder) -> Result<(), InstallerError> {
+        // Initialize helper path if not already set
+        Self::ensure_helper_path()?;
+        
         // First, copy the binary to /tmp so elevated context can access it
         let temp_path = format!("/tmp/{}", b.label);
         std::fs::copy(&b.program, &temp_path)
@@ -25,26 +30,19 @@ impl PlatformExecutor {
         
         // Build the installation commands using CommandBuilder
         let mkdir_cmd = CommandBuilder::new("mkdir")
-            .arg("-p")
-            .arg("/Library/LaunchDaemons")
-            .arg("/usr/local/bin")
-            .arg(&format!("/var/log/{}", b.label));
+            .args(["-p", "/Library/LaunchDaemons", "/usr/local/bin", &format!("/var/log/{}", b.label)]);
         
         let cp_cmd = CommandBuilder::new("cp")
-            .arg(&temp_path)
-            .arg(&format!("/usr/local/bin/{}", b.label));
+            .args([&temp_path, &format!("/usr/local/bin/{}", b.label)]);
             
         let chown_cmd = CommandBuilder::new("chown")
-            .arg("root:wheel")
-            .arg(&format!("/usr/local/bin/{}", b.label));
+            .args(["root:wheel", &format!("/usr/local/bin/{}", b.label)]);
             
         let chmod_cmd = CommandBuilder::new("chmod")
-            .arg("755")
-            .arg(&format!("/usr/local/bin/{}", b.label));
+            .args(["755", &format!("/usr/local/bin/{}", b.label)]);
             
         let rm_cmd = CommandBuilder::new("rm")
-            .arg("-f")
-            .arg(&temp_path);
+            .args(["-f", &temp_path]);
         
         // Write files to temp location first, then move them in elevated context
         let temp_plist = format!("/tmp/{}.plist", b.label);
@@ -62,20 +60,17 @@ impl PlatformExecutor {
         
         // Set plist permissions
         let plist_perms_chown = CommandBuilder::new("chown")
-            .arg("root:wheel")
-            .arg(&plist_file);
+            .args(["root:wheel", &plist_file]);
         
         let plist_perms_chmod = CommandBuilder::new("chmod")
-            .arg("644")
-            .arg(&plist_file);
+            .args(["644", &plist_file]);
         
         script.push_str(&format!(" && {}", Self::command_to_script(&plist_perms_chown)));
         script.push_str(&format!(" && {}", Self::command_to_script(&plist_perms_chmod)));
         
         // Create services directory
         let services_dir = CommandBuilder::new("mkdir")
-            .arg("-p")
-            .arg("/etc/cyrupd/services");
+            .args(["-p", "/etc/cyrupd/services"]);
         
         script.push_str(&format!(" && {}", Self::command_to_script(&services_dir)));
 
@@ -95,12 +90,10 @@ impl PlatformExecutor {
                 
                 // Set service file permissions using CommandBuilder
                 let service_perms_chown = CommandBuilder::new("chown")
-                    .arg("root:wheel")
-                    .arg(&service_file);
+                    .args(["root:wheel", &service_file]);
                 
                 let service_perms_chmod = CommandBuilder::new("chmod")
-                    .arg("644")
-                    .arg(&service_file);
+                    .args(["644", &service_file]);
                 
                 script.push_str(&format!(" && {}", Self::command_to_script(&service_perms_chown)));
                 script.push_str(&format!(" && {}", Self::command_to_script(&service_perms_chmod)));
@@ -109,15 +102,249 @@ impl PlatformExecutor {
 
         // Load the daemon using CommandBuilder
         let load_daemon = CommandBuilder::new("launchctl")
-            .arg("load")
-            .arg("-w")
-            .arg(&format!("/Library/LaunchDaemons/{}.plist", b.label));
+            .args(["load", "-w", &format!("/Library/LaunchDaemons/{}.plist", b.label)]);
         
         script.push_str(&format!(" && {}", Self::command_to_script(&load_daemon)));
 
         Self::run_osascript(&script)
     }
 
+    /// Ensure the helper path is initialized for secure privileged operations
+    fn ensure_helper_path() -> Result<(), InstallerError> {
+        if HELPER_PATH.get().is_none() {
+            let helper_path = Self::extract_helper_app()?;
+            HELPER_PATH.set(helper_path)
+                .map_err(|_| InstallerError::System("Failed to set helper path".to_string()))?;
+        }
+        Ok(())
+    }
+
+    /// Extract the signed helper app from embedded data
+    fn extract_helper_app() -> Result<PathBuf, InstallerError> {
+        // Use a stable location based on app version to avoid re-extraction
+        let version_hash = {
+            use std::hash::{Hash, Hasher};
+            let mut hasher = std::collections::hash_map::DefaultHasher::new();
+            APP_ZIP_DATA.len().hash(&mut hasher);
+            APP_ZIP_DATA.get(0..64).unwrap_or(&APP_ZIP_DATA[0..APP_ZIP_DATA.len().min(64)]).hash(&mut hasher);
+            hasher.finish()
+        };
+        
+        let helper_dir = std::env::temp_dir()
+            .join("sweetmcp_helper")
+            .join(format!("v{:016x}", version_hash));
+        
+        std::fs::create_dir_all(&helper_dir)
+            .map_err(|e| InstallerError::System(format!("Failed to create helper directory: {}", e)))?;
+        
+        let helper_path = helper_dir.join("SweetMCPHelper.app");
+        
+        // Check if helper already exists and is valid
+        if helper_path.exists() && 
+           Self::validate_helper(&helper_path)? && 
+           Self::verify_code_signature(&helper_path)? {
+            return Ok(helper_path);
+        }
+        
+        // Extract from embedded data
+        Self::extract_from_embedded_data(&helper_path)?;
+        
+        Ok(helper_path)
+    }
+
+    /// Extract helper from embedded APP_ZIP_DATA
+    fn extract_from_embedded_data(helper_path: &PathBuf) -> Result<bool, InstallerError> {
+        // Validate ZIP data size and header
+        if APP_ZIP_DATA.len() < 22 {  // Minimum ZIP file size
+            return Err(InstallerError::System("Embedded helper ZIP data is too small".to_string()));
+        }
+        
+        // Check ZIP signature
+        if !APP_ZIP_DATA.starts_with(&[0x50, 0x4B, 0x03, 0x04]) && // Local file header
+           !APP_ZIP_DATA.starts_with(&[0x50, 0x4B, 0x05, 0x06]) && // Empty archive
+           !APP_ZIP_DATA.starts_with(&[0x50, 0x4B, 0x07, 0x08]) {  // Spanned archive
+            return Err(InstallerError::System("Invalid ZIP signature in embedded data".to_string()));
+        }
+        
+        // Extract the embedded ZIP data
+        match Self::extract_zip_data(APP_ZIP_DATA, helper_path) {
+            Ok(_) => {
+                // Verify the extracted app is valid and properly signed
+                if Self::validate_helper(helper_path)? && Self::verify_code_signature(helper_path)? {
+                    Ok(true)
+                } else {
+                    // Cleanup invalid extraction
+                    let _ = std::fs::remove_dir_all(helper_path);
+                    Err(InstallerError::System("Extracted helper failed validation".to_string()))?
+                }
+            }
+            Err(e) => {
+                // Extraction failed, cleanup
+                let _ = std::fs::remove_dir_all(helper_path);
+                Err(e)
+            }
+        }
+    }
+
+    /// Extract ZIP data to the specified path
+    fn extract_zip_data(zip_data: &[u8], target_path: &PathBuf) -> Result<(), InstallerError> {
+        use std::io::{Cursor, Read};
+        use zip::ZipArchive;
+        
+        // Create a cursor for the ZIP data
+        let cursor = Cursor::new(zip_data);
+        
+        // Create ZIP archive reader
+        let mut archive = ZipArchive::new(cursor)
+            .map_err(|e| InstallerError::System(format!("Failed to read ZIP archive: {}", e)))?;
+        
+        // Extract all files
+        for i in 0..archive.len() {
+            let mut file = archive.by_index(i)
+                .map_err(|e| InstallerError::System(format!("Failed to access file in ZIP: {}", e)))?;
+            
+            let file_path = match file.enclosed_name() {
+                Some(path) => path.to_owned(),
+                None => {
+                    // Skip files with invalid paths
+                    continue;
+                }
+            };
+            
+            let out_path = target_path.join(&file_path);
+            
+            // Create parent directories if needed
+            if let Some(parent) = out_path.parent() {
+                std::fs::create_dir_all(parent)
+                    .map_err(|e| InstallerError::System(format!("Failed to create directory {}: {}", parent.display(), e)))?;
+            }
+            
+            if file.is_dir() {
+                // Create directory
+                std::fs::create_dir_all(&out_path)
+                    .map_err(|e| InstallerError::System(format!("Failed to create directory {}: {}", out_path.display(), e)))?;
+            } else {
+                // Extract file
+                let mut outfile = std::fs::File::create(&out_path)
+                    .map_err(|e| InstallerError::System(format!("Failed to create file {}: {}", out_path.display(), e)))?;
+                
+                // Copy file contents with zero-copy optimization where possible
+                let mut buffer = Vec::with_capacity(file.size() as usize);
+                file.read_to_end(&mut buffer)
+                    .map_err(|e| InstallerError::System(format!("Failed to read file from ZIP: {}", e)))?;
+                
+                use std::io::Write;
+                outfile.write_all(&buffer)
+                    .map_err(|e| InstallerError::System(format!("Failed to write file {}: {}", out_path.display(), e)))?;
+                
+                // Sync to ensure data is written
+                outfile.sync_all()
+                    .map_err(|e| InstallerError::System(format!("Failed to sync file {}: {}", out_path.display(), e)))?;
+                
+                // Set file permissions on Unix
+                #[cfg(unix)]
+                {
+                    use std::os::unix::fs::PermissionsExt;
+                    if let Some(mode) = file.unix_mode() {
+                        let permissions = std::fs::Permissions::from_mode(mode);
+                        std::fs::set_permissions(&out_path, permissions)
+                            .map_err(|e| InstallerError::System(format!("Failed to set permissions on {}: {}", out_path.display(), e)))?;
+                    }
+                }
+            }
+        }
+        
+        Ok(())
+    }
+
+    /// Validate that the helper app is properly signed and functional
+    fn validate_helper(helper_path: &PathBuf) -> Result<bool, InstallerError> {
+        // Check if the helper exists and has the expected structure
+        let contents = helper_path.join("Contents");
+        let macos = contents.join("MacOS");
+        let info_plist = contents.join("Info.plist");
+        let executable = macos.join("SweetMCPHelper");
+        
+        // Verify all required components exist
+        if !contents.exists() || !macos.exists() || !info_plist.exists() || !executable.exists() {
+            return Ok(false);
+        }
+        
+        // Verify Info.plist contains required keys
+        let plist_data = std::fs::read(&info_plist)
+            .map_err(|e| InstallerError::System(format!("Failed to read Info.plist: {}", e)))?;
+        
+        let plist_value = plist::from_bytes::<plist::Value>(&plist_data)
+            .map_err(|e| InstallerError::System(format!("Failed to parse Info.plist: {}", e)))?;
+        
+        if let plist::Value::Dictionary(dict) = plist_value {
+            // Check required keys
+            let has_bundle_id = dict.contains_key("CFBundleIdentifier");
+            let has_bundle_executable = dict.contains_key("CFBundleExecutable");
+            let has_sm_authorized = dict.contains_key("SMAuthorizedClients");
+            
+            Ok(has_bundle_id && has_bundle_executable && has_sm_authorized)
+        } else {
+            Ok(false)
+        }
+    }
+    
+    /// Verify the code signature of the helper app
+    fn verify_code_signature(helper_path: &PathBuf) -> Result<bool, InstallerError> {
+        // Use codesign to verify the signature
+        let output = Command::new("codesign")
+            .args([
+                "--verify",
+                "--deep",
+                "--strict",
+                "--verbose=2",
+                helper_path.to_str().unwrap_or("")
+            ])
+            .output()
+            .map_err(|e| InstallerError::System(format!("Failed to run codesign: {}", e)))?;
+        
+        if output.status.success() {
+            // Additional verification: check if it's signed with a Developer ID
+            let verify_output = Command::new("codesign")
+                .args([
+                    "-d",
+                    "--verbose=4",
+                    helper_path.to_str().unwrap_or("")
+                ])
+                .output()
+                .map_err(|e| InstallerError::System(format!("Failed to run codesign -d: {}", e)))?;
+            
+            let stderr = String::from_utf8_lossy(&verify_output.stderr);
+            
+            // Check for Developer ID signature
+            let has_developer_id = stderr.contains("Developer ID Application");
+            let has_valid_timestamp = stderr.contains("Timestamp=");
+            let has_hardened_runtime = stderr.contains("flags=0x10000(runtime)");
+            
+            Ok(has_developer_id && has_valid_timestamp && has_hardened_runtime)
+        } else {
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            
+            // In development mode, allow ad-hoc signatures
+            #[cfg(debug_assertions)]
+            {
+                if stderr.contains("code object is not signed at all") || 
+                   stderr.contains("ad-hoc") {
+                    return Ok(true);
+                }
+            }
+            
+            Err(InstallerError::System(format!("Code signature verification failed: {}", stderr)))
+        }
+    }
+
+
+    /// Get the path to the helper app, ensuring it's initialized
+    pub fn get_helper_path() -> Result<&'static PathBuf, InstallerError> {
+        Self::ensure_helper_path()?;
+        HELPER_PATH.get()
+            .ok_or_else(|| InstallerError::System("Helper path not initialized".to_string()))
+    }
 
     pub fn uninstall(label: &str) -> Result<(), InstallerError> {
         let script = format!(

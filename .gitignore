@@ -103,6 +103,11 @@ ipython_config.py
 .env
 
 # ==============================
+# Signing Configuration
+# ==============================
+signing.toml
+
+# ==============================
 # IDE and Editor Files
 # ==============================
 .vscode/

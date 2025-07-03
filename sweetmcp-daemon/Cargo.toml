@@ -61,3 +61,8 @@ zip    = { version = "0.6.6", default-features = false, features = ["deflate"] }
 
 [build-dependencies]
 pkg-config = "0.3.32"
+tauri-bundler = "2.5.0"
+tauri-utils = "2.1.0"
+cc = "1.0"
+tempfile = "3.10"
+which = "8.0"

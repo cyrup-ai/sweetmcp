@@ -1,0 +1,280 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  build-macos:
+    name: Build macOS (${{ matrix.target }})
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        include:
+          - target: x86_64-apple-darwin
+            arch: intel
+          - target: aarch64-apple-darwin
+            arch: silicon
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      
+      - name: Import Apple Certificate
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          # Create temporary keychain
+          KEYCHAIN_NAME="build-${{ github.run_id }}.keychain"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+          security default-keychain -s "$KEYCHAIN_NAME"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+          security set-keychain-settings -t 3600 -u "$KEYCHAIN_NAME"
+          
+          # Import certificate
+          echo "$APPLE_CERTIFICATE" | base64 --decode > certificate.p12
+          security import certificate.p12 -k "$KEYCHAIN_NAME" -P "$APPLE_CERTIFICATE_PASSWORD" -T /usr/bin/codesign -T /usr/bin/security
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+          
+          # Verify import
+          security find-identity -v -p codesigning "$KEYCHAIN_NAME"
+          
+          # Get signing identity
+          IDENTITY=$(security find-identity -v -p codesigning "$KEYCHAIN_NAME" | grep "Developer ID Application" | head -1 | awk -F'"' '{print $2}')
+          echo "APPLE_SIGNING_IDENTITY=$IDENTITY" >> $GITHUB_ENV
+          
+          # Clean up
+          rm -f certificate.p12
+      
+      - name: Build sweetmcp-daemon
+        env:
+          APPLE_SIGNING_IDENTITY: ${{ env.APPLE_SIGNING_IDENTITY }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+        run: |
+          cd sweetmcp-daemon
+          cargo build --release --target ${{ matrix.target }}
+      
+      - name: Sign and Notarize
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          # Sign the daemon binary
+          codesign --force --sign "${{ env.APPLE_SIGNING_IDENTITY }}" \
+            --options runtime --timestamp --deep \
+            "sweetmcp-daemon/target/${{ matrix.target }}/release/sweetmcp-daemon"
+          
+          # Create ZIP for notarization
+          ditto -c -k --keepParent \
+            "sweetmcp-daemon/target/${{ matrix.target }}/release/sweetmcp-daemon" \
+            "sweetmcp-daemon-${{ matrix.arch }}.zip"
+          
+          # Submit for notarization
+          xcrun notarytool submit "sweetmcp-daemon-${{ matrix.arch }}.zip" \
+            --apple-id "$APPLE_ID" \
+            --password "$APPLE_PASSWORD" \
+            --team-id "$APPLE_TEAM_ID" \
+            --wait
+          
+          # Staple the ticket
+          xcrun stapler staple "sweetmcp-daemon/target/${{ matrix.target }}/release/sweetmcp-daemon"
+      
+      - name: Create tarball
+        run: |
+          cd sweetmcp-daemon/target/${{ matrix.target }}/release
+          tar czf sweetmcp-daemon-${{ matrix.target }}.tar.gz sweetmcp-daemon
+          mv sweetmcp-daemon-${{ matrix.target }}.tar.gz ../../../../
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sweetmcp-daemon-${{ matrix.target }}
+          path: sweetmcp-daemon-${{ matrix.target }}.tar.gz
+
+  build-windows:
+    name: Build Windows (${{ matrix.target }})
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        include:
+          - target: x86_64-pc-windows-msvc
+            arch: x64
+          - target: i686-pc-windows-msvc
+            arch: x86
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      
+      - name: Import Certificate
+        env:
+          WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
+          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+        shell: powershell
+        run: |
+          # Decode certificate
+          $cert = [System.Convert]::FromBase64String($env:WINDOWS_CERTIFICATE)
+          $certPath = "certificate.pfx"
+          [System.IO.File]::WriteAllBytes($certPath, $cert)
+          
+          # Import to certificate store
+          $securePwd = ConvertTo-SecureString -String $env:WINDOWS_CERTIFICATE_PASSWORD -Force -AsPlainText
+          Import-PfxCertificate -FilePath $certPath -CertStoreLocation Cert:\CurrentUser\My -Password $securePwd
+          
+          # Get thumbprint
+          $thumbprint = (Get-PfxCertificate -FilePath $certPath).Thumbprint
+          echo "WINDOWS_CERTIFICATE_THUMBPRINT=$thumbprint" >> $env:GITHUB_ENV
+          
+          # Clean up
+          Remove-Item $certPath
+      
+      - name: Build sweetmcp-daemon
+        run: |
+          cd sweetmcp-daemon
+          cargo build --release --target ${{ matrix.target }}
+      
+      - name: Sign executable
+        shell: powershell
+        run: |
+          # Find signtool
+          $signtool = Get-ChildItem -Path "C:\Program Files (x86)\Windows Kits\10\bin" -Filter "signtool.exe" -Recurse | 
+                      Where-Object { $_.Directory.Name -eq "x64" } | 
+                      Select-Object -First 1
+          
+          if (-not $signtool) {
+            throw "signtool.exe not found"
+          }
+          
+          # Sign the executable
+          & $signtool.FullName sign /sha1 $env:WINDOWS_CERTIFICATE_THUMBPRINT `
+            /tr http://timestamp.digicert.com /td sha256 /fd sha256 `
+            /v "sweetmcp-daemon\target\${{ matrix.target }}\release\sweetmcp-daemon.exe"
+      
+      - name: Create ZIP
+        shell: powershell
+        run: |
+          Compress-Archive -Path "sweetmcp-daemon\target\${{ matrix.target }}\release\sweetmcp-daemon.exe" `
+            -DestinationPath "sweetmcp-daemon-${{ matrix.target }}.zip"
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sweetmcp-daemon-${{ matrix.target }}
+          path: sweetmcp-daemon-${{ matrix.target }}.zip
+
+  build-linux:
+    name: Build Linux (${{ matrix.target }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-gnu
+            arch: x64
+          - target: aarch64-unknown-linux-gnu
+            arch: arm64
+            cross: true
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      
+      - name: Install cross-compilation tools
+        if: matrix.cross
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu
+      
+      - name: Import GPG key
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+          echo "$GPG_PASSPHRASE" | gpg --batch --passphrase-fd 0 --pinentry-mode loopback --edit-key sweetmcp@cyrupd.com trust quit
+      
+      - name: Build sweetmcp-daemon
+        run: |
+          cd sweetmcp-daemon
+          if [ "${{ matrix.cross }}" = "true" ]; then
+            cargo install cross --git https://github.com/cross-rs/cross
+            cross build --release --target ${{ matrix.target }}
+          else
+            cargo build --release --target ${{ matrix.target }}
+          fi
+      
+      - name: Sign binary
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          echo "$GPG_PASSPHRASE" | gpg --batch --yes --passphrase-fd 0 --pinentry-mode loopback \
+            --detach-sign --armor \
+            "sweetmcp-daemon/target/${{ matrix.target }}/release/sweetmcp-daemon"
+      
+      - name: Create tarball
+        run: |
+          cd sweetmcp-daemon/target/${{ matrix.target }}/release
+          tar czf sweetmcp-daemon-${{ matrix.target }}.tar.gz sweetmcp-daemon sweetmcp-daemon.asc
+          mv sweetmcp-daemon-${{ matrix.target }}.tar.gz ../../../../
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sweetmcp-daemon-${{ matrix.target }}
+          path: sweetmcp-daemon-${{ matrix.target }}.tar.gz
+
+  create-release:
+    name: Create Release
+    needs: [build-macos, build-windows, build-linux]
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: sweetmcp-daemon-*
+          merge-multiple: true
+      
+      - name: Create checksums
+        run: |
+          sha256sum sweetmcp-daemon-*.{tar.gz,zip} > checksums.txt
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          generate_release_notes: true
+          files: |
+            sweetmcp-daemon-*.tar.gz
+            sweetmcp-daemon-*.zip
+            checksums.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

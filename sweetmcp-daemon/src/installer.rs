@@ -1,9 +1,10 @@
 use crate::install::{install_daemon, uninstall_daemon, InstallerBuilder, InstallerError};
+use crate::signing;
 use anyhow::{Context, Result};
 use log::{info, warn};
 use rcgen::{CertificateParams, DistinguishedName, DnType, KeyPair, SanType};
 use std::fs;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::time::{Duration, SystemTime};
 
@@ -28,14 +29,45 @@ pub async fn install(dry: bool, sign: bool, identity: Option<String>) -> Result<
 
     // Get the current executable path
     let exe_path = std::env::current_exe().context("current_exe()")?;
+    
+    // Sign the binary BEFORE installation if requested
+    if sign && !dry {
+        info!("Signing daemon binary before installation...");
+        
+        let mut sign_config = signing::SigningConfig::new(exe_path.clone());
+        
+        // Override identity if provided
+        if let Some(id) = identity.clone() {
+            match &mut sign_config.platform {
+                #[cfg(target_os = "macos")]
+                signing::PlatformConfig::MacOS { identity, .. } => *identity = id,
+                #[cfg(target_os = "windows")]
+                signing::PlatformConfig::Windows { certificate, .. } => *certificate = id,
+                #[cfg(target_os = "linux")]
+                signing::PlatformConfig::Linux { key_id, .. } => *key_id = Some(id),
+                _ => {},
+            }
+        }
+        
+        // Sign the binary
+        signing::sign_binary(&sign_config)
+            .context("Failed to sign daemon binary")?;
+        
+        info!("Successfully signed daemon binary");
+    }
 
     if dry {
         info!("[dry run] Would install daemon:");
         info!("  - Binary: {}", exe_path.display());
         info!("  - Config: {}", config_path.display());
         info!("  - Service: cyrupd");
-        if sign && cfg!(target_os = "macos") {
-            info!("  - Codesign: {}", identity.as_deref().unwrap_or("-"));
+        if sign {
+            #[cfg(target_os = "macos")]
+            info!("  - macOS Codesign: {}", identity.as_deref().unwrap_or("Developer ID or ad-hoc"));
+            #[cfg(target_os = "windows")]
+            info!("  - Windows Authenticode: {}", identity.as_deref().unwrap_or("Auto-select certificate"));
+            #[cfg(target_os = "linux")]
+            info!("  - Linux GPG Sign: {}", identity.as_deref().unwrap_or("Default GPG key"));
         }
         return Ok(());
     }
@@ -162,30 +194,34 @@ pub async fn install(dry: bool, sign: bool, identity: Option<String>) -> Result<
                 // Don't fail installation if host entries fail
             }
 
-            // macOS codesign after installation if requested
-            if cfg!(target_os = "macos") && sign {
-                let installed_path = Path::new("/usr/local/bin/cyrupd");
-                let id = identity.unwrap_or_else(|| "-".to_string());
-                info!(
-                    "Codesigning {} with identity {}",
-                    installed_path.display(),
-                    id
-                );
-
-                let status = std::process::Command::new("codesign")
-                    .args([
-                        "--timestamp",
-                        "--options",
-                        "runtime",
-                        "--force",
-                        "--sign",
-                        &id,
-                    ])
-                    .arg(installed_path)
-                    .status()?;
-
-                if !status.success() {
-                    return Err(anyhow::anyhow!("codesign failed"));
+            // Verify the installed binary is still signed
+            if sign {
+                let installed_path = get_installed_daemon_path();
+                match signing::verify_signature(&installed_path) {
+                    Ok(true) => info!("Installed binary signature verified on {}", installed_path.display()),
+                    Ok(false) => {
+                        warn!("Installed binary lost its signature during installation");
+                        // Re-sign the installed binary
+                        info!("Re-signing installed binary...");
+                        let mut resign_config = signing::SigningConfig::new(installed_path.clone());
+                        if let Some(id) = identity {
+                            match &mut resign_config.platform {
+                                #[cfg(target_os = "macos")]
+                                signing::PlatformConfig::MacOS { identity, .. } => *identity = id,
+                                #[cfg(target_os = "windows")]
+                                signing::PlatformConfig::Windows { certificate, .. } => *certificate = id,
+                                #[cfg(target_os = "linux")]
+                                signing::PlatformConfig::Linux { key_id, .. } => *key_id = Some(id),
+                                _ => {},
+                            }
+                        }
+                        if let Err(e) = signing::sign_binary(&resign_config) {
+                            warn!("Failed to re-sign installed binary: {}", e);
+                        } else {
+                            info!("Successfully re-signed installed binary");
+                        }
+                    },
+                    Err(e) => warn!("Failed to verify installed binary signature: {}", e),
                 }
             }
 
@@ -548,4 +584,28 @@ fn add_sweetmcp_host_entries() -> Result<()> {
     
     info!("Successfully added {} SweetMCP host entries", new_entries.len());
     Ok(())
+}
+
+/// Get the installed daemon path for the current platform
+fn get_installed_daemon_path() -> PathBuf {
+    #[cfg(target_os = "windows")]
+    {
+        // Windows installs to Program Files or System32
+        PathBuf::from("C:\\Program Files\\Cyrupd\\cyrupd.exe")
+    }
+    
+    #[cfg(target_os = "macos")]
+    {
+        PathBuf::from("/usr/local/bin/cyrupd")
+    }
+    
+    #[cfg(target_os = "linux")]
+    {
+        PathBuf::from("/usr/local/bin/cyrupd")
+    }
+    
+    #[cfg(not(any(target_os = "windows", target_os = "macos", target_os = "linux")))]
+    {
+        PathBuf::from("/usr/local/bin/cyrupd")
+    }
 }

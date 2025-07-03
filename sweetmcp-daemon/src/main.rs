@@ -7,6 +7,7 @@ mod ipc;
 mod lifecycle;
 mod manager;
 mod service;
+mod signing;
 mod state_machine;
 
 use anyhow::Result;
@@ -58,6 +59,9 @@ async fn real_main() -> Result<()> {
             identity,
         } => installer::install(dry_run, sign, identity).await,
         cli::Cmd::Uninstall { dry_run } => installer::uninstall(dry_run),
+        cli::Cmd::Sign { binary, identity, verify, show_config } => {
+            handle_sign_command(binary, identity, verify, show_config).await
+        },
     }
 }
 
@@ -84,6 +88,10 @@ fn real_main_sync() -> Result<()> {
             std::process::exit(1);
         },
         cli::Cmd::Uninstall { dry_run } => installer::uninstall(dry_run),
+        cli::Cmd::Sign { .. } => {
+            error!("Sign command requires async runtime. Enable 'runtime' feature.");
+            std::process::exit(1);
+        },
     }
 }
 
@@ -125,4 +133,81 @@ fn run_daemon(force_foreground: bool, config_path: Option<String>, use_system: b
     mgr.run()?;
     info!("Cyrup daemon exiting");
     Ok(())
+}
+
+#[cfg(feature = "runtime")]
+async fn handle_sign_command(
+    binary: Option<String>,
+    identity: Option<String>,
+    verify: bool,
+    show_config: bool,
+) -> Result<()> {
+    if show_config {
+        let sample = signing::config::create_sample_config()?;
+        println!("Sample signing configuration:\n\n{}", sample);
+        return Ok(());
+    }
+    
+    let binary_path = if let Some(path) = binary {
+        PathBuf::from(path)
+    } else {
+        std::env::current_exe()?
+    };
+    
+    if verify {
+        // Verify signature
+        match signing::verify_signature(&binary_path) {
+            Ok(true) => {
+                println!("✓ {} is properly signed", binary_path.display());
+                Ok(())
+            }
+            Ok(false) => {
+                eprintln!("✗ {} is not signed or signature is invalid", binary_path.display());
+                std::process::exit(1);
+            }
+            Err(e) => {
+                eprintln!("✗ Failed to verify signature: {}", e);
+                std::process::exit(1);
+            }
+        }
+    } else {
+        // Sign the binary
+        let mut config = signing::SigningConfig::load()?;
+        config.binary_path = binary_path;
+        config.output_path = config.binary_path.clone();
+        
+        // Override identity if provided
+        if let Some(id) = identity {
+            match &mut config.platform {
+                #[cfg(target_os = "macos")]
+                signing::PlatformConfig::MacOS { identity, .. } => *identity = id,
+                #[cfg(target_os = "windows")]
+                signing::PlatformConfig::Windows { certificate, .. } => *certificate = id,
+                #[cfg(target_os = "linux")]
+                signing::PlatformConfig::Linux { key_id, .. } => *key_id = Some(id),
+                _ => {},
+            }
+        }
+        
+        println!("Signing {}...", config.binary_path.display());
+        
+        match signing::sign_binary(&config) {
+            Ok(_) => {
+                println!("✓ Successfully signed {}", config.binary_path.display());
+                
+                // Verify the signature
+                if signing::verify_signature(&config.output_path)? {
+                    println!("✓ Signature verified");
+                } else {
+                    eprintln!("⚠️  Warning: Signature verification failed");
+                }
+                
+                Ok(())
+            }
+            Err(e) => {
+                eprintln!("✗ Failed to sign binary: {}", e);
+                std::process::exit(1);
+            }
+        }
+    }
 }

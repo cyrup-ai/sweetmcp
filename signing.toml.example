@@ -1,0 +1,36 @@
+# SweetMCP Daemon Signing Configuration
+# Copy this file to signing.toml and update with your values
+
+[macos]
+# Signing identity - use "security find-identity -v -p codesigning" to list available identities
+# Use "-" for ad-hoc signing during development
+identity = "Developer ID Application: David Maple (TEAMID)"
+
+# Team ID for notarization (get from Apple Developer account)
+team_id = "TEAMID"
+
+# Path to entitlements file (optional)
+# entitlements = "entitlements.plist"
+
+# Certificate file path for CI/CD (optional)
+# certificate_path = "/Users/davidmaple/.ssh/development.cer"
+
+[windows]
+# Certificate thumbprint or path to .pfx file
+# For thumbprint: use "certutil -store My" to list certificates
+# For file: provide full path to .pfx file
+certificate = "THUMBPRINT_OR_PATH_TO_PFX"
+
+# Timestamp server URL
+timestamp_url = "http://timestamp.digicert.com"
+
+# Digest algorithm (sha256 recommended)
+digest_algorithm = "sha256"
+
+[linux]
+# GPG key ID for signing
+# Use "gpg --list-secret-keys" to find your key ID
+key_id = "YOUR_GPG_KEY_ID"
+
+# Create detached signatures (.sig files)
+detached = true
