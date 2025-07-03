@@ -11,7 +11,7 @@ fn panic_if_key_missing() -> ! {
 
 pub(crate) mod internal {
     pub(crate) fn return_error(e: extism_pdk::Error) -> i32 {
-        let err = format!("{:?}", e);
+        let err = format!("{e:?}");
         let mem = extism_pdk::Memory::from_bytes(&err).unwrap();
         unsafe {
             extism_pdk::extism::error_set(mem.offset());
