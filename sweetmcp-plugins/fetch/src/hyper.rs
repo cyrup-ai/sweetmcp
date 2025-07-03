@@ -5,10 +5,10 @@ use async_trait::async_trait;
 use base64::Engine;
 use hyper::{Request, Uri};
 use hyper::body::Bytes;
-use hyper_util::rt::TokioIo;
 use http_body_util::{BodyExt, Empty};
 use hyper_rustls::ConfigBuilderExt;
-use tower_service::Service;
+use hyper_util::rt::TokioIo;
+use tokio_rustls::TlsConnector;
 
 use crate::chromiumoxide::{ContentFetcher, FetchResult};
 
@@ -76,71 +76,111 @@ impl HyperFetcher {
         // Parse the URL
         let uri: Uri = url.parse()?;
         
-        // Extract host and port
+        // Extract components
+        let scheme = uri.scheme_str()
+            .ok_or_else(|| FetchError::Other("URL must have a scheme".to_string()))?;
         let host = uri.host()
             .ok_or_else(|| FetchError::Other("URL must have a host".to_string()))?;
-        let port = uri.port_u16().unwrap_or(443);
+        let port = uri.port_u16().unwrap_or_else(|| {
+            match scheme {
+                "https" => 443,
+                "http" => 80,
+                _ => return 443, // default to HTTPS
+            }
+        });
+        
+        // For this plugin, we only support HTTPS
+        if scheme != "https" {
+            return Err(FetchError::Other("Only HTTPS is supported".to_string()));
+        }
+        
         let addr = format!("{}:{}", host, port);
 
-        // Create TLS connector
+        // Connect TCP
+        let tcp_stream = tokio::net::TcpStream::connect(&addr).await?;
+        tcp_stream.set_nodelay(true)?;
+        
+        // TLS setup with zero-copy server name
         let tls_config = rustls::ClientConfig::builder()
             .with_native_roots()?
             .with_no_client_auth();
-        let connector = hyper_rustls::HttpsConnectorBuilder::new()
-            .with_tls_config(tls_config)
-            .https_only()
-            .enable_http1()
-            .enable_http2()
-            .build();
-
-        // Connect to the server
-        let stream = tokio::net::TcpStream::connect(&addr).await?;
-        let io = TokioIo::new(stream);
         
-        let tls_stream = connector
-            .call(io)
-            .await
-            .map_err(|e| FetchError::Other(format!("TLS connection failed: {}", e)))?;
-
-        // Set up HTTP connection
-        let (mut sender, conn) = hyper::client::conn::http1::handshake(tls_stream).await?;
+        let server_name = rustls::pki_types::ServerName::try_from(host)
+            .map_err(|_| FetchError::Other("Invalid server name".to_string()))?;
         
-        // Spawn the connection handler
+        let connector = TlsConnector::from(std::sync::Arc::new(tls_config));
+        let tls_stream = connector.connect(server_name, tcp_stream).await
+            .map_err(|e| FetchError::Other(format!("TLS handshake failed: {}", e)))?;
+        
+        // Wrap for hyper
+        let io = TokioIo::new(tls_stream);
+        
+        // Use HTTP/2 with automatic protocol selection
+        let (mut sender, conn) = hyper::client::conn::http2::Builder::new()
+            .adaptive_window(true)
+            .max_frame_size(16_384)
+            .max_send_buf_size(1024 * 1024)
+            .handshake(io)
+            .await?;
+        
+        // Spawn connection handler without blocking
         tokio::spawn(async move {
-            if let Err(e) = conn.await {
-                eprintln!("Connection error: {}", e);
-            }
+            let _ = conn.await;
         });
 
-        // Build the request
+        // Build optimized request
+        let authority = uri.authority()
+            .ok_or_else(|| FetchError::Other("Invalid authority".to_string()))?
+            .as_str();
+        
+        let path_and_query = uri.path_and_query()
+            .map(|pq| pq.as_str())
+            .unwrap_or("/");
+        
         let request = Request::builder()
-            .uri(uri)
-            .header("Host", host)
-            .header("User-Agent", "fetch-hyper/1.0")
             .method("GET")
+            .uri(path_and_query)
+            .header(hyper::header::HOST, authority)
+            .header(hyper::header::USER_AGENT, "fetch-hyper/1.0")
+            .header(hyper::header::ACCEPT, "*/*")
+            .header(hyper::header::ACCEPT_ENCODING, "identity")
             .body(Empty::<Bytes>::new())?;
 
-        // Send the request
+        // Send request
         let response = sender.send_request(request).await?;
-
-        // Check if the request was successful
-        if !response.status().is_success() {
+        let status = response.status();
+        
+        if !status.is_success() {
             return Err(FetchError::Other(format!(
-                "Request failed with status: {}",
-                response.status()
+                "HTTP {}: {}",
+                status.as_u16(),
+                status.canonical_reason().unwrap_or("Unknown")
             )));
         }
 
-        // Get the response body
-        let body = response.into_body();
-        let body_bytes = body.collect().await
-            .map_err(|e| FetchError::Other(format!("Failed to collect body: {}", e)))?
-            .to_bytes();
+        // Collect body with pre-allocated buffer
+        let content_length = response.headers()
+            .get(hyper::header::CONTENT_LENGTH)
+            .and_then(|v| v.to_str().ok())
+            .and_then(|s| s.parse::<usize>().ok());
         
-        let body_string = String::from_utf8(body_bytes.to_vec())
-            .map_err(|e| FetchError::Other(format!("Failed to decode response body: {}", e)))?;
-
-        Ok(body_string)
+        let mut body_bytes = if let Some(len) = content_length {
+            Vec::with_capacity(len.min(10 * 1024 * 1024)) // Cap at 10MB pre-allocation
+        } else {
+            Vec::with_capacity(64 * 1024) // 64KB default
+        };
+        
+        let mut body = response.into_body();
+        while let Some(frame) = body.frame().await {
+            let frame = frame.map_err(|e| FetchError::Other(format!("Frame error: {}", e)))?;
+            if let Some(chunk) = frame.data_ref() {
+                body_bytes.extend_from_slice(chunk);
+            }
+        }
+        
+        // Convert to string without re-allocation
+        String::from_utf8(body_bytes)
+            .map_err(|e| FetchError::Other(format!("Invalid UTF-8: {}", e)))
     }
 
     pub fn clean_html(html: &str) -> String {

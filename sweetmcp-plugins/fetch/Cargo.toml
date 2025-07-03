@@ -18,6 +18,7 @@ base64 = "0.22.1"
 htmd = "0.2.2"
 hyper = { version = "1.6.0", features = ["client", "http1", "http2"] }
 hyper-util = { version = "0.1.14", features = ["http1", "http2", "tokio"] }
+tokio-rustls = "0.26"
 http-body-util = "0.1"
 ring = "0.17.14"
 tokio = { version = "1", features = ["rt", "macros", "sync", "time"] }
