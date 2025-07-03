@@ -3,9 +3,8 @@ use crate::ipc::{Cmd, Evt};
 use anyhow::Result;
 use crossbeam_channel::{Receiver, Sender};
 use log::{error, info};
-use std::sync::Arc;
 use std::thread;
-use sweetmcp_client_autoconfig::{clients::all_clients, watcher::AutoConfigWatcher, ConfigMerger};
+use sweetmcp_client_autoconfig::{clients::all_clients, watcher::AutoConfigWatcher};
 
 /// Auto-configuration service that watches for MCP client installations
 pub struct AutoConfigService {
@@ -29,28 +28,27 @@ impl AutoConfigService {
         
         // Create the watcher with all client plugins
         let clients = all_clients();
-        let merger = ConfigMerger::new();
-        let watcher = AutoConfigWatcher::new(clients, merger)?;
+        let watcher = AutoConfigWatcher::new(clients)?;
         
         // Spawn the watcher task
         let watcher_handle = rt.spawn({
             let bus = self.bus.clone();
-            let name = self.name.clone();
             
             async move {
                 // Notify daemon we're starting
                 let _ = bus.send(Evt::State {
-                    service: name.clone(),
-                    kind: "running".to_string(),
-                    pid: std::process::id(),
+                    service: "autoconfig",
+                    kind: "running",
+                    ts: chrono::Utc::now(),
+                    pid: Some(std::process::id()),
                 });
                 
                 if let Err(e) = watcher.run().await {
                     error!("Auto-config watcher failed: {}", e);
                     let _ = bus.send(Evt::Fatal {
-                        service: name,
-                        msg: format!("Watcher error: {}", e),
-                        pid: std::process::id(),
+                        service: "autoconfig",
+                        msg: "Watcher error occurred",
+                        ts: chrono::Utc::now(),
                     });
                 }
             }

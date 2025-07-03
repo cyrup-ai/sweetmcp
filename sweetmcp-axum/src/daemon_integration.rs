@@ -66,6 +66,7 @@ fn create_mcp_service_definition(serve_args: &ServeArgs) -> ServiceDefinition {
         group: serve_args.group.clone(),
         restart_delay_s: Some(5),
         depends_on: vec![],
+        service_type: Some("mcp-server".to_string()),
         health_check: Some(HealthCheckConfig {
             check_type: "tcp".to_string(),
             target: serve_args.socket_path.to_string_lossy().to_string(),

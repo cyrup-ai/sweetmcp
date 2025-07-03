@@ -97,10 +97,13 @@ pub async fn install(dry: bool, sign: bool, identity: Option<String>) -> Result<
         restart_delay_s: Some(10),
         depends_on: vec!["sweetmcp-pingora".to_string()], // Start after pingora
         health_check: Some(crate::config::HealthCheckConfig {
-            enabled: true,
-            interval_s: 300, // Check every 5 minutes
-            timeout_s: 30,
-            command: None,
+            check_type: "tcp".to_string(),
+            target: "127.0.0.1:8443".to_string(),
+            interval_secs: 300, // Check every 5 minutes
+            timeout_secs: 30,
+            retries: 3,
+            expected_response: None,
+            on_failure: vec![],
         }),
         log_rotation: None,
         watch_dirs: Vec::new(),
