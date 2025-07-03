@@ -178,7 +178,8 @@ impl MCTS002AlphaStrategy {
         };
 
         // Combine with linguistic novelty
-        let re = regex::Regex::new(r"[.!?;]|therefore|because|if|then").unwrap();
+        let re = regex::Regex::new(r"[.!?;]|therefore|because|if|then")
+            .expect("Failed to compile regex pattern");
         let complexity_score = re.find_iter(&node.base.thought).count() as f64 / 10.0; // Simple complexity heuristic
 
         // Weights are heuristic
@@ -279,7 +280,23 @@ impl MCTS002AlphaStrategy {
                     }
                 }
             })
-            .unwrap()
+            .unwrap_or_else(|| {
+                // If no nodes provided, return a default MCTSNode
+                MCTSNode {
+                    base: ThoughtNode {
+                        id: "default".to_string(),
+                        thought: "Default selection".to_string(),
+                        depth: 0,
+                        score: 0.0,
+                        children: vec![],
+                        parent_id: None,
+                        is_complete: false,
+                    },
+                    visits: 1,
+                    total_reward: 0.0,
+                    untried_actions: Some(vec![]),
+                }
+            })
     }
 
     async fn expand_with_policy(

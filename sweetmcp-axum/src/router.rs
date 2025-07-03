@@ -18,11 +18,9 @@ use crate::{
     config::Config,
     plugin::manager::PluginManager,
     prompt,
-    prompt::service::PromptService,
     resource::cms::resources_list_handler,
     sampling::sampling_create_message,
     tool,
-    tool::service::ToolService,
     tool::notifications::{notifications_cancelled, notifications_initialized},
     types::*,
     ui::ServeArgs,
@@ -69,15 +67,8 @@ fn build_rpc_router(
         .append("context/get", crate::context::rpc::context_get)
         .append("context/subscribe", crate::context::rpc::context_subscribe);
 
-    // Create services using the PluginManager
-    let prompt_service = PromptService::new(pm.clone());
-    let tool_service = ToolService::new(pm.clone());
-
-    // Add resources and register handlers that need access to them
-    let builder = builder
-        .append_resource(pm)
-        .append_resource(prompt_service)
-        .append_resource(tool_service);
+    // Add resource and register handlers that need access to it
+    let builder = builder.append_resource(pm);
 
     // Build and return the router
     builder.build()

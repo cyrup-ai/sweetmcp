@@ -12,7 +12,10 @@ pub struct StateManager {
 
 impl StateManager {
     pub fn new(cache_size: usize) -> Self {
-        let cache_size = NonZeroUsize::new(cache_size).unwrap_or(NonZeroUsize::new(1).unwrap());
+        let cache_size = NonZeroUsize::new(cache_size).unwrap_or_else(|| {
+            // This should never fail since 1 is always non-zero
+            unsafe { NonZeroUsize::new_unchecked(1) }
+        });
         Self {
             cache: Arc::new(Mutex::new(LruCache::new(cache_size))),
             nodes: Arc::new(Mutex::new(HashMap::new())),

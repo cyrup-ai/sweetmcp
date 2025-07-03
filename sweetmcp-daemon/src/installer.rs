@@ -1,4 +1,4 @@
-use crate::install::{install_daemon, uninstall_daemon, InstallerBuilder, InstallerError};
+use crate::install::{install_daemon, install_daemon_async, uninstall_daemon, uninstall_daemon_async, InstallerBuilder, InstallerError};
 use crate::signing;
 use anyhow::{Context, Result};
 use log::{info, warn};
@@ -190,7 +190,7 @@ pub async fn install(dry: bool, sign: bool, identity: Option<String>) -> Result<
     let installer = installer.user("root").group("wheel");
 
     // Install the daemon with GUI authorization
-    match install_daemon(installer) {
+    match install_daemon_async(installer).await {
         Ok(()) => {
             info!("Daemon installed successfully");
 

@@ -23,7 +23,10 @@ impl StdError for CustomError {}
 // Called when the tool is invoked.
 pub(crate) fn call(input: CallToolRequest) -> Result<CallToolResult, Error> {
     let args = input.params.arguments.unwrap_or_default();
-    let name = args.get("name").unwrap().as_str().unwrap();
+    let name = args.get("name")
+        .ok_or_else(|| Error::msg("name parameter is required"))?
+        .as_str()
+        .ok_or_else(|| Error::msg("name parameter must be a string"))?;
     match name {
         "get_time_utc" => {
             let now = Utc::now();
@@ -45,8 +48,12 @@ pub(crate) fn call(input: CallToolRequest) -> Result<CallToolResult, Error> {
             })
         }
         "parse_time" => {
-            let time = args.get("time_rfc2822").unwrap().as_str().unwrap();
-            let t = chrono::DateTime::parse_from_rfc2822(time).unwrap();
+            let time = args.get("time_rfc2822")
+                .ok_or_else(|| Error::msg("time_rfc2822 parameter is required"))?
+                .as_str()
+                .ok_or_else(|| Error::msg("time_rfc2822 parameter must be a string"))?;
+            let t = chrono::DateTime::parse_from_rfc2822(time)
+                .map_err(|e| Error::msg(format!("Failed to parse time_rfc2822: {}", e)))?;
             let timestamp = t.timestamp().to_string();
             let rfc2822 = t.to_rfc2822().to_string();
             Ok(CallToolResult {
@@ -65,9 +72,16 @@ pub(crate) fn call(input: CallToolRequest) -> Result<CallToolResult, Error> {
             })
         }
         "time_offset" => {
-            let t1 = args.get("timestamp").unwrap().as_i64().unwrap();
-            let offset = args.get("offset").unwrap().as_i64().unwrap();
-            let t1 = chrono::DateTime::from_timestamp(t1, 0).unwrap();
+            let t1 = args.get("timestamp")
+                .ok_or_else(|| Error::msg("timestamp parameter is required"))?
+                .as_i64()
+                .ok_or_else(|| Error::msg("timestamp parameter must be an integer"))?;
+            let offset = args.get("offset")
+                .ok_or_else(|| Error::msg("offset parameter is required"))?
+                .as_i64()
+                .ok_or_else(|| Error::msg("offset parameter must be an integer"))?;
+            let t1 = chrono::DateTime::from_timestamp(t1, 0)
+                .ok_or_else(|| Error::msg("Invalid timestamp value"))?;
             let t2 = t1 + chrono::Duration::seconds(offset);
             let timestamp = t2.timestamp().to_string();
             let rfc2822 = t2.to_rfc2822().to_string();
@@ -127,7 +141,7 @@ to compute time differences or offsets.".into(),
             },
         })
         .as_object()
-        .unwrap()
+        .expect("JSON schema should be valid object")
         .clone(),
     }]})
 }

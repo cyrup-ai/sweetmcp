@@ -252,7 +252,23 @@ impl MonteCarloTreeSearchStrategy {
                     }
                 }
             })
-            .unwrap()
+            .unwrap_or_else(|| {
+                // If no nodes provided, return a default MCTSNode
+                MCTSNode {
+                    base: ThoughtNode {
+                        id: "default".to_string(),
+                        thought: "Default selection".to_string(),
+                        depth: 0,
+                        score: 0.0,
+                        children: vec![],
+                        parent_id: None,
+                        is_complete: false,
+                    },
+                    visits: 1,
+                    total_reward: 0.0,
+                    untried_actions: Some(vec![]),
+                }
+            })
     }
 
     fn calculate_path_score(&self, path: &[ThoughtNode]) -> f64 {

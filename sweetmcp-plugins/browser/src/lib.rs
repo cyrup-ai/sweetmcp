@@ -373,7 +373,11 @@ pub(crate) fn describe() -> Result<ListToolsResult, Error> {
                         }
                     },
                     "required": ["url"]
-                }).as_object().unwrap().clone(),
+                }).as_object().map(|obj| obj.clone()).unwrap_or_else(|| {
+                    let mut map = serde_json::Map::new();
+                    map.insert("type".to_string(), json!("object"));
+                    map
+                }),
             },
             ToolDescription {
                 name: "screenshot".into(),
@@ -392,7 +396,11 @@ pub(crate) fn describe() -> Result<ListToolsResult, Error> {
                             "default": "base64"
                         }
                     }
-                }).as_object().unwrap().clone(),
+                }).as_object().map(|obj| obj.clone()).unwrap_or_else(|| {
+                    let mut map = serde_json::Map::new();
+                    map.insert("type".to_string(), json!("object"));
+                    map
+                }),
             },
             ToolDescription {
                 name: "click".into(),
@@ -406,7 +414,11 @@ pub(crate) fn describe() -> Result<ListToolsResult, Error> {
                         }
                     },
                     "required": ["selector"]
-                }).as_object().unwrap().clone(),
+                }).as_object().map(|obj| obj.clone()).unwrap_or_else(|| {
+                    let mut map = serde_json::Map::new();
+                    map.insert("type".to_string(), json!("object"));
+                    map
+                }),
             },
             ToolDescription {
                 name: "type_text".into(),
@@ -424,7 +436,11 @@ pub(crate) fn describe() -> Result<ListToolsResult, Error> {
                         }
                     },
                     "required": ["selector", "text"]
-                }).as_object().unwrap().clone(),
+                }).as_object().map(|obj| obj.clone()).unwrap_or_else(|| {
+                    let mut map = serde_json::Map::new();
+                    map.insert("type".to_string(), json!("object"));
+                    map
+                }),
             },
             ToolDescription {
                 name: "extract_text".into(),
@@ -438,7 +454,11 @@ pub(crate) fn describe() -> Result<ListToolsResult, Error> {
                             "default": "body"
                         }
                     }
-                }).as_object().unwrap().clone(),
+                }).as_object().map(|obj| obj.clone()).unwrap_or_else(|| {
+                    let mut map = serde_json::Map::new();
+                    map.insert("type".to_string(), json!("object"));
+                    map
+                }),
             },
             ToolDescription {
                 name: "scroll".into(),
@@ -458,7 +478,11 @@ pub(crate) fn describe() -> Result<ListToolsResult, Error> {
                             "default": 300
                         }
                     }
-                }).as_object().unwrap().clone(),
+                }).as_object().map(|obj| obj.clone()).unwrap_or_else(|| {
+                    let mut map = serde_json::Map::new();
+                    map.insert("type".to_string(), json!("object"));
+                    map
+                }),
             },
             ToolDescription {
                 name: "wait".into(),
@@ -472,7 +496,11 @@ pub(crate) fn describe() -> Result<ListToolsResult, Error> {
                             "default": 1000
                         }
                     }
-                }).as_object().unwrap().clone(),
+                }).as_object().map(|obj| obj.clone()).unwrap_or_else(|| {
+                    let mut map = serde_json::Map::new();
+                    map.insert("type".to_string(), json!("object"));
+                    map
+                }),
             },
             ToolDescription {
                 name: "run_automation".into(),
@@ -496,7 +524,11 @@ pub(crate) fn describe() -> Result<ListToolsResult, Error> {
                         }
                     },
                     "required": ["task"]
-                }).as_object().unwrap().clone(),
+                }).as_object().map(|obj| obj.clone()).unwrap_or_else(|| {
+                    let mut map = serde_json::Map::new();
+                    map.insert("type".to_string(), json!("object"));
+                    map
+                }),
             },
         ],
     })

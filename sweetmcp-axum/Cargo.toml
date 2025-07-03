@@ -68,9 +68,6 @@ sweetmcp-workspace-hack = { version = "0.1", path = "../sweetmcp-workspace-hack"
 # cynic-codegen = "3.10.0" # Removed
 # cynic-introspection = "3.10.0" # Removed
 
-[[bin]]
-name = "sweet"
-path = "src/main.rs"
 
 [lib]
 name = "sweetmcp_axum"

@@ -238,7 +238,7 @@ impl MCTS002AltAlphaStrategy {
                     b.base
                         .policy_score
                         .partial_cmp(&a.base.policy_score)
-                        .unwrap()
+                        .unwrap_or(std::cmp::Ordering::Equal)
                 });
 
                 for neighbor in neighbors {

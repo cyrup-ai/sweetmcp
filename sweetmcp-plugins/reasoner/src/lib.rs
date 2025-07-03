@@ -235,14 +235,39 @@ pub fn process_thought(input: String) -> FnResult<String> {
     let reasoner = get_reasoner();
 
     // Process the thought
-    let response = reasoner.lock().unwrap().process_thought(request.clone());
+    let response = match reasoner.lock() {
+        Ok(mut reasoner) => reasoner.process_thought(request.clone()),
+        Err(e) => {
+            return Ok(serde_json::json!({
+                "is_error": true,
+                "content": [{
+                    "type": "text",
+                    "text": format!("Failed to lock reasoner: {}", e)
+                }]
+            }).to_string());
+        }
+    };
 
     // Get stats for the used strategy
     let strategy = response
         .strategy_used
         .clone()
         .unwrap_or("beam_search".to_string());
-    let stats = reasoner.lock().unwrap().get_stats(vec![&strategy]);
+    let stats = match reasoner.lock() {
+        Ok(reasoner) => reasoner.get_stats(vec![&strategy]),
+        Err(e) => {
+            return Ok(CallToolResult {
+                is_error: Some(true),
+                content: vec![Content {
+                    annotations: None,
+                    text: Some(format!("Failed to lock reasoner for stats: {}", e)),
+                    mime_type: None,
+                    r#type: ContentType::Text,
+                    data: None,
+                }],
+            });
+        }
+    };
 
     // Create the enhanced response
     let enhanced_response = EnhancedResponse {
@@ -264,7 +289,10 @@ pub fn process_thought(input: String) -> FnResult<String> {
 pub fn clear(_: String) -> FnResult<String> {
     // Get the reasoner singleton and clear it
     let reasoner = get_reasoner();
-    reasoner.lock().unwrap().clear();
+    match reasoner.lock() {
+        Ok(mut reasoner) => reasoner.clear(),
+        Err(e) => return Err(format!("Failed to lock reasoner for clearing: {}", e).into()),
+    };
 
     Ok("Reasoner state cleared".to_string())
 }

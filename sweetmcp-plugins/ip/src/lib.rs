@@ -437,7 +437,11 @@ pub(crate) fn describe() -> Result<ListToolsResult, Error> {
                 input_schema: json!({
                     "type": "object",
                     "properties": {}
-                }).as_object().unwrap().clone(),
+                }).as_object().map(|obj| obj.clone()).unwrap_or_else(|| {
+                    let mut map = serde_json::Map::new();
+                    map.insert("type".to_string(), json!("object"));
+                    map
+                }),
             },
             ToolDescription {
                 name: "validate_ip".into(),
@@ -451,7 +455,11 @@ pub(crate) fn describe() -> Result<ListToolsResult, Error> {
                         }
                     },
                     "required": ["ip"]
-                }).as_object().unwrap().clone(),
+                }).as_object().map(|obj| obj.clone()).unwrap_or_else(|| {
+                    let mut map = serde_json::Map::new();
+                    map.insert("type".to_string(), json!("object"));
+                    map
+                }),
             },
             ToolDescription {
                 name: "ip_info".into(),
@@ -465,7 +473,11 @@ pub(crate) fn describe() -> Result<ListToolsResult, Error> {
                         }
                     },
                     "required": ["ip"]
-                }).as_object().unwrap().clone(),
+                }).as_object().map(|obj| obj.clone()).unwrap_or_else(|| {
+                    let mut map = serde_json::Map::new();
+                    map.insert("type".to_string(), json!("object"));
+                    map
+                }),
             },
             ToolDescription {
                 name: "is_private".into(),
@@ -479,7 +491,11 @@ pub(crate) fn describe() -> Result<ListToolsResult, Error> {
                         }
                     },
                     "required": ["ip"]
-                }).as_object().unwrap().clone(),
+                }).as_object().map(|obj| obj.clone()).unwrap_or_else(|| {
+                    let mut map = serde_json::Map::new();
+                    map.insert("type".to_string(), json!("object"));
+                    map
+                }),
             },
             ToolDescription {
                 name: "ip_to_binary".into(),
@@ -493,7 +509,11 @@ pub(crate) fn describe() -> Result<ListToolsResult, Error> {
                         }
                     },
                     "required": ["ip"]
-                }).as_object().unwrap().clone(),
+                }).as_object().map(|obj| obj.clone()).unwrap_or_else(|| {
+                    let mut map = serde_json::Map::new();
+                    map.insert("type".to_string(), json!("object"));
+                    map
+                }),
             },
             ToolDescription {
                 name: "create_ipv4".into(),
@@ -510,7 +530,11 @@ pub(crate) fn describe() -> Result<ListToolsResult, Error> {
                         }
                     },
                     "required": ["octets"]
-                }).as_object().unwrap().clone(),
+                }).as_object().map(|obj| obj.clone()).unwrap_or_else(|| {
+                    let mut map = serde_json::Map::new();
+                    map.insert("type".to_string(), json!("object"));
+                    map
+                }),
             },
             ToolDescription {
                 name: "create_ipv6".into(),
@@ -527,7 +551,11 @@ pub(crate) fn describe() -> Result<ListToolsResult, Error> {
                         }
                     },
                     "required": ["segments"]
-                }).as_object().unwrap().clone(),
+                }).as_object().map(|obj| obj.clone()).unwrap_or_else(|| {
+                    let mut map = serde_json::Map::new();
+                    map.insert("type".to_string(), json!("object"));
+                    map
+                }),
             },
             ToolDescription {
                 name: "cidr_contains".into(),
@@ -545,7 +573,11 @@ pub(crate) fn describe() -> Result<ListToolsResult, Error> {
                         }
                     },
                     "required": ["ip", "cidr"]
-                }).as_object().unwrap().clone(),
+                }).as_object().map(|obj| obj.clone()).unwrap_or_else(|| {
+                    let mut map = serde_json::Map::new();
+                    map.insert("type".to_string(), json!("object"));
+                    map
+                }),
             },
         ],
     })

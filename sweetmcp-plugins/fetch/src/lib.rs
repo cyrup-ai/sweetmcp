@@ -472,8 +472,12 @@ Perfect for web scraping, content analysis, competitive research, and automated 
                     "required": ["url"],
                 })
                 .as_object()
-                .unwrap()
-                .clone(),
+                .map(|obj| obj.clone())
+                .unwrap_or_else(|| {
+                    let mut map = serde_json::Map::new();
+                    map.insert("type".to_string(), json!("object"));
+                    map
+                }),
             },
         ],
     })

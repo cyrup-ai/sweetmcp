@@ -466,7 +466,9 @@ impl Strategy for BaseStrategy {
                 return;
             }
 
-            completed_nodes.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap());
+            completed_nodes.sort_by(|a, b| {
+                b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal)
+            });
             let path = state_manager.get_path(&completed_nodes[0].id).await;
             let _ = tx.send(Ok(path));
         });

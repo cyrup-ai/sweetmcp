@@ -481,8 +481,12 @@ Perfect for code analysis, data extraction, log inspection, and content processi
                     "required": ["path"],
                 })
                 .as_object()
-                .unwrap()
-                .clone(),
+                .map(|obj| obj.clone())
+                .unwrap_or_else(|| {
+                    let mut map = serde_json::Map::new();
+                    map.insert("type".to_string(), json!("object"));
+                    map
+                }),
             },
             ToolDescription {
                 name: "read_multiple_files".into(),
@@ -507,8 +511,12 @@ Perfect for batch processing, comparative analysis, and efficient multi-file ope
                     "required": ["paths"],
                 })
                 .as_object()
-                .unwrap()
-                .clone(),
+                .map(|obj| obj.clone())
+                .unwrap_or_else(|| {
+                    let mut map = serde_json::Map::new();
+                    map.insert("type".to_string(), json!("object"));
+                    map
+                }),
             },
             ToolDescription {
                 name: "write_file".into(),
@@ -534,8 +542,12 @@ Perfect for code generation, data export, report creation, and file-based workfl
                     "required": ["path", "content"],
                 })
                 .as_object()
-                .unwrap()
-                .clone(),
+                .map(|obj| obj.clone())
+                .unwrap_or_else(|| {
+                    let mut map = serde_json::Map::new();
+                    map.insert("type".to_string(), json!("object"));
+                    map
+                }),
             },
             ToolDescription {
                 name: "edit_file".into(),
@@ -561,8 +573,12 @@ Perfect for code refactoring, configuration updates, and content modifications. 
                     "required": ["path", "content"],
                 })
                 .as_object()
-                .unwrap()
-                .clone(),
+                .map(|obj| obj.clone())
+                .unwrap_or_else(|| {
+                    let mut map = serde_json::Map::new();
+                    map.insert("type".to_string(), json!("object"));
+                    map
+                }),
             },
             ToolDescription {
                 name: "create_dir".into(),
@@ -584,8 +600,12 @@ Perfect for project setup, build preparation, and filesystem organization. Creat
                     "required": ["path"],
                 })
                 .as_object()
-                .unwrap()
-                .clone(),
+                .map(|obj| obj.clone())
+                .unwrap_or_else(|| {
+                    let mut map = serde_json::Map::new();
+                    map.insert("type".to_string(), json!("object"));
+                    map
+                }),
             },
             ToolDescription {
                 name: "list_dir".into(),
@@ -607,8 +627,12 @@ Perfect for filesystem exploration, project analysis, and directory navigation. 
                     "required": ["path"],
                 })
                 .as_object()
-                .unwrap()
-                .clone(),
+                .map(|obj| obj.clone())
+                .unwrap_or_else(|| {
+                    let mut map = serde_json::Map::new();
+                    map.insert("type".to_string(), json!("object"));
+                    map
+                }),
             },
             ToolDescription {
                 name: "move_file".into(),
@@ -634,8 +658,12 @@ Perfect for refactoring, archiving, organization, and cleanup operations. Handle
                     "required": ["from", "to"],
                 })
                 .as_object()
-                .unwrap()
-                .clone(),
+                .map(|obj| obj.clone())
+                .unwrap_or_else(|| {
+                    let mut map = serde_json::Map::new();
+                    map.insert("type".to_string(), json!("object"));
+                    map
+                }),
             },
             ToolDescription {
                 name: "search_files".into(),
@@ -661,8 +689,12 @@ Perfect for file discovery, batch operations, and codebase exploration. Supports
                     "required": ["directory", "pattern"],
                 })
                 .as_object()
-                .unwrap()
-                .clone(),
+                .map(|obj| obj.clone())
+                .unwrap_or_else(|| {
+                    let mut map = serde_json::Map::new();
+                    map.insert("type".to_string(), json!("object"));
+                    map
+                }),
             },
             ToolDescription {
                 name: "get_file_info".into(),
@@ -684,8 +716,12 @@ Perfect for validation, caching decisions, and conditional processing. Returns s
                     "required": ["path"],
                 })
                 .as_object()
-                .unwrap()
-                .clone(),
+                .map(|obj| obj.clone())
+                .unwrap_or_else(|| {
+                    let mut map = serde_json::Map::new();
+                    map.insert("type".to_string(), json!("object"));
+                    map
+                }),
             },
         ],
     })

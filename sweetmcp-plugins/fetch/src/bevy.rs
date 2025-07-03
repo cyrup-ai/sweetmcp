@@ -96,10 +96,15 @@ impl BevyRenderer {
                         eprintln!("Failed to encode screenshot: {}", e);
                     } else {
                         let base64_image = base64::engine::general_purpose::STANDARD.encode(buffer.into_inner());
-                        let mut state = shared_state_clone.lock().unwrap();
-                        state.content = Some(html_content.0.clone());
-                        state.screenshot_base64 = Some(base64_image);
-                    }
+                        match shared_state_clone.lock() {
+                            Ok(mut state) => {
+                                state.content = Some(html_content.0.clone());
+                                state.screenshot_base64 = Some(base64_image);
+                            }
+                            Err(e) => {
+                                eprintln!("Failed to lock shared state: {}", e);
+                            }
+                        }
                 }
                 std::process::exit(0);
             }
@@ -108,7 +113,10 @@ impl BevyRenderer {
         app.run();
 
         // Extract the results from the shared state
-        let state = shared_state.lock().unwrap();
+        let state = match shared_state.lock() {
+            Ok(state) => state,
+            Err(e) => return Err(format!("Failed to lock shared state: {}", e)),
+        };
         
         if let Some(screenshot_base64) = &state.screenshot_base64 {
             Ok(screenshot_base64.clone())
@@ -198,12 +206,17 @@ fn screenshot_system(
         image.data = buffer;
 
         // Convert to DynamicImage
-        let img_buffer = ImageBuffer::<Rgba<u8>, _>::from_raw(
+        let img_buffer = match ImageBuffer::<Rgba<u8>, _>::from_raw(
             size.width,
             size.height,
             image.data.clone(),
-        )
-        .unwrap();
+        ) {
+            Some(buffer) => buffer,
+            None => {
+                eprintln!("Failed to create image buffer from screenshot data");
+                return;
+            }
+        };
         
         let dynamic_image = DynamicImage::ImageRgba8(img_buffer);
         screenshot.0 = Some(dynamic_image);

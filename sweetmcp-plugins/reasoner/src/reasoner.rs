@@ -20,8 +20,12 @@ impl Reasoner {
         // Determine which strategy to use
         let strategy_type = match &request.strategy_type {
             Some(strategy_str) => ReasoningStrategy::from_str(strategy_str)
-                .unwrap_or_else(|| ReasoningStrategy::from_str(CONFIG.default_strategy).unwrap()),
-            None => ReasoningStrategy::from_str(CONFIG.default_strategy).unwrap(),
+                .unwrap_or_else(|| {
+                    ReasoningStrategy::from_str(CONFIG.default_strategy)
+                        .unwrap_or(ReasoningStrategy::BeamSearch)
+                }),
+            None => ReasoningStrategy::from_str(CONFIG.default_strategy)
+                .unwrap_or(ReasoningStrategy::BeamSearch),
         };
 
         // Create strategy instance
@@ -80,8 +84,12 @@ impl Reasoner {
         // Determine which strategy to use
         let strategy_type = match strategy_type {
             Some(strategy_str) => ReasoningStrategy::from_str(strategy_str)
-                .unwrap_or_else(|| ReasoningStrategy::from_str(CONFIG.default_strategy).unwrap()),
-            None => ReasoningStrategy::from_str(CONFIG.default_strategy).unwrap(),
+                .unwrap_or_else(|| {
+                    ReasoningStrategy::from_str(CONFIG.default_strategy)
+                        .unwrap_or(ReasoningStrategy::BeamSearch)
+                }),
+            None => ReasoningStrategy::from_str(CONFIG.default_strategy)
+                .unwrap_or(ReasoningStrategy::BeamSearch),
         };
 
         // Create strategy instance

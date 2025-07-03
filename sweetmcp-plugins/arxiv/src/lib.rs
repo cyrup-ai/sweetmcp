@@ -44,7 +44,7 @@ pub(crate) fn call(input: CallToolRequest) -> Result<CallToolResult, Error> {
 fn search(input: CallToolRequest) -> Result<CallToolResult, Error> {
     let args = input.params.arguments.unwrap_or_default();
     let query = match args.get("query") {
-        Some(v) if v.is_string() => v.as_str().unwrap(),
+        Some(v) if v.is_string() => v.as_str().ok_or_else(|| Error::msg("query parameter must be a valid string"))?,
         _ => return Err(Error::msg("query parameter is required")),
     };
 
@@ -135,7 +135,7 @@ fn search(input: CallToolRequest) -> Result<CallToolResult, Error> {
 fn download_pdf(input: CallToolRequest) -> Result<CallToolResult, Error> {
     let args = input.params.arguments.unwrap_or_default();
     let paper_id = match args.get("paper_id") {
-        Some(v) if v.is_string() => v.as_str().unwrap(),
+        Some(v) if v.is_string() => v.as_str().ok_or_else(|| Error::msg("paper_id parameter must be a valid string"))?,
         _ => return Err(Error::msg("paper_id parameter is required")),
     };
 
@@ -234,7 +234,7 @@ Perfect for academic research, literature reviews, citation gathering, and stayi
                     "required": ["query"],
                 })
                 .as_object()
-                .unwrap()
+                .expect("JSON schema should be valid object")
                 .clone(),
             },
             ToolDescription {
@@ -261,7 +261,7 @@ Perfect for in-depth research, paper archiving, and detailed academic analysis. 
                     "required": ["paper_id"],
                 })
                 .as_object()
-                .unwrap()
+                .expect("JSON schema should be valid object")
                 .clone(),
             },
         ],
