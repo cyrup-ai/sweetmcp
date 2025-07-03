@@ -171,3 +171,53 @@ DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MI
 
 ### 36. QA: Final Production Quality Review
 Act as an Objective QA Rust developer and rate the final codebase quality. Verify 0 warnings, 0 errors, all functionality properly implemented, architecture intact, and production readiness for investor demonstration. Confirm compliance with all production quality requirements.
+
+---
+
+## COMPREHENSIVE WARNING CATALOG (CURRENT STATE)
+
+**CURRENT WARNINGS COUNT**: 70+ warnings across 4 modules  
+**STATUS**: Needs systematic fixes following existing plan above
+
+### SWEETMCP-MEMORY WARNINGS (9 total)
+- `PendingNode::new`, `NodeQuery::new`, `NodeUpdate::new`, `NodeStream::new` functions unused
+- `config` field unused in MemoryQueryExecutor  
+- `vector_store` field unused in HybridRetrieval and RetrievalManager
+- `time_decay_factor` field unused in TemporalRetrieval
+- `config` field unused in HNSWIndex
+
+### SWEETMCP-PLUGINS WARNINGS (5 total)
+- `content_type` field unused in FetchResult
+- `FetchError` enum unused
+- `HyperFetcher` struct unused  
+- `HyperFetcher::fetch` and `clean_html` methods unused
+- FirecrawlError variants `Parse`, `Timeout`, `Internal` unused
+
+### SWEETMCP-DAEMON WARNINGS (18 total)  
+- Unused imports: `install_daemon`, `uninstall_daemon_async`
+- Unused functions: `install_daemon`, `uninstall_daemon_async`, `get_helper_path`, `uninstall_async`
+- Unused methods: `args` in InstallerBuilder, `step`/`is_running` in Lifecycle
+- Unused variants: `MissingExecutable`, `Windows`/`Linux` in PlatformConfig
+- Unused signing functions: `sign_self`, `is_signing_available`, `import_certificate`, `cleanup_keychain`
+- Unused state machine: `State`, `Event`, `Action` enums, `Transition` struct, `next` method
+
+### SWEETMCP-AXUM WARNINGS (12 total)
+- `run_mcp_server_standalone` function unused
+- `PromptService` struct and methods (`new`, `list`, `get`) unused
+- `McpSamplingParams` struct unused
+- `SamplingStream` struct and `new` method unused  
+- `report_sampling_progress` function unused
+- `ToolService` struct and methods (`new`, `list`, `call`) unused
+- `ErrorCode` enum unused
+- `JsonRpcResponse::new` and `JsonRpcError::new` methods unused
+
+### SWEETMCP-PINGORA WARNINGS (24+ total)
+- `registry` field unused in DnsDiscovery
+- `Capnp` variant unused in Proto enum
+- `original_query` and `request_id` fields unused in ProtocolContext
+- Multiple shutdown constants unused
+- Entire `ShutdownCoordinator` implementation unused (15+ methods)
+- `RequestGuard` and `ShutdownAware` structs unused
+- Massive TLS implementation unused (`TlsManager`, `CrlCache`, etc. - 20+ methods)
+
+**NEXT ACTION**: Continue with existing numbered plan above, implementing each warning fix systematically while maintaining production quality standards.

@@ -42,7 +42,7 @@ pub struct PendingNode {
 }
 
 impl PendingNode {
-    fn new(rx: oneshot::Receiver<Result<NodeId>>) -> Self {
+    pub fn new(rx: oneshot::Receiver<Result<NodeId>>) -> Self {
         Self { rx }
     }
 }
@@ -67,7 +67,7 @@ pub struct NodeQuery {
 }
 
 impl NodeQuery {
-    fn new(rx: oneshot::Receiver<Result<Option<Node>>>) -> Self {
+    pub fn new(rx: oneshot::Receiver<Result<Option<Node>>>) -> Self {
         Self { rx }
     }
 }
@@ -92,7 +92,7 @@ pub struct NodeUpdate {
 }
 
 impl NodeUpdate {
-    fn new(rx: oneshot::Receiver<Result<()>>) -> Self {
+    pub fn new(rx: oneshot::Receiver<Result<()>>) -> Self {
         Self { rx }
     }
 }
@@ -117,7 +117,7 @@ pub struct NodeStream {
 }
 
 impl NodeStream {
-    fn new(rx: tokio::sync::mpsc::Receiver<Result<Node>>) -> Self {
+    pub fn new(rx: tokio::sync::mpsc::Receiver<Result<Node>>) -> Self {
         Self { rx }
     }
 }
