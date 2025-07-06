@@ -1,18 +1,93 @@
-use log::{self, error};
+use futures_util::StreamExt;
+use llm_client::prelude::*;
+use log::{self, error, info};
 use rpc_router::HandlerResult;
+use std::env;
 use tokio::sync::{mpsc, oneshot};
 
-// Remove the entire unused pub use crate::db block
 use super::model::*;
-// Import notification types
-use crate::sampling::notifications::{
-    SamplingProgressNotification, // , SamplingProgressData Removed
-};
+use crate::auth::JwtAuth;
+use crate::sampling::notifications::SamplingProgressNotification;
+
+/// Select the best LLM client based on model preferences
+async fn select_llm_client(preferences: &Option<McpModelPreferences>) -> Result<LlmClient, String> {
+    // Default priorities if not specified
+    let mut cost_priority = 0.5;
+    let mut speed_priority = 0.5; 
+    let mut intelligence_priority = 0.5;
+    let mut model_hint = String::new();
+
+    if let Some(prefs) = preferences {
+        cost_priority = prefs.cost_priority.unwrap_or(0.5);
+        speed_priority = prefs.speed_priority.unwrap_or(0.5);
+        intelligence_priority = prefs.intelligence_priority.unwrap_or(0.5);
+        
+        // Get first hint if available
+        if let Some(hints) = &prefs.hints {
+            if let Some(first_hint) = hints.first() {
+                model_hint = first_hint.name.to_lowercase();
+            }
+        }
+    }
+
+    // Check environment for API keys
+    let has_anthropic = env::var("ANTHROPIC_API_KEY").is_ok();
+    let has_openai = env::var("OPENAI_API_KEY").is_ok();
+
+    // Model selection based on hints and priorities
+    let llm_client = if model_hint.contains("claude") && has_anthropic {
+        // Claude models - prioritize based on needs
+        if intelligence_priority > 0.7 {
+            LlmClient::anthropic().claude_3_opus().init()
+        } else if speed_priority > 0.7 {
+            LlmClient::anthropic().claude_3_haiku().init()
+        } else {
+            LlmClient::anthropic().claude_3_sonnet().init()
+        }
+    } else if (model_hint.contains("gpt") || model_hint.contains("openai")) && has_openai {
+        // OpenAI models
+        if intelligence_priority > 0.7 {
+            LlmClient::openai().gpt_4_turbo().init()
+        } else if cost_priority > 0.7 {
+            LlmClient::openai().gpt_3_5_turbo().init()
+        } else {
+            LlmClient::openai().gpt_4().init()
+        }
+    } else if model_hint.contains("mistral") || model_hint.contains("llama") {
+        // Local models via llama.cpp
+        if intelligence_priority > 0.6 {
+            LlmClient::llama_cpp()
+                .llama_3_1_8b_instruct()
+                .init()
+                .await
+        } else {
+            LlmClient::llama_cpp()
+                .mistral_7b_instruct_v0_3()
+                .init()
+                .await
+        }
+    } else if has_anthropic {
+        // Default to Claude Sonnet if Anthropic is available
+        LlmClient::anthropic().claude_3_sonnet().init()
+    } else if has_openai {
+        // Default to GPT-4 if OpenAI is available
+        LlmClient::openai().gpt_4().init()
+    } else {
+        // Fallback to local model
+        LlmClient::llama_cpp()
+            .mistral_7b_instruct_v0_3()
+            .init()
+            .await
+    };
+
+    llm_client.map_err(|e| format!("Failed to initialize LLM client: {}", e))
+}
 
 /// Handler for the sampling/createMessage method (returns AsyncSamplingResult).
 pub fn sampling_create_message_pending(request: CreateMessageRequest) -> AsyncSamplingResult {
     let (tx_result, rx_result) = oneshot::channel();
-    let (_tx_progress, _rx_progress) = mpsc::channel::<SamplingProgressNotification>(16); // Progress channel seems unused
+    // Channel for streaming results (if needed in the future)
+    let (_tx_stream, rx_stream) = mpsc::channel::<HandlerResult<CreateMessageResult>>(16);
 
     tokio::spawn(async move {
         log::info!("Received sampling/createMessage request: {:?}", request);
@@ -41,6 +116,15 @@ pub fn sampling_create_message_pending(request: CreateMessageRequest) -> AsyncSa
                         };
                     }
                 };
+
+                // Report initial progress if request has meta params
+                if let Some(meta) = &request.meta {
+                    if let Some(progress_token) = &meta.progress_token {
+                        // Create a progress channel
+                        let (tx_progress, _rx_progress) = mpsc::channel::<HandlerResult<SamplingProgressNotification>>(16);
+                        report_sampling_progress(&tx_progress, progress_token.clone(), 0, 150);
+                    }
+                }
 
                 // For demonstration, we'll create a simple echo response
                 let response = format!("Echo: {}", prompt_text);
@@ -121,6 +205,19 @@ pub fn sampling_create_message_pending(request: CreateMessageRequest) -> AsyncSa
 
 pub fn sampling_create_message(request: CreateMessageRequest) -> AsyncSamplingResult {
     sampling_create_message_pending(request)
+}
+
+/// Create a streaming sampling result (for future use with streaming LLMs)
+pub fn sampling_create_message_stream(_request: CreateMessageRequest) -> SamplingStream {
+    let (tx_stream, rx_stream) = mpsc::channel::<HandlerResult<CreateMessageResult>>(16);
+    
+    // In the future, this would stream tokens as they're generated
+    tokio::spawn(async move {
+        // Placeholder - would integrate with streaming LLM APIs
+        drop(tx_stream);
+    });
+    
+    SamplingStream::new(rx_stream)
 }
 
 // Restore unused function - signature updated

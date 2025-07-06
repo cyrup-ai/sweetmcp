@@ -12,6 +12,10 @@ documentation = "docs.https://cyrup.ai/docs/sweet-mcp-server"
 homepage = "https://cyrup.ai"
 
 [dependencies]
+# LLM client for real completions
+llm_client = { path = "../llm_client/llm_client" }
+futures-util = "0.3"
+
 anyhow = "1.0.98"
 base64 = "0.22.1"
 chrono = "0.4.41"

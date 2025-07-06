@@ -6,6 +6,8 @@ members = [
     "sweetmcp-daemon",
     "sweetmcp-memory",
     "sweetmcp-client-autoconfig",
+    "sweetmcp-plugin-builder",
+    "sweetmcp-voice-tools",
     # WebAssembly plugins - now properly configured with extism-pdk 1.4.1
     "sweetmcp-plugins/arxiv",
     "sweetmcp-plugins/browser",
@@ -44,10 +46,22 @@ extism = { version = "1.11.1" }
 winreg = { version = "0.55.0" }
 plist = { version = "1.7.2" }
 parking_lot = { version = "0.12.4" }
+colorful = { version = "0.3" }
+indenter = { version = "0.3" }
+llm_devices = { path = "../llm_client/llm_devices" }
+llm_interface = { path = "../llm_client/llm_interface" }
+llm_models = { path = "../llm_client/llm_models" }
+llm_prompt = { path = "../llm_client/llm_prompt" }
+llm_utils = { version = "0.0.11" }
+url = { version = "2.5" }
+serial_test = { version = "3.2" }
+dotenvy = { version = "0.15.7" }
+minijinja = { version = "2.0.1" }
 
 [workspace.package]
 version = "0.1.0"
 authors = ["David Maple<david@cyrup.ai"]
+homepage = "https://github.com/cyrup/sweetmcp"
 edition = "2024"  
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/cyrup-ai/sweetmcp"

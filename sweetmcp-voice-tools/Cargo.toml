@@ -1,0 +1,20 @@
+[package]
+name = "sweetmcp-voice-tools"
+version = "0.1.0"
+edition = "2024"
+authors = ["David Maple<david@cyrup.ai>"]
+description = "MCP voice tool definitions for text-to-speech and speech-to-text operations"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+anyhow = "1.0"
+thiserror = "2.0"
+
+# For async trait definitions
+async-trait = "0.1"
+tokio = { version = "1", features = ["sync"] }
+
+# Workspace hack for consistent dependencies
+sweetmcp-workspace-hack = { version = "0.1", path = "../sweetmcp-workspace-hack" }

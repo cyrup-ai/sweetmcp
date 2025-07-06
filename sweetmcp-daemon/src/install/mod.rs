@@ -8,6 +8,7 @@
 
 mod builder;
 mod error;
+pub mod fluent_voice;
 
 cfg_if::cfg_if! {
     if #[cfg(target_os = "linux")] {

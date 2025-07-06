@@ -1,77 +1,65 @@
-use crate::install::{install_daemon_async, uninstall_daemon, InstallerBuilder, InstallerError};
+use crate::install::{install_daemon_async, uninstall_daemon_async, InstallerBuilder, InstallerError};
+use crate::install::fluent_voice;
 use crate::signing;
 use anyhow::{Context, Result};
+use futures::StreamExt;
 use log::{info, warn};
 use rcgen::{CertificateParams, DistinguishedName, DnType, KeyPair, SanType};
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::pin::Pin;
 use std::process::Command;
 use std::time::{Duration, SystemTime};
+use tokio::sync::mpsc;
+use tokio_stream::wrappers::ReceiverStream;
 
-/// Install the daemon using elevated_daemon_installer with GUI authorization.
-pub async fn install(dry: bool, sign: bool, identity: Option<String>) -> Result<()> {
-    install_async_impl(dry, sign, identity).await
+/// Async task that can be either a future or a stream
+pub enum AsyncTask<T> {
+    FutureVariant(Pin<Box<dyn std::future::Future<Output = T> + Send + 'static>>),
+    StreamVariant(ReceiverStream<T>),
 }
 
-/// Synchronous installation fallback for non-async contexts
-pub fn install_sync(dry: bool, _sign: bool, _identity: Option<String>) -> Result<()> {
-    // Create config directory and file in user-specific location
-    let config_dir = dirs::config_dir()
-        .ok_or_else(|| anyhow::anyhow!("Could not determine config directory"))?
-        .join("cyrupd");
-
-    let config_path = config_dir.join("cyrupd.toml");
-
-    // Create config if it doesn't exist
-    if !config_path.exists() {
-        info!("Creating default config at {}", config_path.display());
-        if !dry {
-            fs::create_dir_all(&config_dir)?;
-            let def = crate::config::ServiceConfig::default();
-            fs::write(&config_path, toml::to_string_pretty(&def)?)?;
-        }
+impl<T> AsyncTask<T> {
+    /// Construct from a future
+    pub fn from_future<F>(fut: F) -> Self
+    where
+        F: std::future::Future<Output = T> + Send + 'static,
+    {
+        AsyncTask::FutureVariant(Box::pin(fut))
     }
 
-    // Get the current executable path and validate it exists
-    let exe_path = std::env::current_exe().context("current_exe()")?;
-    if !exe_path.exists() {
-        return Err(crate::install::InstallerError::MissingExecutable(
-            exe_path.to_string_lossy().to_string()
-        ).into());
-    }
-
-    if dry {
-        info!("[dry run] Would install daemon:");
-        info!("  - Binary: {}", exe_path.display());
-        info!("  - Config: {}", config_path.display());
-        info!("  - Service: cyrupd");
-        return Ok(());
-    }
-
-    // Build the installer configuration using both arg and args methods
-    let installer = InstallerBuilder::new("cyrupd", exe_path)
-        .description("Cyrup Service Manager")
-        .args(["run", "--foreground", "--config", config_path.to_str().unwrap()])
-        .env("RUST_LOG", "info")
-        .auto_restart(true)
-        .network(true);
-
-    // Install using synchronous installer
-    match crate::install::install_daemon(installer) {
-        Ok(()) => {
-            info!("Daemon installed successfully (sync mode)");
-            Ok(())
-        }
-        Err(crate::install::InstallerError::Cancelled) => Err(anyhow::anyhow!("Installation cancelled by user")),
-        Err(crate::install::InstallerError::PermissionDenied) => Err(anyhow::anyhow!(
-            "Permission denied. Please provide administrator credentials."
-        )),
-        Err(e) => Err(e.into()),
+    /// Construct from a receiver
+    pub fn from_receiver(receiver: mpsc::Receiver<T>) -> Self {
+        AsyncTask::StreamVariant(ReceiverStream::new(receiver))
     }
 }
 
-/// Async implementation of installation
-async fn install_async_impl(dry: bool, sign: bool, identity: Option<String>) -> Result<()> {
+/// Install the daemon with full end-to-end handling
+pub fn install(dry: bool, sign: bool, identity: Option<String>) -> AsyncTask<Result<()>> {
+    let (tx, rx) = mpsc::channel(1);
+    
+    tokio::spawn(async move {
+        let result = install_impl(dry, sign, identity).await;
+        let _ = tx.send(result).await;
+    });
+    
+    AsyncTask::from_receiver(rx)
+}
+
+/// Uninstall the daemon
+pub fn uninstall(dry: bool) -> AsyncTask<Result<()>> {
+    let (tx, rx) = mpsc::channel(1);
+    
+    tokio::spawn(async move {
+        let result = uninstall_impl(dry).await;
+        let _ = tx.send(result).await;
+    });
+    
+    AsyncTask::from_receiver(rx)
+}
+
+/// Internal implementation of install
+async fn install_impl(dry: bool, sign: bool, identity: Option<String>) -> Result<()> {
     // Create config directory and file in user-specific location
     let config_dir = dirs::config_dir()
         .ok_or_else(|| anyhow::anyhow!("Could not determine config directory"))?
@@ -122,6 +110,8 @@ async fn install_async_impl(dry: bool, sign: bool, identity: Option<String>) -> 
         info!("  - Binary: {}", exe_path.display());
         info!("  - Config: {}", config_path.display());
         info!("  - Service: cyrupd");
+        info!("  - fluent-voice: Clone to {}/sweetmcp/fluent-voice", 
+              dirs::config_dir().unwrap_or_default().display());
         if sign {
             #[cfg(target_os = "macos")]
             info!(
@@ -268,6 +258,13 @@ async fn install_async_impl(dry: bool, sign: bool, identity: Option<String>) -> 
                 // Don't fail installation if host entries fail
             }
 
+            // Install fluent-voice components
+            if let Err(e) = fluent_voice::install_fluent_voice().await {
+                warn!("Failed to install fluent-voice components: {}", e);
+                // Don't fail installation if fluent-voice installation fails
+                // Voice features will be unavailable but other services can still run
+            }
+
             // Verify the installed binary is still signed
             if sign {
                 let installed_path = get_installed_daemon_path();
@@ -281,50 +278,21 @@ async fn install_async_impl(dry: bool, sign: bool, identity: Option<String>) -> 
                         // Re-sign the installed binary
                         info!("Re-signing installed binary...");
                         let mut resign_config = signing::SigningConfig::new(installed_path.clone());
-                        
-                        // Import certificate if needed on macOS
-                        #[cfg(target_os = "macos")]
-                        if let Some(ref id) = identity {
-                            if id.ends_with(".p12") || id.ends_with(".pfx") {
-                                match signing::macos::import_certificate(std::path::Path::new(id), None) {
-                                    Ok(imported_id) => {
-                                        info!("Imported certificate with identity: {}", imported_id);
-                                        if let signing::PlatformConfig::MacOS { identity: cfg_id, .. } = &mut resign_config.platform {
-                                            *cfg_id = imported_id;
-                                        }
-                                    }
-                                    Err(e) => {
-                                        warn!("Failed to import certificate: {}", e);
-                                    }
-                                }
-                            } else if let signing::PlatformConfig::MacOS { identity: cfg_id, .. } = &mut resign_config.platform {
-                                *cfg_id = id.clone();
-                            }
-                        }
-                        
-                        #[cfg(not(target_os = "macos"))]
                         if let Some(id) = identity {
                             match &mut resign_config.platform {
+                                #[cfg(target_os = "macos")]
+                                signing::PlatformConfig::MacOS { identity, .. } => *identity = id,
                                 #[cfg(target_os = "windows")]
-                                signing::PlatformConfig::Windows { certificate, .. } => {
-                                    *certificate = id
-                                }
+                                signing::PlatformConfig::Windows { certificate, .. } => *certificate = id,
                                 #[cfg(target_os = "linux")]
                                 signing::PlatformConfig::Linux { key_id, .. } => *key_id = Some(id),
                                 _ => {}
                             }
                         }
-                        
                         if let Err(e) = signing::sign_binary(&resign_config) {
                             warn!("Failed to re-sign installed binary: {}", e);
                         } else {
                             info!("Successfully re-signed installed binary");
-                            
-                            // Cleanup temporary keychain on macOS
-                            #[cfg(target_os = "macos")]
-                            if let Err(e) = signing::macos::cleanup_keychain() {
-                                warn!("Failed to cleanup temporary keychain: {}", e);
-                            }
                         }
                     }
                     Err(e) => warn!("Failed to verify installed binary signature: {}", e),
@@ -341,36 +309,16 @@ async fn install_async_impl(dry: bool, sign: bool, identity: Option<String>) -> 
     }
 }
 
-/// Uninstall the daemon using elevated_daemon_installer
-pub fn uninstall(dry: bool) -> Result<()> {
+/// Internal implementation of uninstall
+async fn uninstall_impl(dry: bool) -> Result<()> {
     if dry {
         info!("[dry run] Would uninstall daemon: cyrupd");
         return Ok(());
     }
 
-    match uninstall_daemon("cyrupd") {
+    match uninstall_daemon_async("cyrupd").await {
         Ok(()) => {
             info!("Daemon uninstalled successfully");
-            Ok(())
-        }
-        Err(InstallerError::Cancelled) => Err(anyhow::anyhow!("Uninstallation cancelled by user")),
-        Err(InstallerError::PermissionDenied) => Err(anyhow::anyhow!(
-            "Permission denied. Please provide administrator credentials."
-        )),
-        Err(e) => Err(e.into()),
-    }
-}
-
-/// Async uninstallation for contexts requiring async operations
-pub async fn uninstall_async(dry: bool) -> Result<()> {
-    if dry {
-        info!("[dry run] Would uninstall daemon: cyrupd (async)");
-        return Ok(());
-    }
-
-    match crate::install::uninstall_daemon_async("cyrupd").await {
-        Ok(()) => {
-            info!("Daemon uninstalled successfully (async mode)");
             Ok(())
         }
         Err(InstallerError::Cancelled) => Err(anyhow::anyhow!("Uninstallation cancelled by user")),

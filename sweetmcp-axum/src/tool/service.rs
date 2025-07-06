@@ -122,21 +122,14 @@ pub fn tools_call_pending(
     ToolCallExecution { rx }
 }
 
-// Sync method returning stream/future types
-pub fn tools_list(
-    pm: crate::plugin::PluginManager,
-    request: Option<ListToolsRequest>,
-) -> ToolStream {
-    tools_list_stream(pm, request)
-}
-
 /// Router-compatible async handler for tools/list
 pub async fn tools_list_handler(
     pm: PluginManager,                 // Resource first
     request: Option<ListToolsRequest>, // Request second
 ) -> HandlerResult<ListToolsResult> {
-    // Create a stream
-    let stream = tools_list(pm, request);
+    // Use ToolService instead of calling functions directly
+    let service = ToolService::new(pm);
+    let stream = service.list(request.unwrap_or(ListToolsRequest { cursor: None }));
 
     // Collect results from stream
     let mut tools = Vec::new();
@@ -156,23 +149,14 @@ pub async fn tools_list_handler(
     })
 }
 
-pub fn tools_call(
-    pm: crate::plugin::PluginManager,
-    request: ToolCallRequestParams,
-) -> ToolCallExecution {
-    tools_call_pending(pm, request)
-}
-
 /// Router-compatible async handler for tools/call
 pub async fn tools_call_handler(
     pm: PluginManager,        // Resource first
     request: CallToolRequest, // Request second
 ) -> HandlerResult<CallToolResult> {
-    // Use the params field from the request directly
-    let params = request.params;
-
-    // Create a future
-    let pending = tools_call(pm, params);
+    // Use ToolService instead of calling functions directly
+    let service = ToolService::new(pm);
+    let pending = service.call(request);
 
     // Await the result
     pending.await

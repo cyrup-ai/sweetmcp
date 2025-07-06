@@ -143,15 +143,6 @@ pub fn prompts_get_pending(
     crate::prompt::model::PendingPromptResult { rx }
 }
 
-// Sync method returning stream/future types
-pub fn prompts_list(
-    _request: Option<ListPromptsRequest>, /* Parameter unused, but keep for signature
-                                           * consistency if needed */
-    plugin_manager: PluginManager,
-) -> crate::prompt::model::PromptStream {
-    prompts_list_stream(plugin_manager)
-}
-
 /// Router-compatible async handler for prompts/list
 pub async fn prompts_list_handler(
     plugin_manager: PluginManager,
@@ -174,13 +165,6 @@ pub async fn prompts_list_handler(
     }
 
     Ok(prompts)
-}
-
-pub fn prompts_get(
-    request: GetPromptRequest,
-    plugin_manager: PluginManager,
-) -> crate::prompt::model::PendingPromptResult {
-    prompts_get_pending(request, plugin_manager)
 }
 
 /// Router-compatible async handler for prompts/get

@@ -8,7 +8,7 @@ use crate::{
     metrics,
     peer_discovery::{PeerRegistry, PeersResponse, RegisterRequest, BUILD_ID},
     rate_limit::AdvancedRateLimitManager,
-    shutdown::{ShutdownCoordinator, ShutdownAware, RequestGuard},
+    shutdown::ShutdownCoordinator,
 };
 use bytes::Bytes;
 use pingora::http::{Method, ResponseHeader, StatusCode};
@@ -65,8 +65,11 @@ impl EdgeService {
 
         // Note: cleanup task will be started lazily when first rate limit check occurs
 
-        // Initialize shutdown coordinator
-        let shutdown_coordinator = Arc::new(ShutdownCoordinator::new());
+        // Initialize shutdown coordinator with XDG data directory
+        let data_dir = dirs::data_local_dir()
+            .unwrap_or_else(|| std::path::PathBuf::from("."))
+            .join("sweetmcp");
+        let shutdown_coordinator = Arc::new(ShutdownCoordinator::new(data_dir));
         
         Self {
             auth: JwtAuth::new(cfg.jwt_secret.clone(), cfg.jwt_expiry),

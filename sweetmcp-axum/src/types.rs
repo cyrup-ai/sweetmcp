@@ -356,70 +356,13 @@ pub struct Root {
     pub url: String,
 }
 
-// #[derive(Debug, Clone, Copy, PartialEq, Eq)] // Already fixed
-pub enum ErrorCode {
-    // MCP SDK error codes
-    ConnectionClosed = -1,
-    RequestTimeout = -2,
-    // Standard JSON-RPC error codes
-    ParseError = -32700,
-    InvalidRequest = -32600,
-    MethodNotFound = -32601,
-    InvalidParams = -32602,
-    InternalError = -32603,
-}
-
-// ----- json-rpc -----
-#[derive(Debug, Deserialize, Serialize)]
-pub struct JsonRpcResponse {
-    pub jsonrpc: String,
-    pub id: Value,
-    pub result: Value,
-}
-
-impl JsonRpcResponse {
-    pub fn new(id: Value, result: Value) -> Self {
-        JsonRpcResponse {
-            jsonrpc: JSONRPC_VERSION.to_string(),
-            id,
-            result,
-        }
-    }
-}
-
+// JSON-RPC types are defined in router.rs to avoid duplication
+// But JsonRpcNotification is still needed here
 #[derive(Debug, Deserialize, Serialize)]
 pub struct JsonRpcNotification {
     pub jsonrpc: String,
     pub method: String,
     pub params: Value,
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-pub struct JsonRpcError {
-    pub jsonrpc: String,
-    pub id: Value,
-    pub error: Error,
-}
-
-#[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct Error {
-    pub code: i32,
-    pub message: String,
-    pub data: Option<Value>,
-}
-
-impl JsonRpcError {
-    pub fn new(id: Value, code: i32, message: &str) -> Self {
-        JsonRpcError {
-            jsonrpc: JSONRPC_VERSION.to_string(),
-            id,
-            error: Error {
-                code,
-                message: message.to_string(),
-                data: None,
-            },
-        }
-    }
 }
 
 /// A concrete, reusable wrapper for async tasks that hides all async complexity from trait/public interfaces.

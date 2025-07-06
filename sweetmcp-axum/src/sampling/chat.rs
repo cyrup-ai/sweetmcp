@@ -192,8 +192,60 @@ pub struct McpSamplingParams {
     // Add other MCP sampling params as needed
 }
 
-// Helper function (to be implemented)
-// fn translate_openai_to_mcp(request: &ChatRequest) -> McpSamplingParams { ... }
+// Helper function to translate OpenAI format to MCP format
+fn translate_openai_to_mcp(request: &ChatRequest) -> McpSamplingParams {
+    let messages = request.messages.iter().map(|msg| {
+        let role = match msg.role {
+            Role::System => "system",
+            Role::User => "user",
+            Role::Assistant => "assistant",
+            Role::Tool => "tool",
+        }.to_string();
+        
+        super::model::McpMessage {
+            role,
+            content: super::model::McpMessageContent {
+                type_: "text".to_string(),
+                text: msg.content.clone(),
+                data: None,
+                mime_type: None,
+            },
+        }
+    }).collect();
 
-// Helper function (to be implemented)
-// fn translate_mcp_to_openai(mcp_response: &Value) -> Result<ChatResponse, anyhow::Error> { ... }
+    McpSamplingParams {
+        messages,
+        model_preferences: request.model.as_ref().map(|model| super::model::McpModelPreferences {
+            hints: Some(vec![super::model::McpModelHint { name: model.clone() }]),
+            cost_priority: None,
+            speed_priority: None,
+            intelligence_priority: None,
+        }),
+        system_prompt: None,
+        include_context: Some("thisServer".to_string()),
+        max_tokens: request.max_tokens.map(|n| n as u32),
+        temperature: request.temperature,
+        stop_sequences: request.stop.as_ref().and_then(|s| match s {
+            StopSequence::Single(seq) => Some(vec![seq.clone()]),
+            StopSequence::Multiple(seqs) => Some(seqs.clone()),
+        }),
+    }
+}
+
+// Helper function to translate MCP response to OpenAI format
+fn translate_mcp_to_openai(mcp_response: &Value) -> Result<ChatResponse, anyhow::Error> {
+    // This is a placeholder implementation - would need proper mapping
+    // Generate a session token for conversation continuity
+    let session_token = format!("session-{}", uuid::Uuid::new_v4());
+    
+    Ok(ChatResponse {
+        id: format!("chat-{}", uuid::Uuid::new_v4()),
+        object: "chat.completion".to_string(),
+        created: chrono::Utc::now().timestamp() as u64,
+        model: "gpt-3.5-turbo".to_string(),
+        choices: vec![],
+        usage: None,
+        system_fingerprint: None,
+        session_token,
+    })
+}
