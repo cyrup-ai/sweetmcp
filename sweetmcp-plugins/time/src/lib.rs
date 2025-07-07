@@ -23,7 +23,8 @@ impl StdError for CustomError {}
 // Called when the tool is invoked.
 pub(crate) fn call(input: CallToolRequest) -> Result<CallToolResult, Error> {
     let args = input.params.arguments.unwrap_or_default();
-    let name = args.get("name")
+    let name = args
+        .get("name")
         .ok_or_else(|| Error::msg("name parameter is required"))?
         .as_str()
         .ok_or_else(|| Error::msg("name parameter must be a string"))?;
@@ -48,7 +49,8 @@ pub(crate) fn call(input: CallToolRequest) -> Result<CallToolResult, Error> {
             })
         }
         "parse_time" => {
-            let time = args.get("time_rfc2822")
+            let time = args
+                .get("time_rfc2822")
                 .ok_or_else(|| Error::msg("time_rfc2822 parameter is required"))?
                 .as_str()
                 .ok_or_else(|| Error::msg("time_rfc2822 parameter must be a string"))?;
@@ -72,11 +74,13 @@ pub(crate) fn call(input: CallToolRequest) -> Result<CallToolResult, Error> {
             })
         }
         "time_offset" => {
-            let t1 = args.get("timestamp")
+            let t1 = args
+                .get("timestamp")
                 .ok_or_else(|| Error::msg("timestamp parameter is required"))?
                 .as_i64()
                 .ok_or_else(|| Error::msg("timestamp parameter must be an integer"))?;
-            let offset = args.get("offset")
+            let offset = args
+                .get("offset")
                 .ok_or_else(|| Error::msg("offset parameter is required"))?
                 .as_i64()
                 .ok_or_else(|| Error::msg("offset parameter must be an integer"))?;

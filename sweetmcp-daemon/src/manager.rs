@@ -1,7 +1,7 @@
 use crate::config::ServiceConfig;
 use crate::ipc::{Cmd, Evt};
 use crate::lifecycle::Lifecycle;
-use crate::state_machine::{Event, Action};
+use crate::state_machine::{Action, Event};
 use anyhow::Result;
 use crossbeam_channel::{bounded, select, tick, Receiver, Sender};
 use log::{error, info};

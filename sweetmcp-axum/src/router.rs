@@ -43,7 +43,6 @@ fn build_rpc_router(
         pending_requests: Arc::new(Mutex::new(HashMap::new())),
     };
 
-
     // Register standard handlers first
     let builder = RouterBuilder::default()
         .append("initialize", initialize)
@@ -107,7 +106,6 @@ pub async fn run_server(
     plugin_manager: PluginManager,
     serve_args: ServeArgs,
 ) -> Result<()> {
-
     // Initialize memory system if configured
     if let Some(db_config) = &config.database {
         let memory_config = sweetmcp_memory::MemoryConfig {
@@ -449,7 +447,9 @@ pub async fn roots_list(_request: Option<ListRootsRequest>) -> HandlerResult<Lis
 
 /// Run the server as a system daemon using our sophisticated daemon manager
 async fn run_daemon(_plugin_manager: PluginManager, _serve_args: ServeArgs) -> Result<()> {
-    Err(anyhow::anyhow!("Daemon mode is not supported in axum - use the daemon to run pingora"))
+    Err(anyhow::anyhow!(
+        "Daemon mode is not supported in axum - use the daemon to run pingora"
+    ))
 }
 
 /// Create and run Unix domain socket listener

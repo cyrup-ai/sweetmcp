@@ -244,7 +244,8 @@ pub fn process_thought(input: String) -> FnResult<String> {
                     "type": "text",
                     "text": format!("Failed to lock reasoner: {}", e)
                 }]
-            }).to_string());
+            })
+            .to_string());
         }
     };
 
@@ -262,7 +263,8 @@ pub fn process_thought(input: String) -> FnResult<String> {
                     "type": "text",
                     "text": format!("Failed to lock reasoner for stats: {}", e)
                 }]
-            }).to_string());
+            })
+            .to_string());
         }
     };
 
@@ -288,7 +290,13 @@ pub fn clear(_: String) -> FnResult<String> {
     let reasoner = get_reasoner();
     match reasoner.lock() {
         Ok(mut reasoner) => reasoner.clear(),
-        Err(e) => return Err(extism_pdk::Error::msg(format!("Failed to lock reasoner for clearing: {}", e)).into()),
+        Err(e) => {
+            return Err(extism_pdk::Error::msg(format!(
+                "Failed to lock reasoner for clearing: {}",
+                e
+            ))
+            .into());
+        }
     };
 
     Ok("Reasoner state cleared".to_string())

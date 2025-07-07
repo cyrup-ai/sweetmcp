@@ -4,10 +4,10 @@
 mod fluent;
 mod plugin;
 
-use fluent::*;
-use plugin::types::*;
 use base64::Engine;
 use extism_pdk::*;
+use fluent::*;
+use plugin::types::*;
 use serde_json::Value;
 use sha1::Sha1;
 use sha2::{Digest, Sha224, Sha256, Sha384, Sha512};
@@ -41,7 +41,10 @@ fn compute_hash(data: &str, algorithm: &str) -> Result<String, String> {
             Ok(format!("{:x}", hasher.finalize()))
         }
         "md5" => Ok(format!("{:x}", md5::compute(data))),
-        "base32" => Ok(base32::encode(base32::Alphabet::Rfc4648 { padding: true }, data.as_bytes())),
+        "base32" => Ok(base32::encode(
+            base32::Alphabet::Rfc4648 { padding: true },
+            data.as_bytes(),
+        )),
         "base64" => Ok(base64::engine::general_purpose::STANDARD.encode(data)),
         _ => Err(format!("Unsupported algorithm: {}", algorithm)),
     }
@@ -61,17 +64,24 @@ impl McpTool for HashTool {
     fn schema() -> Value {
         SchemaBuilder::new()
             .requires_string("data", "data to convert to hash or encoded format")
-            .requires_enum("algorithm", "algorithm to use for hashing or encoding", 
-                          &["sha256", "sha512", "sha384", "sha224", "sha1", "md5", "base32", "base64"])
+            .requires_enum(
+                "algorithm",
+                "algorithm to use for hashing or encoding",
+                &[
+                    "sha256", "sha512", "sha384", "sha224", "sha1", "md5", "base32", "base64",
+                ],
+            )
             .build()
     }
 
     fn execute(args: Value) -> Result<CallToolResult, Error> {
-        let data = args.get("data")
+        let data = args
+            .get("data")
             .and_then(|v| v.as_str())
             .ok_or_else(|| Error::msg("data parameter required"))?;
-            
-        let algorithm = args.get("algorithm")
+
+        let algorithm = args
+            .get("algorithm")
             .and_then(|v| v.as_str())
             .ok_or_else(|| Error::msg("algorithm parameter required"))?;
 
@@ -86,8 +96,8 @@ impl McpTool for HashTool {
 fn plugin() -> McpPlugin<Ready> {
     McpPlugin::named("hash")
         .described("Cryptographic hashing and encoding operations for data integrity and security")
-        .provides::<HashTool>()           // const-generic tool registration! 🔥
-        .expose()                         // semantic: expose to MCP clients
+        .provides::<HashTool>() // const-generic tool registration! 🔥
+        .expose() // semantic: expose to MCP clients
 }
 
 // MCP Protocol Implementation - semantic method dispatch

@@ -1,7 +1,7 @@
 use serde_json::Value;
+use sweetmcp_axum::JSONRPC_VERSION;
 use tokio::sync::{mpsc, oneshot};
 use tracing::{error, info};
-use sweetmcp_axum::JSONRPC_VERSION;
 
 // Bridge message type for communication between Pingora and MCP handler
 pub type BridgeMsg = (

@@ -1,12 +1,12 @@
 //! Converts GraphQL, JSON-RPC, or Cap'n Proto payloads into standard JSON-RPC for MCP.
 
 use anyhow::{bail, Context, Result};
-use sweetmcp_axum::JSONRPC_VERSION;
 use async_graphql::parser::{parse_query, types::*};
 use async_graphql::{Name, Positioned};
 use async_graphql_value::Value;
 use capnp::message::ReaderOptions;
 use serde_json::json;
+use sweetmcp_axum::JSONRPC_VERSION;
 use uuid::Uuid;
 
 #[derive(Debug, Clone)]

@@ -1,21 +1,22 @@
 //! Sexy fluent builder for MCP plugins
-//! 
+//!
 //! No `new()`, no boilerplate, just pure fluent chaining with closures
 
-use std::marker::PhantomData;
-use serde::{Serialize, Deserialize};
-use serde_json::Value;
 use extism_pdk::*;
+use serde::{Deserialize, Serialize};
+use serde_json::Value;
+use std::marker::PhantomData;
 
 pub mod prelude {
     pub use super::{
-        mcp_plugin, McpPlugin, McpTool,
-        DescriptionBuilder, SchemaBuilder, ContentBuilder,
+        ContentBuilder, DescriptionBuilder, McpPlugin, McpTool, SchemaBuilder, mcp_plugin,
     };
 }
 
 // Re-export MCP protocol types
-pub use extism_pdk::{CallToolRequest, CallToolResult, ListToolsResult, ToolDescription, Content, ContentType};
+pub use extism_pdk::{
+    CallToolRequest, CallToolResult, Content, ContentType, ListToolsResult, ToolDescription,
+};
 
 /// Type states for compile-time safety
 pub struct Empty;
@@ -72,7 +73,7 @@ impl McpPlugin<Described> {
         });
         self
     }
-    
+
     /// Ready to serve MCP clients
     pub fn serve(self) -> McpPlugin<Ready> {
         McpPlugin {
@@ -101,15 +102,19 @@ impl McpPlugin<Ready> {
 
     /// Describe available tools
     pub fn describe(&self) -> Result<ListToolsResult, Error> {
-        let tools = self.tools.iter().map(|tool| {
-            ToolDescription {
+        let tools = self
+            .tools
+            .iter()
+            .map(|tool| ToolDescription {
                 name: tool.name.clone(),
                 description: tool.description.clone(),
-                input_schema: tool.schema.as_object()
+                input_schema: tool
+                    .schema
+                    .as_object()
                     .expect("Tool schema must be object")
                     .clone(),
-            }
-        }).collect();
+            })
+            .collect();
 
         Ok(ListToolsResult { tools })
     }
@@ -118,7 +123,7 @@ impl McpPlugin<Ready> {
 /// Tool trait with fluent description
 pub trait McpTool: Send + Sync + 'static {
     const NAME: &'static str;
-    
+
     fn description(builder: DescriptionBuilder) -> DescriptionBuilder;
     fn schema(builder: SchemaBuilder) -> Value;
     fn execute(args: Value) -> Result<CallToolResult, Error>;
@@ -188,7 +193,9 @@ impl DescriptionBuilder {
         }
 
         if !self.operations.is_empty() {
-            let ops = self.operations.iter()
+            let ops = self
+                .operations
+                .iter()
                 .map(|(name, desc)| format!("- `{}`: {}", name, desc))
                 .collect::<Vec<_>>()
                 .join("\n");
@@ -196,28 +203,29 @@ impl DescriptionBuilder {
         }
 
         if !self.use_cases.is_empty() {
-            parts.push(format!("Use this tool when you need to:\n- {}", 
-                self.use_cases.join("\n- ")));
+            parts.push(format!(
+                "Use this tool when you need to:\n- {}",
+                self.use_cases.join("\n- ")
+            ));
         }
 
         if !self.always_use_for.is_empty() {
-            parts.push(format!("Always use this tool to {}", 
-                self.always_use_for.join(", ")));
+            parts.push(format!(
+                "Always use this tool to {}",
+                self.always_use_for.join(", ")
+            ));
         }
 
         if !self.prerequisites.is_empty() {
-            parts.push(format!("NOTE: {}", 
-                self.prerequisites.join(". ")));
+            parts.push(format!("NOTE: {}", self.prerequisites.join(". ")));
         }
 
         if !self.limitations.is_empty() {
-            parts.push(format!("Not suitable for: {}", 
-                self.limitations.join("; ")));
+            parts.push(format!("Not suitable for: {}", self.limitations.join("; ")));
         }
 
         if !self.perfect_for.is_empty() {
-            parts.push(format!("Perfect for {}.", 
-                self.perfect_for.join(", ")));
+            parts.push(format!("Perfect for {}.", self.perfect_for.join(", ")));
         }
 
         parts.join(" ")
@@ -235,31 +243,45 @@ impl SchemaBuilder {
     /// Required string parameter
     pub fn required_string(mut self, name: impl Into<String>, desc: impl Into<String>) -> Self {
         let name = name.into();
-        self.properties.insert(name.clone(), serde_json::json!({
-            "type": "string",
-            "description": desc.into()
-        }));
+        self.properties.insert(
+            name.clone(),
+            serde_json::json!({
+                "type": "string",
+                "description": desc.into()
+            }),
+        );
         self.required.push(name);
         self
     }
 
     /// Optional string parameter
     pub fn optional_string(mut self, name: impl Into<String>, desc: impl Into<String>) -> Self {
-        self.properties.insert(name.into(), serde_json::json!({
-            "type": "string",
-            "description": desc.into()
-        }));
+        self.properties.insert(
+            name.into(),
+            serde_json::json!({
+                "type": "string",
+                "description": desc.into()
+            }),
+        );
         self
     }
 
     /// Required enum parameter
-    pub fn required_enum(mut self, name: impl Into<String>, desc: impl Into<String>, options: &[&str]) -> Self {
+    pub fn required_enum(
+        mut self,
+        name: impl Into<String>,
+        desc: impl Into<String>,
+        options: &[&str],
+    ) -> Self {
         let name = name.into();
-        self.properties.insert(name.clone(), serde_json::json!({
-            "type": "string",
-            "description": desc.into(),
-            "enum": options
-        }));
+        self.properties.insert(
+            name.clone(),
+            serde_json::json!({
+                "type": "string",
+                "description": desc.into(),
+                "enum": options
+            }),
+        );
         self.required.push(name);
         self
     }
@@ -336,7 +358,7 @@ macro_rules! generate_mcp_functions {
                 }
             }
         }
-        
+
         #[no_mangle]
         pub extern "C" fn describe() -> i32 {
             let result = $plugin_fn().describe();
@@ -381,9 +403,7 @@ mod tests {
         }
 
         fn schema(builder: SchemaBuilder) -> Value {
-            builder
-                .required_string("input", "Test input")
-                .build()
+            builder.required_string("input", "Test input").build()
         }
 
         fn execute(args: Value) -> Result<CallToolResult, Error> {

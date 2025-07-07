@@ -61,7 +61,7 @@ pub enum Cmd {
         /// Show sample signing configuration
         #[arg(long)]
         show_config: bool,
-        
+
         /// Sign the currently running binary (self-sign)
         #[arg(long)]
         self_sign: bool,

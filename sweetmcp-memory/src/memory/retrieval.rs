@@ -1,11 +1,11 @@
 //! Memory retrieval strategies and algorithms
 
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::future::Future;
 use std::pin::Pin;
 use std::task::{Context, Poll};
 use tokio::sync::oneshot;
-use serde::{Deserialize, Serialize};
 
 use crate::memory::filter::MemoryFilter;
 use crate::utils::Result;
@@ -111,15 +111,25 @@ impl<V: VectorStore> HybridRetrieval<V> {
     }
 
     /// Get vector similarity results from the vector store
-    pub async fn get_vector_similarity(&self, query_vector: Vec<f32>, limit: usize) -> Result<Vec<RetrievalResult>> {
+    pub async fn get_vector_similarity(
+        &self,
+        query_vector: Vec<f32>,
+        limit: usize,
+    ) -> Result<Vec<RetrievalResult>> {
         let filter = crate::memory::filter::MemoryFilter::new();
-        let results = self.vector_store.search(query_vector, limit, Some(filter)).await?;
-        let retrieval_results = results.into_iter().map(|result| RetrievalResult {
-            id: result.id,
-            method: RetrievalMethod::VectorSimilarity,
-            score: result.score,
-            metadata: HashMap::new(),
-        }).collect();
+        let results = self
+            .vector_store
+            .search(query_vector, limit, Some(filter))
+            .await?;
+        let retrieval_results = results
+            .into_iter()
+            .map(|result| RetrievalResult {
+                id: result.id,
+                method: RetrievalMethod::VectorSimilarity,
+                score: result.score,
+                metadata: HashMap::new(),
+            })
+            .collect();
         Ok(retrieval_results)
     }
 }
@@ -267,7 +277,7 @@ impl RetrievalStrategy for TemporalRetrieval {
                 let age_hours = (now - timestamp) / 3600.0;
                 (age_hours * time_decay * -1.0).exp()
             };
-            
+
             // This would typically query a time-indexed database
             // For now, return empty results as this is a placeholder
             let _ = tx.send(Ok(Vec::new()));
@@ -322,9 +332,15 @@ impl<V: VectorStore + Clone + Send + Sync + 'static> RetrievalManager<V> {
     }
 
     /// Direct vector search using the managed vector store
-    pub async fn direct_vector_search(&self, query_vector: Vec<f32>, limit: usize) -> Result<Vec<crate::vector::VectorSearchResult>> {
+    pub async fn direct_vector_search(
+        &self,
+        query_vector: Vec<f32>,
+        limit: usize,
+    ) -> Result<Vec<crate::vector::VectorSearchResult>> {
         let filter = crate::memory::filter::MemoryFilter::new();
-        self.vector_store.search(query_vector, limit, Some(filter)).await
+        self.vector_store
+            .search(query_vector, limit, Some(filter))
+            .await
     }
 
     /// Retrieve memories using the specified strategy

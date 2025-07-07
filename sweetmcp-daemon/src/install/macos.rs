@@ -401,9 +401,7 @@ impl PlatformExecutor {
         }
     }
 
-
     pub fn uninstall(label: &str) -> Result<(), InstallerError> {
-        
         let script = format!(
             r#"
             set -e
@@ -498,7 +496,6 @@ impl PlatformExecutor {
     }
 
     fn run_osascript(script: &str) -> Result<(), InstallerError> {
-        
         // Escape the script for AppleScript
         let escaped_script = script.replace('\\', "\\\\").replace('"', "\\\"");
 

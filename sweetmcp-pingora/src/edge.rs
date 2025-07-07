@@ -70,7 +70,7 @@ impl EdgeService {
             .unwrap_or_else(|| std::path::PathBuf::from("."))
             .join("sweetmcp");
         let shutdown_coordinator = Arc::new(ShutdownCoordinator::new(data_dir));
-        
+
         Self {
             auth: JwtAuth::new(cfg.jwt_secret.clone(), cfg.jwt_expiry),
             picker: Arc::new(MetricPicker::from_backends(&backends)),

@@ -1,6 +1,6 @@
 //! MCP Voice Tools - Tool definitions for voice operations
 //!
-//! This crate provides the MCP tool definitions for text-to-speech (TTS) 
+//! This crate provides the MCP tool definitions for text-to-speech (TTS)
 //! and speech-to-text (STT) operations, enabling LLMs to interact with
 //! voice capabilities through a clean, intuitive interface.
 
@@ -15,8 +15,8 @@ pub mod types;
 // Re-export commonly used types
 pub use error::{VoiceError, VoiceResult};
 pub use protocol::{VoiceRequest, VoiceResponse};
-pub use tools::{speak_tool, listen_tool};
-pub use types::{SpeakParams, ListenParams, ListenResult, VoiceConfig};
+pub use tools::{listen_tool, speak_tool};
+pub use types::{ListenParams, ListenResult, SpeakParams, VoiceConfig};
 
 /// MCP Tool definition structure (matching sweetmcp-axum types)
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -48,21 +48,18 @@ pub struct ToolInputSchemaProperty {
 pub trait VoiceService: Send + Sync {
     /// Synthesize speech from text
     async fn speak(&self, params: SpeakParams) -> VoiceResult<()>;
-    
+
     /// Listen for speech and transcribe to text
     async fn listen(&self, params: ListenParams) -> VoiceResult<ListenResult>;
-    
+
     /// Get available voice IDs
     async fn list_voices(&self) -> VoiceResult<Vec<String>>;
-    
+
     /// Get available microphone devices
     async fn list_microphones(&self) -> VoiceResult<Vec<String>>;
 }
 
 /// Tool registry helper
 pub fn register_voice_tools() -> Vec<Tool> {
-    vec![
-        speak_tool(),
-        listen_tool(),
-    ]
+    vec![speak_tool(), listen_tool()]
 }

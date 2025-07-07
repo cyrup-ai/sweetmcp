@@ -24,7 +24,9 @@ pub(crate) fn call(input: CallToolRequest) -> Result<CallToolResult, Error> {
     );
 
     let data = match args.get("data") {
-        Some(v) => v.as_str().ok_or_else(|| Error::msg("`data` must be a string"))?,
+        Some(v) => v
+            .as_str()
+            .ok_or_else(|| Error::msg("`data` must be a string"))?,
         None => return Err(Error::msg("`data` must be available")),
     };
 

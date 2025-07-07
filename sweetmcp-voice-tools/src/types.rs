@@ -7,11 +7,11 @@ use serde::{Deserialize, Serialize};
 pub struct SpeakParams {
     /// Text to synthesize into speech
     pub text: String,
-    
+
     /// Optional voice ID (defaults to system default)
     #[serde(skip_serializing_if = "Option::is_none")]
     pub voice_id: Option<String>,
-    
+
     /// Optional speed modifier (0.5 to 2.0, default 1.0)
     #[serde(skip_serializing_if = "Option::is_none")]
     pub speed: Option<f32>,
@@ -22,10 +22,10 @@ pub struct SpeakParams {
 pub struct ListenParams {
     /// Microphone device ID (e.g., "default", "USB Microphone")
     pub microphone_id: String,
-    
+
     /// Duration to listen in seconds (1-300)
     pub duration_seconds: u32,
-    
+
     /// Optional wake word to listen for
     #[serde(skip_serializing_if = "Option::is_none")]
     pub wake_word: Option<String>,
@@ -36,15 +36,15 @@ pub struct ListenParams {
 pub struct ListenResult {
     /// Transcribed text
     pub text: String,
-    
+
     /// Whether wake word was detected (if specified)
     #[serde(skip_serializing_if = "Option::is_none")]
     pub wake_word_detected: Option<bool>,
-    
+
     /// Confidence score (0.0 to 1.0)
     #[serde(skip_serializing_if = "Option::is_none")]
     pub confidence: Option<f32>,
-    
+
     /// Detected language (if available)
     #[serde(skip_serializing_if = "Option::is_none")]
     pub language: Option<String>,
@@ -55,13 +55,13 @@ pub struct ListenResult {
 pub struct VoiceConfig {
     /// QUIC endpoint for voice service
     pub endpoint: String,
-    
+
     /// Default voice ID
     pub default_voice: Option<String>,
-    
+
     /// Default microphone
     pub default_microphone: Option<String>,
-    
+
     /// VAD (Voice Activity Detection) sensitivity (0.0 to 1.0)
     pub vad_sensitivity: f32,
 }

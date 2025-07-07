@@ -1,5 +1,7 @@
-use crate::install::{install_daemon_async, uninstall_daemon_async, InstallerBuilder, InstallerError};
 use crate::install::fluent_voice;
+use crate::install::{
+    install_daemon_async, uninstall_daemon_async, InstallerBuilder, InstallerError,
+};
 use crate::signing;
 use anyhow::{Context, Result};
 use futures::StreamExt;
@@ -37,24 +39,24 @@ impl<T> AsyncTask<T> {
 /// Install the daemon with full end-to-end handling
 pub fn install(dry: bool, sign: bool, identity: Option<String>) -> AsyncTask<Result<()>> {
     let (tx, rx) = mpsc::channel(1);
-    
+
     tokio::spawn(async move {
         let result = install_impl(dry, sign, identity).await;
         let _ = tx.send(result).await;
     });
-    
+
     AsyncTask::from_receiver(rx)
 }
 
 /// Uninstall the daemon
 pub fn uninstall(dry: bool) -> AsyncTask<Result<()>> {
     let (tx, rx) = mpsc::channel(1);
-    
+
     tokio::spawn(async move {
         let result = uninstall_impl(dry).await;
         let _ = tx.send(result).await;
     });
-    
+
     AsyncTask::from_receiver(rx)
 }
 
@@ -110,8 +112,10 @@ async fn install_impl(dry: bool, sign: bool, identity: Option<String>) -> Result
         info!("  - Binary: {}", exe_path.display());
         info!("  - Config: {}", config_path.display());
         info!("  - Service: cyrupd");
-        info!("  - fluent-voice: Clone to {}/sweetmcp/fluent-voice", 
-              dirs::config_dir().unwrap_or_default().display());
+        info!(
+            "  - fluent-voice: Clone to {}/sweetmcp/fluent-voice",
+            dirs::config_dir().unwrap_or_default().display()
+        );
         if sign {
             #[cfg(target_os = "macos")]
             info!(
@@ -283,7 +287,9 @@ async fn install_impl(dry: bool, sign: bool, identity: Option<String>) -> Result
                                 #[cfg(target_os = "macos")]
                                 signing::PlatformConfig::MacOS { identity, .. } => *identity = id,
                                 #[cfg(target_os = "windows")]
-                                signing::PlatformConfig::Windows { certificate, .. } => *certificate = id,
+                                signing::PlatformConfig::Windows { certificate, .. } => {
+                                    *certificate = id
+                                }
                                 #[cfg(target_os = "linux")]
                                 signing::PlatformConfig::Linux { key_id, .. } => *key_id = Some(id),
                                 _ => {}

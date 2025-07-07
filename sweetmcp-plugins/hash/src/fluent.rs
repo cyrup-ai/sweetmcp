@@ -1,9 +1,9 @@
 // Sexy fluent builder with proper semantics and state progression
 
-use std::marker::PhantomData;
-use serde_json::Value;
 use crate::plugin::types::*;
 use extism_pdk::Error;
+use serde_json::Value;
+use std::marker::PhantomData;
 
 /// State markers for type-safe progression
 pub struct Empty;
@@ -29,7 +29,7 @@ struct ToolDef {
 /// Tool trait for const-generic registration
 pub trait McpTool: Send + Sync + 'static {
     const NAME: &'static str;
-    
+
     fn description() -> String;
     fn schema() -> Value;
     fn execute(args: Value) -> Result<CallToolResult, Error>;
@@ -100,15 +100,19 @@ impl McpPlugin<Ready> {
 
     /// Describe available tools to MCP clients
     pub fn describe(&self) -> Result<ListToolsResult, Error> {
-        let tools = self.tools.iter().map(|tool| {
-            ToolDescription {
+        let tools = self
+            .tools
+            .iter()
+            .map(|tool| ToolDescription {
                 name: tool.name.clone(),
                 description: tool.description.clone(),
-                input_schema: tool.schema.as_object()
+                input_schema: tool
+                    .schema
+                    .as_object()
                     .expect("Tool schema must be object")
                     .clone(),
-            }
-        }).collect();
+            })
+            .collect();
 
         Ok(ListToolsResult { tools })
     }
@@ -191,7 +195,9 @@ impl DescriptionBuilder {
 
         // Multi-operation tools get special treatment
         if !self.operations.is_empty() {
-            let ops = self.operations.iter()
+            let ops = self
+                .operations
+                .iter()
                 .map(|(name, desc)| format!("- `{}`: {}", name, desc))
                 .collect::<Vec<_>>()
                 .join("\n");
@@ -200,32 +206,33 @@ impl DescriptionBuilder {
 
         // Use cases (best practice: always include)
         if !self.use_cases.is_empty() {
-            parts.push(format!("Use this tool when you need to:\n- {}", 
-                self.use_cases.join("\n- ")));
+            parts.push(format!(
+                "Use this tool when you need to:\n- {}",
+                self.use_cases.join("\n- ")
+            ));
         }
 
         // Always use for (when specified)
         if !self.always_use_for.is_empty() {
-            parts.push(format!("Always use this tool to {}", 
-                self.always_use_for.join(", ")));
+            parts.push(format!(
+                "Always use this tool to {}",
+                self.always_use_for.join(", ")
+            ));
         }
 
         // Prerequisites (if any)
         if !self.prerequisites.is_empty() {
-            parts.push(format!("NOTE: {}", 
-                self.prerequisites.join(". ")));
+            parts.push(format!("NOTE: {}", self.prerequisites.join(". ")));
         }
 
         // Limitations (if any)
         if !self.limitations.is_empty() {
-            parts.push(format!("Not suitable for: {}", 
-                self.limitations.join("; ")));
+            parts.push(format!("Not suitable for: {}", self.limitations.join("; ")));
         }
 
         // Perfect for (value proposition - always end with this)
         if !self.perfect_for.is_empty() {
-            parts.push(format!("Perfect for {}.", 
-                self.perfect_for.join(", ")));
+            parts.push(format!("Perfect for {}.", self.perfect_for.join(", ")));
         }
 
         parts.join(" ")
@@ -294,33 +301,55 @@ impl SchemaBuilder {
     }
 
     /// Add a required string parameter
-    pub fn requires_string(mut self, name: impl Into<String>, description: impl Into<String>) -> Self {
+    pub fn requires_string(
+        mut self,
+        name: impl Into<String>,
+        description: impl Into<String>,
+    ) -> Self {
         let name = name.into();
-        self.properties.insert(name.clone(), serde_json::json!({
-            "type": "string",
-            "description": description.into()
-        }));
+        self.properties.insert(
+            name.clone(),
+            serde_json::json!({
+                "type": "string",
+                "description": description.into()
+            }),
+        );
         self.required.push(name);
         self
     }
 
     /// Add an optional string parameter
-    pub fn accepts_string(mut self, name: impl Into<String>, description: impl Into<String>) -> Self {
-        self.properties.insert(name.into(), serde_json::json!({
-            "type": "string",
-            "description": description.into()
-        }));
+    pub fn accepts_string(
+        mut self,
+        name: impl Into<String>,
+        description: impl Into<String>,
+    ) -> Self {
+        self.properties.insert(
+            name.into(),
+            serde_json::json!({
+                "type": "string",
+                "description": description.into()
+            }),
+        );
         self
     }
 
     /// Add a required enum parameter
-    pub fn requires_enum(mut self, name: impl Into<String>, description: impl Into<String>, options: &[&str]) -> Self {
+    pub fn requires_enum(
+        mut self,
+        name: impl Into<String>,
+        description: impl Into<String>,
+        options: &[&str],
+    ) -> Self {
         let name = name.into();
-        self.properties.insert(name.clone(), serde_json::json!({
-            "type": "string",
-            "description": description.into(),
-            "enum": options
-        }));
+        self.properties.insert(
+            name.clone(),
+            serde_json::json!({
+                "type": "string",
+                "description": description.into(),
+                "enum": options
+            }),
+        );
         self.required.push(name);
         self
     }
@@ -352,10 +381,11 @@ mod tests {
         }
 
         fn execute(args: Value) -> Result<CallToolResult, Error> {
-            let input = args.get("input")
+            let input = args
+                .get("input")
                 .and_then(|v| v.as_str())
                 .ok_or_else(|| Error::msg("input required"))?;
-            
+
             Ok(ContentBuilder::text(format!("Echo: {}", input)))
         }
     }

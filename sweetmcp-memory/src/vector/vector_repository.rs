@@ -155,7 +155,9 @@ impl VectorRepository {
         let mut collections = self.collections.write().await;
 
         let handle = collections.get_mut(collection_name).ok_or_else(|| {
-            crate::utils::error::Error::NotFound(format!("Collection '{collection_name}' not found"))
+            crate::utils::error::Error::NotFound(format!(
+                "Collection '{collection_name}' not found"
+            ))
         })?;
 
         handle.index.add(id, vector)?;
@@ -170,7 +172,9 @@ impl VectorRepository {
         let mut collections = self.collections.write().await;
 
         let handle = collections.get_mut(collection_name).ok_or_else(|| {
-            crate::utils::error::Error::NotFound(format!("Collection '{collection_name}' not found"))
+            crate::utils::error::Error::NotFound(format!(
+                "Collection '{collection_name}' not found"
+            ))
         })?;
 
         handle.index.remove(id)?;
@@ -190,7 +194,9 @@ impl VectorRepository {
         let collections = self.collections.read().await;
 
         let handle = collections.get(collection_name).ok_or_else(|| {
-            crate::utils::error::Error::NotFound(format!("Collection '{collection_name}' not found"))
+            crate::utils::error::Error::NotFound(format!(
+                "Collection '{collection_name}' not found"
+            ))
         })?;
 
         handle.index.search(query, k)
@@ -201,7 +207,9 @@ impl VectorRepository {
         let mut collections = self.collections.write().await;
 
         let handle = collections.get_mut(collection_name).ok_or_else(|| {
-            crate::utils::error::Error::NotFound(format!("Collection '{collection_name}' not found"))
+            crate::utils::error::Error::NotFound(format!(
+                "Collection '{collection_name}' not found"
+            ))
         })?;
 
         handle.index.build()?;
@@ -222,7 +230,9 @@ impl VectorRepository {
         let mut collections = self.collections.write().await;
 
         let handle = collections.get_mut(collection_name).ok_or_else(|| {
-            crate::utils::error::Error::NotFound(format!("Collection '{collection_name}' not found"))
+            crate::utils::error::Error::NotFound(format!(
+                "Collection '{collection_name}' not found"
+            ))
         })?;
 
         for (id, vector) in vectors {
@@ -247,7 +257,9 @@ impl VectorRepository {
         let mut collections = self.collections.write().await;
 
         let handle = collections.get_mut(collection_name).ok_or_else(|| {
-            crate::utils::error::Error::NotFound(format!("Collection '{collection_name}' not found"))
+            crate::utils::error::Error::NotFound(format!(
+                "Collection '{collection_name}' not found"
+            ))
         })?;
 
         for id in ids {

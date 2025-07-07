@@ -87,7 +87,7 @@ impl PlatformExecutor {
 
         // Enable and start the service
         Self::enable_systemd_service(&b.label)?;
-        
+
         if b.auto_restart {
             Self::start_systemd_service(&b.label)?;
         }
@@ -139,7 +139,9 @@ impl PlatformExecutor {
         {
             use std::os::unix::fs::PermissionsExt;
             let mut perms = fs::metadata(&helper_path)
-                .map_err(|e| InstallerError::System(format!("Failed to get helper metadata: {}", e)))?
+                .map_err(|e| {
+                    InstallerError::System(format!("Failed to get helper metadata: {}", e))
+                })?
                 .permissions();
             perms.set_mode(0o755);
             fs::set_permissions(&helper_path, perms).map_err(|e| {
@@ -168,7 +170,7 @@ impl PlatformExecutor {
             // Check for systemd user service support
             let home_dir = std::env::var("HOME").map_err(|_| InstallerError::PermissionDenied)?;
             let user_systemd_dir = PathBuf::from(home_dir).join(".config/systemd/user");
-            
+
             if !user_systemd_dir.exists() {
                 return Err(InstallerError::PermissionDenied);
             }
@@ -180,7 +182,7 @@ impl PlatformExecutor {
     /// Create systemd unit file with comprehensive configuration
     fn create_systemd_unit(config: &SystemdConfig) -> Result<(), InstallerError> {
         let unit_content = Self::generate_unit_content(config)?;
-        
+
         // Determine unit file path
         let unit_path = if unsafe { libc::getuid() } == 0 {
             // System service
@@ -210,7 +212,9 @@ impl PlatformExecutor {
         {
             use std::os::unix::fs::PermissionsExt;
             let mut perms = fs::metadata(&unit_path)
-                .map_err(|e| InstallerError::System(format!("Failed to get unit file metadata: {}", e)))?
+                .map_err(|e| {
+                    InstallerError::System(format!("Failed to get unit file metadata: {}", e))
+                })?
                 .permissions();
             perms.set_mode(0o644);
             fs::set_permissions(&unit_path, perms).map_err(|e| {
@@ -229,13 +233,13 @@ impl PlatformExecutor {
         content.push_str("[Unit]\n");
         content.push_str(&format!("Description={}\n", config.description));
         content.push_str("Documentation=https://github.com/cyrup/sweetmcp\n");
-        
+
         if config.wants_network {
             content.push_str("Wants=network-online.target\n");
             content.push_str("After=network-online.target\n");
             content.push_str("Requires=network.target\n");
         }
-        
+
         content.push_str("After=multi-user.target\n");
         content.push_str("DefaultDependencies=no\n");
         content.push('\n');
@@ -244,12 +248,16 @@ impl PlatformExecutor {
         content.push_str("[Service]\n");
         content.push_str("Type=notify\n"); // Use sd_notify for proper startup signaling
         content.push_str("NotifyAccess=main\n");
-        
+
         // Build ExecStart command
         let exec_start = if config.args.is_empty() {
             format!("ExecStart={}\n", config.binary_path)
         } else {
-            format!("ExecStart={} {}\n", config.binary_path, config.args.join(" "))
+            format!(
+                "ExecStart={} {}\n",
+                config.binary_path,
+                config.args.join(" ")
+            )
         };
         content.push_str(&exec_start);
 
@@ -538,7 +546,7 @@ Compress=yes
     fn cleanup_journal_integration(service_name: &str) -> Result<(), InstallerError> {
         let journal_config_dir = PathBuf::from("/etc/systemd/journald.conf.d");
         let config_path = journal_config_dir.join(format!("{}.conf", service_name));
-        
+
         if config_path.exists() {
             fs::remove_file(&config_path).map_err(|e| {
                 InstallerError::System(format!("Failed to remove journal config: {}", e))
@@ -573,7 +581,9 @@ Compress=yes
     }
 
     /// Install service definitions in configuration directory
-    fn install_services(services: &[crate::config::ServiceDefinition]) -> Result<(), InstallerError> {
+    fn install_services(
+        services: &[crate::config::ServiceDefinition],
+    ) -> Result<(), InstallerError> {
         for service in services {
             let service_toml = toml::to_string_pretty(service).map_err(|e| {
                 InstallerError::System(format!("Failed to serialize service: {}", e))
@@ -594,7 +604,12 @@ Compress=yes
             {
                 use std::os::unix::fs::PermissionsExt;
                 let mut perms = fs::metadata(&service_file)
-                    .map_err(|e| InstallerError::System(format!("Failed to get service file metadata: {}", e)))?
+                    .map_err(|e| {
+                        InstallerError::System(format!(
+                            "Failed to get service file metadata: {}",
+                            e
+                        ))
+                    })?
                     .permissions();
                 perms.set_mode(0o644);
                 fs::set_permissions(&service_file, perms).map_err(|e| {
@@ -608,32 +623,30 @@ Compress=yes
     /// Verify helper executable signature (if signing is available)
     fn verify_helper_signature(helper_path: &Path) -> Result<(), InstallerError> {
         // Use the signing module to verify the helper
-        crate::signing::verify_signature(helper_path)
-            .map_err(|e| InstallerError::System(format!("Helper signature verification failed: {}", e)))?;
+        crate::signing::verify_signature(helper_path).map_err(|e| {
+            InstallerError::System(format!("Helper signature verification failed: {}", e))
+        })?;
         Ok(())
     }
 
     /// Write file atomically to prevent corruption
     fn write_file_atomic(path: &Path, content: &str) -> Result<(), InstallerError> {
         let temp_path = path.with_extension("tmp");
-        
+
         {
             let mut file = fs::File::create(&temp_path).map_err(|e| {
                 InstallerError::System(format!("Failed to create temp file: {}", e))
             })?;
-            
-            file.write_all(content.as_bytes()).map_err(|e| {
-                InstallerError::System(format!("Failed to write temp file: {}", e))
-            })?;
-            
-            file.sync_all().map_err(|e| {
-                InstallerError::System(format!("Failed to sync temp file: {}", e))
-            })?;
+
+            file.write_all(content.as_bytes())
+                .map_err(|e| InstallerError::System(format!("Failed to write temp file: {}", e)))?;
+
+            file.sync_all()
+                .map_err(|e| InstallerError::System(format!("Failed to sync temp file: {}", e)))?;
         }
 
-        fs::rename(&temp_path, path).map_err(|e| {
-            InstallerError::System(format!("Failed to rename temp file: {}", e))
-        })?;
+        fs::rename(&temp_path, path)
+            .map_err(|e| InstallerError::System(format!("Failed to rename temp file: {}", e)))?;
 
         Ok(())
     }

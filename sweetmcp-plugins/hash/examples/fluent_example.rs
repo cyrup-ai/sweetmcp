@@ -1,8 +1,8 @@
 // Example showing the SEXY fluent builder with semantic description builder
 
-use sweetmcp_hash::fluent::*;
-use serde_json::Value;
 use extism_pdk::Error;
+use serde_json::Value;
+use sweetmcp_hash::fluent::*;
 
 /// Example: Using the semantic description builder
 fn build_hash_description() -> String {
@@ -58,20 +58,20 @@ fn main() {
     // SEXY: Clean, semantic, type-safe plugin definition
     let plugin = McpPlugin::named("crypto-suite")
         .described("Comprehensive cryptographic operations and encoding suite")
-        .provides::<HashTool>()           // const-generic registration
-        .provides::<EncryptTool>()        // add more tools fluently
-        .provides::<SignTool>()           
-        .expose();                        // ready for MCP clients
+        .provides::<HashTool>() // const-generic registration
+        .provides::<EncryptTool>() // add more tools fluently
+        .provides::<SignTool>()
+        .expose(); // ready for MCP clients
 
     println!("Plugin ready!");
-    
+
     // Show the generated descriptions
     println!("\nHash tool description:");
     println!("{}", build_hash_description());
-    
+
     println!("\nTime tool description:");
     println!("{}", TimeToolDescription::build());
-    
+
     println!("\nBrowser tool description:");
     println!("{}", BrowserToolDescription::build());
 }
@@ -84,15 +84,18 @@ struct SignTool;
 impl McpTool for HashTool {
     const NAME: &'static str = "hash";
     const DESCRIPTION: &'static str = "Generate cryptographic hashes and encoded formats from input data. Use this tool when you need to:\n- Create SHA hashes for security verification (sha256, sha512, sha384, sha224, sha1)\n- Generate MD5 checksums for file integrity\n- Encode data in base64 format for transmission\n- Encode data in base32 format for URLs or identifiers\n- Verify data integrity before storage or transmission. Perfect for data integrity checks, password verification, API authentication, and encoding binary data for text protocols.";
-    
+
     fn schema() -> Value {
         SchemaBuilder::new()
             .requires_string("data", "data to convert to hash or encoded format")
-            .requires_enum("algorithm", "algorithm to use", 
-                          &["sha256", "sha512", "md5", "base64"])
+            .requires_enum(
+                "algorithm",
+                "algorithm to use",
+                &["sha256", "sha512", "md5", "base64"],
+            )
             .build()
     }
-    
+
     fn execute(args: Value) -> Result<CallToolResult, Error> {
         // Business logic here
         Ok(ContentBuilder::text("hash_result"))
@@ -102,14 +105,14 @@ impl McpTool for HashTool {
 impl McpTool for EncryptTool {
     const NAME: &'static str = "encrypt";
     const DESCRIPTION: &'static str = "Encrypt data using AES-256-GCM. Use this tool when you need to:\n- Protect sensitive data before storage\n- Secure data for transmission\n- Implement client-side encryption. Perfect for data protection and secure communication.";
-    
+
     fn schema() -> Value {
         SchemaBuilder::new()
             .requires_string("data", "data to encrypt")
             .requires_string("key", "encryption key (base64)")
             .build()
     }
-    
+
     fn execute(args: Value) -> Result<CallToolResult, Error> {
         Ok(ContentBuilder::text("encrypted_data"))
     }
@@ -118,14 +121,14 @@ impl McpTool for EncryptTool {
 impl McpTool for SignTool {
     const NAME: &'static str = "sign";
     const DESCRIPTION: &'static str = "Create digital signatures. Use this tool when you need to:\n- Sign documents or data\n- Verify authenticity\n- Implement non-repudiation. Perfect for digital signatures and authentication.";
-    
+
     fn schema() -> Value {
         SchemaBuilder::new()
             .requires_string("data", "data to sign")
             .requires_string("private_key", "private key for signing")
             .build()
     }
-    
+
     fn execute(args: Value) -> Result<CallToolResult, Error> {
         Ok(ContentBuilder::text("signature"))
     }

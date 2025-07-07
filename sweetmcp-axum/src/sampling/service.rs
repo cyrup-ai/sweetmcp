@@ -13,7 +13,7 @@ use crate::sampling::notifications::SamplingProgressNotification;
 async fn select_llm_client(preferences: &Option<McpModelPreferences>) -> Result<LlmClient, String> {
     // Default priorities if not specified
     let mut cost_priority = 0.5;
-    let mut speed_priority = 0.5; 
+    let mut speed_priority = 0.5;
     let mut intelligence_priority = 0.5;
     let mut model_hint = String::new();
 
@@ -21,7 +21,7 @@ async fn select_llm_client(preferences: &Option<McpModelPreferences>) -> Result<
         cost_priority = prefs.cost_priority.unwrap_or(0.5);
         speed_priority = prefs.speed_priority.unwrap_or(0.5);
         intelligence_priority = prefs.intelligence_priority.unwrap_or(0.5);
-        
+
         // Get first hint if available
         if let Some(hints) = &prefs.hints {
             if let Some(first_hint) = hints.first() {
@@ -56,10 +56,7 @@ async fn select_llm_client(preferences: &Option<McpModelPreferences>) -> Result<
     } else if model_hint.contains("mistral") || model_hint.contains("llama") {
         // Local models via llama.cpp
         if intelligence_priority > 0.6 {
-            LlmClient::llama_cpp()
-                .llama_3_1_8b_instruct()
-                .init()
-                .await
+            LlmClient::llama_cpp().llama_3_1_8b_instruct().init().await
         } else {
             LlmClient::llama_cpp()
                 .mistral_7b_instruct_v0_3()
@@ -121,7 +118,8 @@ pub fn sampling_create_message_pending(request: CreateMessageRequest) -> AsyncSa
                 if let Some(meta) = &request.meta {
                     if let Some(progress_token) = &meta.progress_token {
                         // Create a progress channel
-                        let (tx_progress, _rx_progress) = mpsc::channel::<HandlerResult<SamplingProgressNotification>>(16);
+                        let (tx_progress, _rx_progress) =
+                            mpsc::channel::<HandlerResult<SamplingProgressNotification>>(16);
                         report_sampling_progress(&tx_progress, progress_token.clone(), 0, 150);
                     }
                 }
@@ -210,13 +208,13 @@ pub fn sampling_create_message(request: CreateMessageRequest) -> AsyncSamplingRe
 /// Create a streaming sampling result (for future use with streaming LLMs)
 pub fn sampling_create_message_stream(_request: CreateMessageRequest) -> SamplingStream {
     let (tx_stream, rx_stream) = mpsc::channel::<HandlerResult<CreateMessageResult>>(16);
-    
+
     // In the future, this would stream tokens as they're generated
     tokio::spawn(async move {
         // Placeholder - would integrate with streaming LLM APIs
         drop(tx_stream);
     });
-    
+
     SamplingStream::new(rx_stream)
 }
 

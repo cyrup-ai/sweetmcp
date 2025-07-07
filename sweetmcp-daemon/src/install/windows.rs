@@ -21,13 +21,14 @@ use windows::Win32::System::Registry::{
 };
 use windows::Win32::System::Services::{
     ChangeServiceConfig2W, CloseServiceHandle, CreateServiceW, OpenSCManagerW, OpenServiceW,
-    StartServiceW, SERVICE_ACCESS_RIGHTS, SERVICE_AUTO_START, SERVICE_CONFIG_DELAYED_AUTO_START_INFO,
-    SERVICE_CONFIG_DESCRIPTION, SERVICE_CONFIG_FAILURE_ACTIONS, SERVICE_CONFIG_FAILURE_ACTIONS_FLAG,
-    SERVICE_CONFIG_SERVICE_SID_INFO, SERVICE_CONTROL_MANAGER_ACCESS_RIGHTS, SERVICE_DEMAND_START,
-    SERVICE_ERROR_IGNORE, SERVICE_WIN32_OWN_PROCESS, SC_HANDLE, SC_MANAGER_ALL_ACCESS,
-    SERVICE_ALL_ACCESS, SERVICE_CONFIG_DESCRIPTION_W, SERVICE_CONFIG_FAILURE_ACTIONSW,
-    SERVICE_DELAYED_AUTO_START_INFO, SERVICE_FAILURE_ACTIONSW, SERVICE_SID_TYPE_UNRESTRICTED,
-    SC_ACTION, SC_ACTION_RESTART, SC_ACTION_TYPE,
+    StartServiceW, SC_ACTION, SC_ACTION_RESTART, SC_ACTION_TYPE, SC_HANDLE, SC_MANAGER_ALL_ACCESS,
+    SERVICE_ACCESS_RIGHTS, SERVICE_ALL_ACCESS, SERVICE_AUTO_START,
+    SERVICE_CONFIG_DELAYED_AUTO_START_INFO, SERVICE_CONFIG_DESCRIPTION,
+    SERVICE_CONFIG_DESCRIPTION_W, SERVICE_CONFIG_FAILURE_ACTIONS, SERVICE_CONFIG_FAILURE_ACTIONSW,
+    SERVICE_CONFIG_FAILURE_ACTIONS_FLAG, SERVICE_CONFIG_SERVICE_SID_INFO,
+    SERVICE_CONTROL_MANAGER_ACCESS_RIGHTS, SERVICE_DELAYED_AUTO_START_INFO, SERVICE_DEMAND_START,
+    SERVICE_ERROR_IGNORE, SERVICE_FAILURE_ACTIONSW, SERVICE_SID_TYPE_UNRESTRICTED,
+    SERVICE_WIN32_OWN_PROCESS,
 };
 use windows::Win32::System::Threading::{GetCurrentProcess, OpenProcessToken};
 use windows::Win32::UI::Shell::{ShellExecuteW, SW_HIDE};
@@ -55,13 +56,8 @@ struct ScManagerHandle(SC_HANDLE);
 impl ScManagerHandle {
     #[inline]
     fn new() -> Result<Self, InstallerError> {
-        let handle = unsafe {
-            OpenSCManagerW(
-                PCWSTR::null(),
-                PCWSTR::null(),
-                SC_MANAGER_ALL_ACCESS,
-            )
-        };
+        let handle =
+            unsafe { OpenSCManagerW(PCWSTR::null(), PCWSTR::null(), SC_MANAGER_ALL_ACCESS) };
 
         if handle.is_invalid() {
             return Err(InstallerError::System(format!(
@@ -245,9 +241,8 @@ impl PlatformExecutor {
         let mut token_handle: HANDLE = HANDLE::default();
 
         unsafe {
-            OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &mut token_handle).map_err(|e| {
-                InstallerError::PermissionDenied
-            })?;
+            OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &mut token_handle)
+                .map_err(|e| InstallerError::PermissionDenied)?;
 
             let mut elevation: TOKEN_ELEVATION = mem::zeroed();
             let mut return_length: u32 = 0;
@@ -409,9 +404,7 @@ impl PlatformExecutor {
                 SERVICE_CONFIG_FAILURE_ACTIONS,
                 Some(&failure_actions as *const _ as *const std::ffi::c_void),
             )
-            .map_err(|e| {
-                InstallerError::System(format!("Failed to set failure actions: {}", e))
-            })?;
+            .map_err(|e| InstallerError::System(format!("Failed to set failure actions: {}", e)))?;
         }
 
         Ok(())
@@ -429,9 +422,7 @@ impl PlatformExecutor {
                 SERVICE_CONFIG_DELAYED_AUTO_START_INFO,
                 Some(&delayed_start as *const _ as *const std::ffi::c_void),
             )
-            .map_err(|e| {
-                InstallerError::System(format!("Failed to set delayed start: {}", e))
-            })?;
+            .map_err(|e| InstallerError::System(format!("Failed to set delayed start: {}", e)))?;
         }
 
         Ok(())
@@ -449,9 +440,7 @@ impl PlatformExecutor {
                 SERVICE_CONFIG_SERVICE_SID_INFO,
                 Some(&service_sid_info as *const _ as *const std::ffi::c_void),
             )
-            .map_err(|e| {
-                InstallerError::System(format!("Failed to set service SID: {}", e))
-            })?;
+            .map_err(|e| InstallerError::System(format!("Failed to set service SID: {}", e)))?;
         }
 
         Ok(())
@@ -481,9 +470,7 @@ impl PlatformExecutor {
                 &mut key_handle,
                 None,
             )
-            .map_err(|e| {
-                InstallerError::System(format!("Failed to create registry key: {}", e))
-            })?;
+            .map_err(|e| InstallerError::System(format!("Failed to create registry key: {}", e)))?;
         }
 
         let registry_handle = RegistryHandle(key_handle);
@@ -494,8 +481,16 @@ impl PlatformExecutor {
         }
 
         // Store service metadata
-        Self::set_registry_dword(&registry_handle, "AutoRestart", if builder.auto_restart { 1 } else { 0 })?;
-        Self::set_registry_dword(&registry_handle, "WantsNetwork", if builder.wants_network { 1 } else { 0 })?;
+        Self::set_registry_dword(
+            &registry_handle,
+            "AutoRestart",
+            if builder.auto_restart { 1 } else { 0 },
+        )?;
+        Self::set_registry_dword(
+            &registry_handle,
+            "WantsNetwork",
+            if builder.wants_network { 1 } else { 0 },
+        )?;
 
         Ok(())
     }
@@ -532,10 +527,15 @@ impl PlatformExecutor {
         let registry_handle = RegistryHandle(key_handle);
 
         // Set event message file
-        let exe_path = std::env::current_exe()
-            .map_err(|e| InstallerError::System(format!("Failed to get current exe path: {}", e)))?;
-        
-        Self::set_registry_string(&registry_handle, "EventMessageFile", &exe_path.to_string_lossy())?;
+        let exe_path = std::env::current_exe().map_err(|e| {
+            InstallerError::System(format!("Failed to get current exe path: {}", e))
+        })?;
+
+        Self::set_registry_string(
+            &registry_handle,
+            "EventMessageFile",
+            &exe_path.to_string_lossy(),
+        )?;
         Self::set_registry_dword(&registry_handle, "TypesSupported", 7)?; // Error, Warning, Information
 
         Ok(())
@@ -552,7 +552,8 @@ impl PlatformExecutor {
 
     /// Stop the service
     fn stop_service(service: &ServiceHandle) -> Result<(), InstallerError> {
-        let mut service_status: windows::Win32::System::Services::SERVICE_STATUS = unsafe { mem::zeroed() };
+        let mut service_status: windows::Win32::System::Services::SERVICE_STATUS =
+            unsafe { mem::zeroed() };
 
         unsafe {
             windows::Win32::System::Services::ControlService(
@@ -567,7 +568,9 @@ impl PlatformExecutor {
     }
 
     /// Install service definitions in registry
-    fn install_services(services: &[crate::config::ServiceDefinition]) -> Result<(), InstallerError> {
+    fn install_services(
+        services: &[crate::config::ServiceDefinition],
+    ) -> Result<(), InstallerError> {
         for service in services {
             let service_toml = toml::to_string_pretty(service).map_err(|e| {
                 InstallerError::System(format!("Failed to serialize service: {}", e))
@@ -605,8 +608,9 @@ impl PlatformExecutor {
     /// Verify helper executable signature
     fn verify_helper_signature(helper_path: &Path) -> Result<(), InstallerError> {
         // Use the signing module to verify the helper
-        crate::signing::verify_signature(helper_path)
-            .map_err(|e| InstallerError::System(format!("Helper signature verification failed: {}", e)))?;
+        crate::signing::verify_signature(helper_path).map_err(|e| {
+            InstallerError::System(format!("Helper signature verification failed: {}", e))
+        })?;
         Ok(())
     }
 
@@ -671,8 +675,11 @@ impl PlatformExecutor {
     /// Convert string to wide (UTF-16) with zero allocation
     #[inline]
     fn str_to_wide(s: &str, buffer: &mut [u16]) -> Result<(), InstallerError> {
-        let wide: Vec<u16> = OsStr::new(s).encode_wide().chain(std::iter::once(0)).collect();
-        
+        let wide: Vec<u16> = OsStr::new(s)
+            .encode_wide()
+            .chain(std::iter::once(0))
+            .collect();
+
         if wide.len() > buffer.len() {
             return Err(InstallerError::System(format!(
                 "String '{}' too long for buffer (max {})",

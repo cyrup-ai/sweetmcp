@@ -90,12 +90,18 @@ impl FirecrawlFetcher {
     async fn fetch_with_firecrawl(url: &str) -> Result<String, FirecrawlError> {
         // Validate URL format
         if !url.starts_with("http://") && !url.starts_with("https://") {
-            return Err(FirecrawlError::Parse(format!("Invalid URL format: {}", url)));
+            return Err(FirecrawlError::Parse(format!(
+                "Invalid URL format: {}",
+                url
+            )));
         }
 
         // Simulate timeout for very long URLs (placeholder logic)
         if url.len() > 200 {
-            return Err(FirecrawlError::Timeout(format!("URL too long, request timed out: {}", url)));
+            return Err(FirecrawlError::Timeout(format!(
+                "URL too long, request timed out: {}",
+                url
+            )));
         }
 
         // Simulate network delay with timeout
@@ -107,7 +113,9 @@ impl FirecrawlFetcher {
 
             // Simulate internal error for certain patterns
             if url.contains("internal-error") {
-                return Err(FirecrawlError::Internal("Simulated internal processing error".to_string()));
+                return Err(FirecrawlError::Internal(
+                    "Simulated internal processing error".to_string(),
+                ));
             }
 
             // Sample response HTML
@@ -149,7 +157,9 @@ impl FirecrawlFetcher {
         // Apply timeout to the fetch operation
         match tokio::time::timeout(Duration::from_secs(10), fetch_future).await {
             Ok(result) => result,
-            Err(_) => Err(FirecrawlError::Timeout("Firecrawl request timed out".to_string())),
+            Err(_) => Err(FirecrawlError::Timeout(
+                "Firecrawl request timed out".to_string(),
+            )),
         }
     }
 }

@@ -180,7 +180,7 @@ impl HNSWIndex {
         // Use config parameters for optimization
         let _dimensions = self.config.dimensions;
         let _metric = &self.config.metric;
-        
+
         // Apply configuration-based optimizations
         self.flat_index.build()
     }

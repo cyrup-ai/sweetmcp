@@ -43,7 +43,9 @@ fn get_or_create_vm(id: &str) -> Rc<StoredVirtualMachine> {
             let stored_vm = StoredVirtualMachine::new();
             vms.insert(id.to_string(), Rc::new(stored_vm));
         }
-        vms.get(id).expect("VM should exist after insertion").clone()
+        vms.get(id)
+            .expect("VM should exist after insertion")
+            .clone()
     })
 }
 

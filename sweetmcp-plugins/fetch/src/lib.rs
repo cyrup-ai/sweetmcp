@@ -8,8 +8,8 @@ mod firecrawl;
 use std::str::FromStr;
 
 // use async_trait::async_trait;
-use chromiumoxide::ContentFetcher;
 use crate::hyper::HyperFetcher;
+use chromiumoxide::ContentFetcher;
 use extism_pdk::*;
 use htmd::HtmlToMarkdown;
 use pdk::types::{
