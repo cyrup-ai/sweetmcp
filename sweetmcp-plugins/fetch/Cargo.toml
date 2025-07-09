@@ -34,4 +34,5 @@ syntect = "5.2"
 hyper-rustls = { version = "0.27.7", features = ["ring", "http1", "http2"] }
 rustls = "0.23.28"
 tower-service = "0.3.3"
+sweetmcp-plugin-builder = { version = "0.1.0", path = "../../sweetmcp-plugin-builder" }
 # sweetmcp-workspace-hack = { version = "0.1", path = "../../sweetmcp-workspace-hack" }

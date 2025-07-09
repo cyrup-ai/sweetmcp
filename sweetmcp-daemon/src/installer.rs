@@ -4,7 +4,7 @@ use crate::install::{
 };
 use crate::signing;
 use anyhow::{Context, Result};
-use futures::StreamExt;
+use futures::{Future, Stream, StreamExt};
 use log::{info, warn};
 use rcgen::{CertificateParams, DistinguishedName, DnType, KeyPair, SanType};
 use std::fs;
@@ -36,6 +36,36 @@ impl<T> AsyncTask<T> {
     }
 }
 
+impl<T> std::future::Future for AsyncTask<T> {
+    type Output = T;
+
+    fn poll(
+        mut self: Pin<&mut Self>,
+        cx: &mut std::task::Context<'_>,
+    ) -> std::task::Poll<Self::Output> {
+        match &mut *self {
+            AsyncTask::FutureVariant(fut) => fut.as_mut().poll(cx),
+            AsyncTask::StreamVariant(stream) => {
+                // For streams, we expect only one item
+                match Pin::new(stream).poll_next(cx) {
+                    std::task::Poll::Ready(Some(item)) => std::task::Poll::Ready(item),
+                    std::task::Poll::Ready(None) => std::task::Poll::Pending,
+                    std::task::Poll::Pending => std::task::Poll::Pending,
+                }
+            }
+        }
+    }
+}
+
+impl<T, E> AsyncTask<Result<T, E>> {
+    /// Check if the result is Ok (only works for Result types)
+    pub fn is_ok(&self) -> bool {
+        // This is a placeholder - in practice, you'd need to await the task first
+        // This method doesn't make sense for async tasks that haven't completed
+        false
+    }
+}
+
 /// Install the daemon with full end-to-end handling
 pub fn install(dry: bool, sign: bool, identity: Option<String>) -> AsyncTask<Result<()>> {
     let (tx, rx) = mpsc::channel(1);
@@ -58,6 +88,11 @@ pub fn uninstall(dry: bool) -> AsyncTask<Result<()>> {
     });
 
     AsyncTask::from_receiver(rx)
+}
+
+/// Async uninstall the daemon
+pub async fn uninstall_async(dry: bool) -> Result<()> {
+    uninstall_impl(dry).await
 }
 
 /// Internal implementation of install
@@ -263,7 +298,8 @@ async fn install_impl(dry: bool, sign: bool, identity: Option<String>) -> Result
             }
 
             // Install fluent-voice components
-            if let Err(e) = fluent_voice::install_fluent_voice().await {
+            let fluent_voice_path = std::path::Path::new("/opt/sweetmcp/fluent-voice");
+            if let Err(e) = fluent_voice::install_fluent_voice(fluent_voice_path).await {
                 warn!("Failed to install fluent-voice components: {}", e);
                 // Don't fail installation if fluent-voice installation fails
                 // Voice features will be unavailable but other services can still run

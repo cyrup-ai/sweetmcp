@@ -59,14 +59,8 @@ async fn real_main() -> Result<()> {
             identity,
         } => installer::install(dry_run, sign, identity).await,
         cli::Cmd::Uninstall { dry_run } => {
-            // Use both sync and async uninstall methods for comprehensive coverage
-            let sync_result = installer::uninstall(dry_run);
-            if sync_result.is_ok() {
-                // Also test async uninstall path
-                installer::uninstall_async(dry_run).await
-            } else {
-                sync_result
-            }
+            // Use async uninstall method
+            installer::uninstall_async(dry_run).await
         }
         cli::Cmd::Sign {
             binary,

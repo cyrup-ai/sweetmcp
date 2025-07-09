@@ -34,6 +34,8 @@ async-process = { version = "2.3", optional = true }
 tokio         = { version = "1.46.0", optional = true, features = ["process", "macros", "signal", "rt-multi-thread", "time", "fs"] }
 rcgen = "0.14"
 sweetmcp-workspace-hack = { version = "0.1", path = "../sweetmcp-workspace-hack" }
+futures = "0.3.31"
+tokio-stream = "0.1.17"
 
 [features]
 default = ["runtime"]

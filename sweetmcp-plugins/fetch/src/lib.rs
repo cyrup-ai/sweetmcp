@@ -1,6 +1,5 @@
 mod chromiumoxide;
 mod hyper;
-mod pdk;
 // mod bevy; // Disabled due to API incompatibility with bevy 0.16 - approved by David Maple 07/03/2025
 mod firecrawl;
 
@@ -12,11 +11,10 @@ use crate::hyper::HyperFetcher;
 use chromiumoxide::ContentFetcher;
 use extism_pdk::*;
 use htmd::HtmlToMarkdown;
-use pdk::types::{
-    CallToolRequest, CallToolResult, Content, ContentType, ListToolsResult, ToolDescription,
-};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
+use sweetmcp_plugin_builder::prelude::*;
+use sweetmcp_plugin_builder::{CallToolResult, Ready, Content, ContentType};
 // Sixel encoding is implemented inline below based on sixel6vt renderer
 use base64::Engine;
 use syntect::{highlighting::ThemeSet, html::highlighted_html_for_string, parsing::SyntaxSet};
@@ -184,44 +182,62 @@ struct FetchResponse {
     content_type: String,
 }
 
-pub(crate) fn call(input: CallToolRequest) -> Result<CallToolResult, Error> {
-    match input.params.name.as_str() {
-        "fetch" => fetch(input),
-        _ => Ok(CallToolResult {
-            is_error: Some(true),
+/// Fetch tool using plugin-builder
+struct FetchTool;
+
+impl McpTool for FetchTool {
+    const NAME: &'static str = "fetch";
+    
+    fn description(builder: DescriptionBuilder) -> DescriptionBuilder {
+        builder
+            .does("Retrieve and transform web content from any URL with advanced processing capabilities")
+            .when("you need to scrape web pages and extract content in multiple formats (markdown, JSON, plain text)")
+            .when("you need to take screenshots of web pages for visual documentation")
+            .when("you need to process dynamic websites with JavaScript rendering")
+            .when("you need to handle complex websites with multiple fallback strategies (Bevy, Chromium, Firecrawl)")
+            .when("you need to apply syntax highlighting to extracted code content")
+            .perfect_for("web scraping, content analysis, competitive research, and automated documentation")
+    }
+
+    fn schema(builder: SchemaBuilder) -> Value {
+        builder
+            .required_string("url", "The URL to fetch")
+            .optional_enum(
+                "screenshot_format",
+                "Format for the screenshot (base64 or sixel)",
+                &["base64", "sixel"],
+            )
+            .optional_enum(
+                "content_format",
+                "Format for the content (markdown, json, or txt)",
+                &["markdown", "json", "txt"],
+            )
+            .optional_bool("syntax_highlighting", "Whether to apply syntax highlighting to the content")
+            .optional_string("theme", "Theme to use for syntax highlighting")
+            .build()
+    }
+
+    fn execute(args: Value) -> Result<CallToolResult, Error> {
+        // Parse and validate arguments
+        let options = parse_options(args.as_object().unwrap().clone())?;
+
+        // Run the async fetching process
+        let fetch_result = block_on_fetch(options.url.as_str())?;
+
+        // Process results based on user preferences
+        let response = process_fetch_result(fetch_result, options)?;
+
+        Ok(CallToolResult {
+            is_error: None,
             content: vec![Content {
                 annotations: None,
-                text: Some(format!("Unknown tool: {}", input.params.name)),
-                mime_type: None,
+                text: Some(response.content),
+                mime_type: Some(response.content_type),
                 r#type: ContentType::Text,
-                data: None,
+                data: Some(response.screenshot),
             }],
-        }),
+        })
     }
-}
-
-fn fetch(input: CallToolRequest) -> Result<CallToolResult, Error> {
-    let args = input.params.arguments.unwrap_or_default();
-
-    // Parse and validate arguments
-    let options = parse_options(args)?;
-
-    // Run the async fetching process
-    let fetch_result = block_on_fetch(options.url.as_str())?;
-
-    // Process results based on user preferences
-    let response = process_fetch_result(fetch_result, options)?;
-
-    Ok(CallToolResult {
-        is_error: None,
-        content: vec![Content {
-            annotations: None,
-            text: Some(response.content),
-            mime_type: Some(response.content_type),
-            r#type: ContentType::Text,
-            data: Some(response.screenshot),
-        }],
-    })
 }
 
 // Parse and validate the input options
@@ -435,59 +451,13 @@ fn apply_syntax_highlighting(
     }
 }
 
-// Called by mcpx to understand how and why to use this tool
-pub(crate) fn describe() -> Result<ListToolsResult, Error> {
-    Ok(ListToolsResult{
-        tools: vec![
-            ToolDescription {
-                name: "fetch".into(),
-                description: "Retrieve and transform web content from any URL with advanced processing capabilities. Use this tool when you need to:
-- Scrape web pages and extract content in multiple formats (markdown, JSON, plain text)
-- Take screenshots of web pages for visual documentation
-- Process dynamic websites with JavaScript rendering
-- Handle complex websites with multiple fallback strategies (Bevy, Chromium, Firecrawl)
-- Apply syntax highlighting to extracted code content
-Perfect for web scraping, content analysis, competitive research, and automated documentation.".into(),
-                input_schema: json!({
-                    "type": "object",
-                    "properties": {
-                        "url": {
-                            "type": "string",
-                            "description": "The URL to fetch",
-                        },
-                        "screenshot_format": {
-                            "type": "string",
-                            "description": "Format for the screenshot (base64 or sixel)",
-                            "enum": ["base64", "sixel"],
-                            "default": "base64"
-                        },
-                        "content_format": {
-                            "type": "string",
-                            "description": "Format for the content (markdown, json, or txt)",
-                            "enum": ["markdown", "json", "txt"],
-                            "default": "markdown"
-                        },
-                        "syntax_highlighting": {
-                            "type": "boolean",
-                            "description": "Whether to apply syntax highlighting to the content",
-                            "default": false
-                        },
-                        "theme": {
-                            "type": "string",
-                            "description": "Theme to use for syntax highlighting",
-                            "default": "base16-ocean.dark"
-                        }
-                    },
-                    "required": ["url"],
-                })
-                .as_object()
-                .map(|obj| obj.clone())
-                .unwrap_or_else(|| {
-                    let mut map = serde_json::Map::new();
-                    map.insert("type".to_string(), json!("object"));
-                    map
-                }),
-            },
-        ],
-    })
+/// Create the plugin instance
+fn plugin() -> McpPlugin<Ready> {
+    mcp_plugin("fetch")
+        .description("Advanced web content fetching with multi-stage fallback and format conversion")
+        .tool::<FetchTool>()
+        .serve()
 }
+
+// Generate standard MCP entry points
+sweetmcp_plugin_builder::generate_mcp_functions!(plugin);

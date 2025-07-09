@@ -16,6 +16,7 @@ rustpython-vm = { version = "0.4.0", default-features = false, features = ["comp
 once_cell = "1.21"
 base64-serde = "0.8.0"
 base64 = "0.22.1"
+sweetmcp-plugin-builder = { version = "0.1.0", path = "../../sweetmcp-plugin-builder" }
 # sweetmcp-workspace-hack = { version = "0.1", path = "../../sweetmcp-workspace-hack" }
 
 [target.wasm32-wasi.dependencies]

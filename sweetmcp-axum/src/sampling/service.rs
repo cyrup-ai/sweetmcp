@@ -1,14 +1,16 @@
 use futures_util::StreamExt;
-use llm_client::prelude::*;
-use log::{self, error, info};
+// Note: llm_client dependency removed - LLM functionality disabled
+use log::{self, error};
 use rpc_router::HandlerResult;
 use std::env;
 use tokio::sync::{mpsc, oneshot};
 
 use super::model::*;
-use crate::auth::JwtAuth;
+// use crate::auth::JwtAuth; // Auth module not available
 use crate::sampling::notifications::SamplingProgressNotification;
 
+// TODO: Re-implement LLM client selection after dependency migration
+/* 
 /// Select the best LLM client based on model preferences
 async fn select_llm_client(preferences: &Option<McpModelPreferences>) -> Result<LlmClient, String> {
     // Default priorities if not specified
@@ -79,6 +81,7 @@ async fn select_llm_client(preferences: &Option<McpModelPreferences>) -> Result<
 
     llm_client.map_err(|e| format!("Failed to initialize LLM client: {}", e))
 }
+*/
 
 /// Handler for the sampling/createMessage method (returns AsyncSamplingResult).
 pub fn sampling_create_message_pending(request: CreateMessageRequest) -> AsyncSamplingResult {
@@ -116,12 +119,10 @@ pub fn sampling_create_message_pending(request: CreateMessageRequest) -> AsyncSa
 
                 // Report initial progress if request has meta params
                 if let Some(meta) = &request.meta {
-                    if let Some(progress_token) = &meta.progress_token {
-                        // Create a progress channel
-                        let (tx_progress, _rx_progress) =
-                            mpsc::channel::<HandlerResult<SamplingProgressNotification>>(16);
-                        report_sampling_progress(&tx_progress, progress_token.clone(), 0, 150);
-                    }
+                    // Create a progress channel
+                    let (tx_progress, _rx_progress) =
+                        mpsc::channel::<HandlerResult<SamplingProgressNotification>>(16);
+                    report_sampling_progress(&tx_progress, meta.progress_token.clone(), 0, 150);
                 }
 
                 // For demonstration, we'll create a simple echo response

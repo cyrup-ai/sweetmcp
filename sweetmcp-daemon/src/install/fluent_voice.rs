@@ -1,5 +1,15 @@
+use std::process::Command;
+use std::fs;
+use log::info;
+use anyhow::{Context, Result};
+
+/// Install fluent voice from git repository
+pub async fn install_fluent_voice(fluent_voice_dir: &std::path::Path) -> Result<()> {
+    clone_from_git(fluent_voice_dir).await
+}
+
 /// Clone from git repository with retries
-async fn clone_from_git(&self) -> Result<()> {
+async fn clone_from_git(fluent_voice_dir: &std::path::Path) -> Result<()> {
     const MAX_RETRIES: u32 = 3;
     let mut last_error = None;
 
@@ -18,7 +28,7 @@ async fn clone_from_git(&self) -> Result<()> {
             .args(&[
                 "clone",
                 "https://github.com/cyrup-ai/fluent-voice.git",
-                self.fluent_voice_dir.to_str().ok_or_else(|| {
+                fluent_voice_dir.to_str().ok_or_else(|| {
                     anyhow::anyhow!("fluent-voice directory path contains invalid UTF-8")
                 })?,
             ])
@@ -34,8 +44,8 @@ async fn clone_from_git(&self) -> Result<()> {
         last_error = Some(error_msg.to_string());
 
         // Clean up failed attempt
-        if self.fluent_voice_dir.exists() {
-            let _ = fs::remove_dir_all(&self.fluent_voice_dir);
+        if fluent_voice_dir.exists() {
+            let _ = fs::remove_dir_all(fluent_voice_dir);
         }
     }
 

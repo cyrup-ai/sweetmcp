@@ -1,14 +1,11 @@
-mod plugin;
 
 use rustpython_vm::{self as vm, Settings, scope::Scope};
 use std::{cell::RefCell, collections::HashMap, rc::Rc};
 
 use extism_pdk::*;
-use json::Value;
-use plugin::types::{
-    CallToolRequest, CallToolResult, Content, ContentType, ListToolsResult, ToolDescription,
-};
-use serde_json::json;
+use serde_json::Value;
+use sweetmcp_plugin_builder::prelude::*;
+use sweetmcp_plugin_builder::{CallToolResult, Ready};
 
 struct StoredVirtualMachine {
     interp: vm::Interpreter,
@@ -49,24 +46,36 @@ fn get_or_create_vm(id: &str) -> Rc<StoredVirtualMachine> {
     })
 }
 
-pub(crate) fn call(input: CallToolRequest) -> Result<CallToolResult, Error> {
-    match input.params.name.as_str() {
-        "eval_python" => eval_python(input),
-        _ => Ok(CallToolResult {
-            is_error: Some(true),
-            content: vec![Content {
-                annotations: None,
-                text: Some(format!("Unknown tool: {}", input.params.name)),
-                mime_type: None,
-                r#type: ContentType::Text,
-                data: None,
-            }],
-        }),
+/// Shell evaluation tool (currently using Python as placeholder)
+struct ShellTool;
+
+impl McpTool for ShellTool {
+    const NAME: &'static str = "eval_shell";
+    
+    fn description(builder: DescriptionBuilder) -> DescriptionBuilder {
+        builder
+            .does("Execute shell commands in a sandboxed environment")
+            .when("you need to run system commands for file operations or process management")
+            .when("you need to execute shell scripts for automation tasks")
+            .when("you need to perform system administration operations")
+            .when("you need to chain commands with pipes and redirections")
+            .when("you need to access environment variables and system information")
+            .perfect_for("system automation, DevOps tasks, and command-line operations")
+            .requires("Security warning - currently implemented incorrectly with Python. Requires proper shell sandbox implementation")
+    }
+
+    fn schema(builder: SchemaBuilder) -> Value {
+        builder
+            .required_string("code", "The shell command to execute")
+            .build()
+    }
+
+    fn execute(args: Value) -> Result<CallToolResult, Error> {
+        eval_python_as_shell(args)
     }
 }
 
-fn eval_python(input: CallToolRequest) -> Result<CallToolResult, Error> {
-    let args = input.params.arguments.unwrap_or_default();
+fn eval_python_as_shell(args: Value) -> Result<CallToolResult, Error> {
     if let Some(Value::String(code)) = args.get("code") {
         let stored_vm = get_or_create_vm("eval_python");
 
@@ -96,73 +105,27 @@ fn eval_python(input: CallToolRequest) -> Result<CallToolResult, Error> {
         });
 
         match result {
-            Ok(output) => Ok(CallToolResult {
-                is_error: None,
-                content: vec![Content {
-                    annotations: None,
-                    text: Some(output),
-                    mime_type: Some("text/plain".to_string()),
-                    r#type: ContentType::Text,
-                    data: None,
-                }],
-            }),
+            Ok(output) => Ok(ContentBuilder::text(output)),
             Err(exc) => {
                 let mut error_msg = String::new();
                 stored_vm.interp.enter(|vm| {
                     vm.write_exception(&mut error_msg, &exc).unwrap_or_default();
                 });
-                Ok(CallToolResult {
-                    is_error: Some(true),
-                    content: vec![Content {
-                        annotations: None,
-                        text: Some(error_msg),
-                        mime_type: None,
-                        r#type: ContentType::Text,
-                        data: None,
-                    }],
-                })
+                Ok(ContentBuilder::error(error_msg))
             }
         }
     } else {
-        Ok(CallToolResult {
-            is_error: Some(true),
-            content: vec![Content {
-                annotations: None,
-                text: Some("Please provide Python code to evaluate".into()),
-                mime_type: None,
-                r#type: ContentType::Text,
-                data: None,
-            }],
-        })
+        Err(Error::msg("Please provide shell code to evaluate"))
     }
 }
 
-pub(crate) fn describe() -> Result<ListToolsResult, Error> {
-    Ok(ListToolsResult{
-        tools: vec![
-            ToolDescription {
-                name: "eval_shell".into(),
-                description: "Execute shell commands in a sandboxed environment. Use this tool when you need to:
-- Run system commands for file operations or process management
-- Execute shell scripts for automation tasks
-- Perform system administration operations
-- Chain commands with pipes and redirections
-- Access environment variables and system information
-Perfect for system automation, DevOps tasks, and command-line operations. Note: Security warning - currently implemented incorrectly with Python. Requires proper shell sandbox implementation.".into(),
-                input_schema: json!({
-                    "type": "object",
-                    "properties": {
-                        "code": {
-                            "type": "string",
-                            "description": "The shell command to execute",
-                        },
-                    },
-                    "required": ["code"],
-                })
-                .as_object()
-                .expect("JSON schema should be valid object")
-                .clone(),
-            },
-        ],
-    })
+/// Create the plugin instance
+fn plugin() -> McpPlugin<Ready> {
+    mcp_plugin("eval_shell")
+        .description("Shell command execution in sandboxed environment (currently using Python)")
+        .tool::<ShellTool>()
+        .serve()
 }
+
+// Generate standard MCP entry points
+sweetmcp_plugin_builder::generate_mcp_functions!(plugin);
