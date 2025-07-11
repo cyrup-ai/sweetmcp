@@ -16,7 +16,7 @@ pub mod plugin; // Ensure plugin module is declared and public
 mod prompt;
 pub mod resource; // Make resource module public
 pub mod router; // Ensure router is declared
-mod sampling; // Re-enable
+pub mod sampling; // Re-enable
 mod tool; // Re-enable
 mod types;
 pub mod ui;
