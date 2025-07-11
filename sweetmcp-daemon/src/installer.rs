@@ -355,20 +355,47 @@ async fn install_impl(dry: bool, sign: bool, identity: Option<String>) -> Result
 async fn uninstall_impl(dry: bool) -> Result<()> {
     if dry {
         info!("[dry run] Would uninstall daemon: cyrupd");
+        info!("[dry run] Would remove auto-generated certificates from ~/.config/sweetmcp");
+        info!("[dry run] Would preserve user configuration in ~/.config/cyrupd");
         return Ok(());
     }
 
+    // First, uninstall the system daemon
     match uninstall_daemon_async("cyrupd").await {
         Ok(()) => {
             info!("Daemon uninstalled successfully");
-            Ok(())
         }
-        Err(InstallerError::Cancelled) => Err(anyhow::anyhow!("Uninstallation cancelled by user")),
-        Err(InstallerError::PermissionDenied) => Err(anyhow::anyhow!(
+        Err(InstallerError::Cancelled) => return Err(anyhow::anyhow!("Uninstallation cancelled by user")),
+        Err(InstallerError::PermissionDenied) => return Err(anyhow::anyhow!(
             "Permission denied. Please provide administrator credentials."
         )),
-        Err(e) => Err(e.into()),
+        Err(e) => return Err(e.into()),
     }
+
+    // Clean up auto-generated files but preserve user config
+    let config_dir = dirs::config_dir()
+        .ok_or_else(|| anyhow::anyhow!("Could not determine config directory"))?;
+
+    // Remove auto-generated certificates from ~/.config/sweetmcp
+    let sweetmcp_config_dir = config_dir.join("sweetmcp");
+    if sweetmcp_config_dir.exists() {
+        info!("Removing auto-generated certificates from: {}", sweetmcp_config_dir.display());
+        fs::remove_dir_all(&sweetmcp_config_dir)
+            .with_context(|| format!("Failed to remove certificates directory: {}", sweetmcp_config_dir.display()))?;
+    }
+
+    // Remove /opt/sweetmcp if it exists (system-level components)
+    let opt_sweetmcp = std::path::Path::new("/opt/sweetmcp");
+    if opt_sweetmcp.exists() {
+        info!("Removing system components from: /opt/sweetmcp");
+        fs::remove_dir_all(opt_sweetmcp)
+            .with_context(|| "Failed to remove /opt/sweetmcp directory")?;
+    }
+
+    info!("Uninstallation completed successfully");
+    info!("User configuration preserved in ~/.config/cyrupd");
+    info!("To completely remove user settings, manually delete ~/.config/cyrupd");
+    Ok(())
 }
 
 /// Generate wildcard certificate and import to system trust store

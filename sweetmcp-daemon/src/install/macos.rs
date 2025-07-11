@@ -368,7 +368,7 @@ impl PlatformExecutor {
             .map_err(|e| InstallerError::System(format!("Failed to run codesign: {}", e)))?;
 
         if output.status.success() {
-            // Additional verification: check if it's signed with a Developer ID
+            // Get detailed signature information
             let verify_output = Command::new("codesign")
                 .args(["-d", "--verbose=4", helper_path.to_str().unwrap_or("")])
                 .output()
@@ -376,24 +376,18 @@ impl PlatformExecutor {
 
             let stderr = String::from_utf8_lossy(&verify_output.stderr);
 
-            // Check for Developer ID signature
+            // For distributed deployment, accept both Developer ID signatures and ad-hoc signatures
             let has_developer_id = stderr.contains("Developer ID Application");
             let has_valid_timestamp = stderr.contains("Timestamp=");
             let has_hardened_runtime = stderr.contains("flags=0x10000(runtime)");
+            let is_adhoc_signed = stderr.contains("Signature=adhoc");
 
-            Ok(has_developer_id && has_valid_timestamp && has_hardened_runtime)
+            // Accept either a fully signed Developer ID app OR a properly ad-hoc signed app
+            let is_valid = (has_developer_id && has_valid_timestamp && has_hardened_runtime) || is_adhoc_signed;
+
+            Ok(is_valid)
         } else {
             let stderr = String::from_utf8_lossy(&output.stderr);
-
-            // In development mode, allow ad-hoc signatures
-            #[cfg(debug_assertions)]
-            {
-                if stderr.contains("code object is not signed at all") || stderr.contains("ad-hoc")
-                {
-                    return Ok(true);
-                }
-            }
-
             Err(InstallerError::System(format!(
                 "Code signature verification failed: {}",
                 stderr

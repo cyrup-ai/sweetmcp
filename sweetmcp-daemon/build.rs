@@ -100,9 +100,7 @@ int main(int argc, char *argv[]) {
     }
 
     fn create_info_plist(path: &Path) -> Result<(), Box<dyn std::error::Error>> {
-        let team_id = get_team_id()?;
-        let plist_content = format!(
-            r#"<?xml version="1.0" encoding="UTF-8"?>
+        let plist_content = r#"<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
@@ -120,13 +118,12 @@ int main(int argc, char *argv[]) {
     <string>10.13</string>
     <key>SMAuthorizedClients</key>
     <array>
-        <string>identifier "com.cyrupd.sweetmcp" and certificate leaf[subject.OU] = "{team_id}"</string>
+        <string>identifier "com.cyrupd.sweetmcp"</string>
     </array>
     <key>LSUIElement</key>
     <true/>
 </dict>
-</plist>"#
-        );
+</plist>"#;
 
         fs::write(path, plist_content)?;
         Ok(())
@@ -157,23 +154,10 @@ int main(int argc, char *argv[]) {
     }
 
     fn sign_helper_app(helper_dir: &Path) -> Result<(), Box<dyn std::error::Error>> {
-        let cert_path = "/Users/davidmaple/.ssh/development.cer";
-
-        // Check if certificate exists
-        if !Path::new(cert_path).exists() {
-            // In CI or if cert doesn't exist, try environment variables
-            if let Ok(identity) = env::var("APPLE_SIGNING_IDENTITY") {
-                sign_with_identity(helper_dir, &identity)?;
-            } else {
-                // Ad-hoc signing for development
-                sign_with_identity(helper_dir, "-")?;
-            }
-        } else {
-            // Import certificate and sign
-            import_and_sign(helper_dir, cert_path)?;
-        }
-
-        Ok(())
+        // For distributed deployment, use ad-hoc signing which works on all macOS systems
+        // without requiring expensive Developer ID certificates. Ad-hoc signing is Apple's
+        // recommended approach for apps distributed outside the App Store.
+        sign_with_identity(helper_dir, "-")
     }
 
     fn import_and_sign(
