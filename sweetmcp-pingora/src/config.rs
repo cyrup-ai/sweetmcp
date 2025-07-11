@@ -21,6 +21,9 @@ pub struct Config {
     /// TCP bind address
     pub tcp_bind: String,
 
+    /// MCP Streamable HTTP bind address
+    pub mcp_bind: String,
+
     /// Unix domain socket path
     pub uds_path: String,
 
@@ -122,6 +125,9 @@ impl Config {
 
         let tcp_bind = env::var("SWEETMCP_TCP_BIND").unwrap_or_else(|_| "0.0.0.0:8443".to_string());
 
+        let mcp_bind =
+            env::var("SWEETMCP_MCP_BIND").unwrap_or_else(|_| "0.0.0.0:33399".to_string());
+
         let uds_path = env::var("SWEETMCP_UDS_PATH").unwrap_or_else(|_| {
             let xdg_config = env::var("XDG_CONFIG_HOME").unwrap_or_else(|_| {
                 let home = env::var("HOME").unwrap_or_else(|_| "/tmp".to_string());
@@ -184,6 +190,7 @@ impl Config {
             inflight_max,
             upstreams,
             tcp_bind,
+            mcp_bind,
             uds_path,
             workers,
             metrics_bind,

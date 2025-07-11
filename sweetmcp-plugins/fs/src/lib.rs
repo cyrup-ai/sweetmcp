@@ -3,7 +3,7 @@ use std::path::Path;
 use std::time::SystemTime;
 
 use extism_pdk::*;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 use sweetmcp_plugin_builder::prelude::*;
 use sweetmcp_plugin_builder::{CallToolRequest, CallToolResult, ListToolsResult, Ready};
 
@@ -12,7 +12,7 @@ struct FsTool;
 
 impl McpTool for FsTool {
     const NAME: &'static str = "fs";
-    
+
     fn description(builder: DescriptionBuilder) -> DescriptionBuilder {
         builder
             .does("Perform comprehensive file system operations including reading, writing, and directory management")
@@ -39,11 +39,23 @@ impl McpTool for FsTool {
     fn schema(builder: SchemaBuilder) -> Value {
         builder
             .required_enum(
-                "operation", 
+                "operation",
                 "File system operation to perform",
-                &["read", "read_multiple", "write", "edit", "mkdir", "list", "search", "read_metadata"]
+                &[
+                    "read",
+                    "read_multiple",
+                    "write",
+                    "edit",
+                    "mkdir",
+                    "list",
+                    "search",
+                    "read_metadata",
+                ],
             )
-            .optional_string("path", "File or directory path (required for most operations)")
+            .optional_string(
+                "path",
+                "File or directory path (required for most operations)",
+            )
             .optional_string("content", "Content to write (required for write operation)")
             .optional_string("pattern", "Search pattern for file search operations")
             .build()
@@ -64,7 +76,10 @@ impl McpTool for FsTool {
             "list" => list_dir(&args),
             "search" => search_files(&args),
             "read_metadata" => get_file_info(&args),
-            _ => Ok(ContentBuilder::error(format!("Unknown fs operation: {}", operation))),
+            _ => Ok(ContentBuilder::error(format!(
+                "Unknown fs operation: {}",
+                operation
+            ))),
         }
     }
 }
@@ -77,12 +92,18 @@ fn read_file(args: &Value) -> Result<CallToolResult, Error> {
         .ok_or_else(|| Error::msg("path parameter required for read operation"))?;
 
     match fs::read_to_string(path) {
-        Ok(content) => Ok(ContentBuilder::text(json!({
-            "path": path,
-            "content": content,
-            "size": content.len()
-        }).to_string())),
-        Err(e) => Ok(ContentBuilder::error(format!("Failed to read file {}: {}", path, e))),
+        Ok(content) => Ok(ContentBuilder::text(
+            json!({
+                "path": path,
+                "content": content,
+                "size": content.len()
+            })
+            .to_string(),
+        )),
+        Err(e) => Ok(ContentBuilder::error(format!(
+            "Failed to read file {}: {}",
+            path, e
+        ))),
     }
 }
 
@@ -94,7 +115,7 @@ fn read_multiple_files(args: &Value) -> Result<CallToolResult, Error> {
         .ok_or_else(|| Error::msg("paths array required for read_multiple operation"))?;
 
     let mut results = Vec::new();
-    
+
     for path_val in paths {
         if let Some(path) = path_val.as_str() {
             match fs::read_to_string(path) {
@@ -117,10 +138,13 @@ fn read_multiple_files(args: &Value) -> Result<CallToolResult, Error> {
         }
     }
 
-    Ok(ContentBuilder::text(json!({
-        "operation": "read_multiple",
-        "results": results
-    }).to_string()))
+    Ok(ContentBuilder::text(
+        json!({
+            "operation": "read_multiple",
+            "results": results
+        })
+        .to_string(),
+    ))
 }
 
 /// Write file contents
@@ -129,7 +153,7 @@ fn write_file(args: &Value) -> Result<CallToolResult, Error> {
         .get("path")
         .and_then(|v| v.as_str())
         .ok_or_else(|| Error::msg("path parameter required for write operation"))?;
-    
+
     let content = args
         .get("content")
         .and_then(|v| v.as_str())
@@ -139,18 +163,27 @@ fn write_file(args: &Value) -> Result<CallToolResult, Error> {
     if let Some(parent) = Path::new(path).parent() {
         if !parent.exists() {
             if let Err(e) = fs::create_dir_all(parent) {
-                return Ok(ContentBuilder::error(format!("Failed to create parent directories: {}", e)));
+                return Ok(ContentBuilder::error(format!(
+                    "Failed to create parent directories: {}",
+                    e
+                )));
             }
         }
     }
 
     match fs::write(path, content) {
-        Ok(_) => Ok(ContentBuilder::text(json!({
-            "path": path,
-            "bytes_written": content.len(),
-            "success": true
-        }).to_string())),
-        Err(e) => Ok(ContentBuilder::error(format!("Failed to write file {}: {}", path, e))),
+        Ok(_) => Ok(ContentBuilder::text(
+            json!({
+                "path": path,
+                "bytes_written": content.len(),
+                "success": true
+            })
+            .to_string(),
+        )),
+        Err(e) => Ok(ContentBuilder::error(format!(
+            "Failed to write file {}: {}",
+            path, e
+        ))),
     }
 }
 
@@ -173,26 +206,29 @@ fn create_dir(args: &Value) -> Result<CallToolResult, Error> {
         .ok_or_else(|| Error::msg("path parameter required for mkdir operation"))?;
 
     match fs::create_dir_all(path) {
-        Ok(_) => Ok(ContentBuilder::text(json!({
-            "path": path,
-            "created": true,
-            "success": true
-        }).to_string())),
-        Err(e) => Ok(ContentBuilder::error(format!("Failed to create directory {}: {}", path, e))),
+        Ok(_) => Ok(ContentBuilder::text(
+            json!({
+                "path": path,
+                "created": true,
+                "success": true
+            })
+            .to_string(),
+        )),
+        Err(e) => Ok(ContentBuilder::error(format!(
+            "Failed to create directory {}: {}",
+            path, e
+        ))),
     }
 }
 
 /// List directory contents
 fn list_dir(args: &Value) -> Result<CallToolResult, Error> {
-    let path = args
-        .get("path")
-        .and_then(|v| v.as_str())
-        .unwrap_or(".");
+    let path = args.get("path").and_then(|v| v.as_str()).unwrap_or(".");
 
     match fs::read_dir(path) {
         Ok(entries) => {
             let mut files = Vec::new();
-            
+
             for entry in entries {
                 match entry {
                     Ok(entry) => {
@@ -201,7 +237,7 @@ fn list_dir(args: &Value) -> Result<CallToolResult, Error> {
                             Ok(meta) => meta,
                             Err(_) => continue, // Skip entries we can't read
                         };
-                        
+
                         files.push(json!({
                             "name": entry.file_name().to_string_lossy(),
                             "path": path.to_string_lossy(),
@@ -218,13 +254,19 @@ fn list_dir(args: &Value) -> Result<CallToolResult, Error> {
                 }
             }
 
-            Ok(ContentBuilder::text(json!({
-                "path": path,
-                "entries": files,
-                "count": files.len()
-            }).to_string()))
+            Ok(ContentBuilder::text(
+                json!({
+                    "path": path,
+                    "entries": files,
+                    "count": files.len()
+                })
+                .to_string(),
+            ))
         }
-        Err(e) => Ok(ContentBuilder::error(format!("Failed to list directory {}: {}", path, e))),
+        Err(e) => Ok(ContentBuilder::error(format!(
+            "Failed to list directory {}: {}",
+            path, e
+        ))),
     }
 }
 
@@ -234,17 +276,14 @@ fn search_files(args: &Value) -> Result<CallToolResult, Error> {
         .get("pattern")
         .and_then(|v| v.as_str())
         .ok_or_else(|| Error::msg("pattern parameter required for search operation"))?;
-    
-    let path = args
-        .get("path")
-        .and_then(|v| v.as_str())
-        .unwrap_or(".");
+
+    let path = args.get("path").and_then(|v| v.as_str()).unwrap_or(".");
 
     // Simplified file search - just list files containing the pattern in their name
     match fs::read_dir(path) {
         Ok(entries) => {
             let mut matches = Vec::new();
-            
+
             for entry in entries {
                 if let Ok(entry) = entry {
                     let filename = entry.file_name().to_string_lossy().to_lowercase();
@@ -257,14 +296,20 @@ fn search_files(args: &Value) -> Result<CallToolResult, Error> {
                 }
             }
 
-            Ok(ContentBuilder::text(json!({
-                "pattern": pattern,
-                "search_path": path,
-                "matches": matches,
-                "count": matches.len()
-            }).to_string()))
+            Ok(ContentBuilder::text(
+                json!({
+                    "pattern": pattern,
+                    "search_path": path,
+                    "matches": matches,
+                    "count": matches.len()
+                })
+                .to_string(),
+            ))
         }
-        Err(e) => Ok(ContentBuilder::error(format!("Failed to search in {}: {}", path, e))),
+        Err(e) => Ok(ContentBuilder::error(format!(
+            "Failed to search in {}: {}",
+            path, e
+        ))),
     }
 }
 
@@ -277,22 +322,29 @@ fn get_file_info(args: &Value) -> Result<CallToolResult, Error> {
 
     match fs::metadata(path) {
         Ok(metadata) => {
-            let modified = metadata.modified()
+            let modified = metadata
+                .modified()
                 .ok()
                 .and_then(|time| time.duration_since(SystemTime::UNIX_EPOCH).ok())
                 .map(|duration| duration.as_secs())
                 .unwrap_or(0);
 
-            Ok(ContentBuilder::text(json!({
-                "path": path,
-                "size": metadata.len(),
-                "is_file": metadata.is_file(),
-                "is_dir": metadata.is_dir(),
-                "modified_timestamp": modified,
-                "readonly": metadata.permissions().readonly(),
-            }).to_string()))
+            Ok(ContentBuilder::text(
+                json!({
+                    "path": path,
+                    "size": metadata.len(),
+                    "is_file": metadata.is_file(),
+                    "is_dir": metadata.is_dir(),
+                    "modified_timestamp": modified,
+                    "readonly": metadata.permissions().readonly(),
+                })
+                .to_string(),
+            ))
         }
-        Err(e) => Ok(ContentBuilder::error(format!("Failed to get metadata for {}: {}", path, e))),
+        Err(e) => Ok(ContentBuilder::error(format!(
+            "Failed to get metadata for {}: {}",
+            path, e
+        ))),
     }
 }
 

@@ -14,6 +14,7 @@ pub enum Proto {
     GraphQL,
     JsonRpc,
     Capnp,
+    McpStreamableHttp,
 }
 
 /// Context for tracking protocol conversion
@@ -26,6 +27,15 @@ pub struct ProtocolContext {
 
 /// Normalize incoming protocol to JSON-RPC for cyrup-mcp-api
 pub fn to_json_rpc(_user: &str, body: &[u8]) -> Result<(ProtocolContext, serde_json::Value)> {
+    to_json_rpc_with_headers(_user, body, None)
+}
+
+/// Normalize incoming protocol to JSON-RPC with optional header context
+pub fn to_json_rpc_with_headers(
+    _user: &str,
+    body: &[u8],
+    req_header: Option<&pingora::http::RequestHeader>,
+) -> Result<(ProtocolContext, serde_json::Value)> {
     // Try JSON-RPC first (most specific)
     if let Ok(v) = serde_json::from_slice::<serde_json::Value>(body) {
         if v.get("jsonrpc").is_some() {
@@ -48,6 +58,34 @@ pub fn to_json_rpc(_user: &str, body: &[u8]) -> Result<(ProtocolContext, serde_j
 
             // Pass through valid JSON-RPC unchanged
             return Ok((ctx, v));
+        }
+
+        // Check if it's MCP Streamable HTTP JSON-RPC (without explicit jsonrpc field)
+        if let Some(header) = req_header {
+            let uri_path = header.uri.path();
+            if uri_path == "/mcp" || uri_path.starts_with("/mcp/") {
+                // MCP Streamable HTTP can have JSON-RPC without the version field
+                if v.get("method").is_some() {
+                    let id = v
+                        .get("id")
+                        .cloned()
+                        .unwrap_or_else(|| json!(Uuid::new_v4().to_string()));
+
+                    // Add jsonrpc version if missing
+                    let mut mcp_json = v;
+                    if mcp_json.get("jsonrpc").is_none() {
+                        mcp_json["jsonrpc"] = json!(JSONRPC_VERSION);
+                    }
+
+                    let ctx = ProtocolContext {
+                        protocol: Proto::McpStreamableHttp,
+                        original_query: None,
+                        request_id: id.to_string(),
+                    };
+
+                    return Ok((ctx, mcp_json));
+                }
+            }
         }
     }
 
@@ -222,6 +260,11 @@ pub fn from_json_rpc(
         Proto::JsonRpc => {
             // Pass through unchanged
             serde_json::to_vec(json_rpc_response).context("Failed to serialize JSON-RPC response")
+        }
+        Proto::McpStreamableHttp => {
+            // MCP Streamable HTTP uses standard JSON-RPC format
+            serde_json::to_vec(json_rpc_response)
+                .context("Failed to serialize MCP Streamable HTTP response")
         }
         Proto::GraphQL => graphql_from_json_rpc(ctx, json_rpc_response),
         Proto::Capnp => capnp_from_json_rpc(ctx, json_rpc_response),

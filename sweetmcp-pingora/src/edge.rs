@@ -467,7 +467,11 @@ impl ProxyHttp for EdgeService {
 
                 // Normalize protocol to JSON-RPC
                 let (protocol_ctx, json_rpc_request) =
-                    match crate::normalize::to_json_rpc(&claims.sub, &body) {
+                    match crate::normalize::to_json_rpc_with_headers(
+                        &claims.sub,
+                        &body,
+                        Some(session.req_header()),
+                    ) {
                         Ok(result) => result,
                         Err(e) => {
                             tracing::error!("Failed to normalize protocol: {}", e);
@@ -521,6 +525,7 @@ impl ProxyHttp for EdgeService {
                         let content_type = match &ctx.protocol_context.as_ref().unwrap().protocol {
                             crate::normalize::Proto::GraphQL => "application/json",
                             crate::normalize::Proto::JsonRpc => "application/json",
+                            crate::normalize::Proto::McpStreamableHttp => "application/json",
                             crate::normalize::Proto::Capnp => "application/octet-stream",
                         };
 
@@ -667,6 +672,14 @@ impl ProxyHttp for EdgeService {
 
 /// Check if this is an MCP request based on Content-Type and other headers
 fn is_mcp_request(req_header: &pingora::http::RequestHeader) -> bool {
+    // Check for MCP Streamable HTTP transport patterns
+    let uri_path = req_header.uri.path();
+
+    // MCP Streamable HTTP endpoints
+    if uri_path == "/mcp" || uri_path.starts_with("/mcp/") {
+        return true;
+    }
+
     // Check Content-Type header for MCP protocols
     if let Some(content_type) = req_header.headers.get("content-type") {
         if let Ok(content_type_str) = content_type.to_str() {
@@ -674,7 +687,10 @@ fn is_mcp_request(req_header: &pingora::http::RequestHeader) -> bool {
 
             // JSON-RPC (most common MCP transport)
             if content_type_lower.contains("application/json") {
-                return true;
+                // For MCP Streamable HTTP, also check for specific endpoints
+                if uri_path == "/mcp" || content_type_lower.contains("application/json-rpc") {
+                    return true;
+                }
             }
 
             // GraphQL
@@ -696,17 +712,29 @@ fn is_mcp_request(req_header: &pingora::http::RequestHeader) -> bool {
         return true;
     }
 
-    // Check request method - MCP typically uses POST
-    if req_header.method != pingora::http::Method::POST {
-        return false;
+    // MCP Streamable HTTP specific headers
+    if req_header.headers.get("x-mcp-session-id").is_some()
+        || req_header.headers.get("x-mcp-request-id").is_some()
+    {
+        return true;
     }
 
-    // Check User-Agent for MCP clients
-    if let Some(user_agent) = req_header.headers.get("user-agent") {
-        if let Ok(ua_str) = user_agent.to_str() {
-            let ua_lower = ua_str.to_lowercase();
-            if ua_lower.contains("mcp") || ua_lower.contains("model-context-protocol") {
-                return true;
+    // Check request method - MCP supports both POST and GET for different operations
+    if matches!(
+        req_header.method,
+        pingora::http::Method::POST | pingora::http::Method::GET
+    ) {
+        // Check User-Agent for MCP clients
+        if let Some(user_agent) = req_header.headers.get("user-agent") {
+            if let Ok(ua_str) = user_agent.to_str() {
+                let ua_lower = ua_str.to_lowercase();
+                if ua_lower.contains("mcp")
+                    || ua_lower.contains("model-context-protocol")
+                    || ua_lower.contains("claude")
+                    || ua_lower.contains("anthropic")
+                {
+                    return true;
+                }
             }
         }
     }

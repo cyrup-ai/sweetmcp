@@ -10,7 +10,7 @@ use super::model::*;
 use crate::sampling::notifications::SamplingProgressNotification;
 
 // TODO: Re-implement LLM client selection after dependency migration
-/* 
+/*
 /// Select the best LLM client based on model preferences
 async fn select_llm_client(preferences: &Option<McpModelPreferences>) -> Result<LlmClient, String> {
     // Default priorities if not specified

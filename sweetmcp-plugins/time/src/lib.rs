@@ -1,6 +1,6 @@
 use chrono::Utc;
 use extism_pdk::*;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 use sweetmcp_plugin_builder::prelude::*;
 use sweetmcp_plugin_builder::{CallToolResult, Ready};
 
@@ -9,7 +9,7 @@ struct TimeTool;
 
 impl McpTool for TimeTool {
     const NAME: &'static str = "time";
-    
+
     fn description(builder: DescriptionBuilder) -> DescriptionBuilder {
         builder
             .does("Get current time in various formats and parse time strings")
@@ -26,7 +26,10 @@ impl McpTool for TimeTool {
                 "Time operation to perform",
                 &["get_time_utc", "parse_time"],
             )
-            .optional_string("time_string", "Time string to parse (for parse_time operation)")
+            .optional_string(
+                "time_string",
+                "Time string to parse (for parse_time operation)",
+            )
             .build()
     }
 
@@ -63,10 +66,16 @@ impl McpTool for TimeTool {
                         })
                         .to_string(),
                     )),
-                    Err(e) => Ok(ContentBuilder::error(format!("Failed to parse time: {}", e))),
+                    Err(e) => Ok(ContentBuilder::error(format!(
+                        "Failed to parse time: {}",
+                        e
+                    ))),
                 }
             }
-            _ => Ok(ContentBuilder::error(format!("Unknown time operation: {}", name))),
+            _ => Ok(ContentBuilder::error(format!(
+                "Unknown time operation: {}",
+                name
+            ))),
         }
     }
 }

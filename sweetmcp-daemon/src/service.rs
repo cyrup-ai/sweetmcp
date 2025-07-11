@@ -1,5 +1,7 @@
 mod autoconfig;
 
+pub mod sse;
+
 use crate::config::ServiceDefinition;
 use crate::ipc::{Cmd, Evt};
 use anyhow::{Context, Result};

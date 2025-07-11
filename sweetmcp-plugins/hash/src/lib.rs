@@ -43,7 +43,8 @@ fn compute_hash(data: &str, algorithm: &str) -> Result<String, String> {
             Ok(encoded)
         }
         "base32" => {
-            let encoded = base32::encode(base32::Alphabet::Rfc4648 { padding: true }, data.as_bytes());
+            let encoded =
+                base32::encode(base32::Alphabet::Rfc4648 { padding: true }, data.as_bytes());
             Ok(encoded)
         }
         _ => Err(format!("Unsupported algorithm: {}", algorithm)),
@@ -55,7 +56,7 @@ struct HashTool;
 
 impl McpTool for HashTool {
     const NAME: &'static str = "hash";
-    
+
     fn description(builder: DescriptionBuilder) -> DescriptionBuilder {
         builder
             .does("Generate cryptographic hashes and encoded formats from input data")
@@ -73,7 +74,9 @@ impl McpTool for HashTool {
             .required_enum(
                 "algorithm",
                 "algorithm to use for hashing or encoding",
-                &["sha256", "sha512", "sha384", "sha224", "sha1", "md5", "base32", "base64"],
+                &[
+                    "sha256", "sha512", "sha384", "sha224", "sha1", "md5", "base32", "base64",
+                ],
             )
             .build()
     }

@@ -139,8 +139,9 @@ fn run_server() -> Result<()> {
 
     let mut proxy_service = pingora_proxy::http_proxy_service(&server.configuration, edge_service);
 
-    // Add TCP listener
+    // Add TCP listeners
     proxy_service.add_tcp(&cfg.tcp_bind);
+    proxy_service.add_tcp(&cfg.mcp_bind);
 
     // Add Unix socket listener
     // Ensure directory exists
@@ -173,6 +174,7 @@ fn run_server() -> Result<()> {
 
     log::info!("🚀 Sugora Gateway ready!");
     log::info!("  TCP: {}", cfg.tcp_bind);
+    log::info!("  MCP HTTP: {}", cfg.mcp_bind);
     log::info!("  UDS: {}", cfg.uds_path);
     log::info!("  Metrics: http://{}/metrics", cfg.metrics_bind);
 

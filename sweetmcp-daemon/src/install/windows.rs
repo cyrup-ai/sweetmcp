@@ -692,14 +692,12 @@ impl PlatformExecutor {
         Ok(())
     }
 
-    #[cfg(feature = "runtime")]
     pub async fn install_async(b: InstallerBuilder) -> Result<(), InstallerError> {
         tokio::task::spawn_blocking(move || Self::install(b))
             .await
             .context("task join failed")?
     }
 
-    #[cfg(feature = "runtime")]
     pub async fn uninstall_async(label: &str) -> Result<(), InstallerError> {
         let label = label.to_string();
         tokio::task::spawn_blocking(move || Self::uninstall(&label))

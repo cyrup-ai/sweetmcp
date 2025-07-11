@@ -41,16 +41,12 @@ pub fn uninstall_daemon(label: &str) -> Result<()> {
     Executor::uninstall(label)
 }
 
-/// Asynchronous daemon installation (requires `runtime` feature).
-#[cfg(feature = "runtime")]
-#[cfg_attr(docsrs, doc(cfg(feature = "runtime")))]
+/// Asynchronous daemon installation.
 pub async fn install_daemon_async(builder: InstallerBuilder) -> Result<()> {
     Executor::install_async(builder).await
 }
 
-/// Asynchronous daemon uninstallation (requires `runtime` feature).
-#[cfg(feature = "runtime")]
-#[cfg_attr(docsrs, doc(cfg(feature = "runtime")))]
+/// Asynchronous daemon uninstallation.
 pub async fn uninstall_daemon_async(label: &str) -> Result<()> {
     Executor::uninstall_async(label).await
 }

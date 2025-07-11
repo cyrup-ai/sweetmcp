@@ -1,7 +1,7 @@
-use std::process::Command;
-use std::fs;
-use log::info;
 use anyhow::{Context, Result};
+use log::info;
+use std::fs;
+use std::process::Command;
 
 /// Install fluent voice from git repository
 pub async fn install_fluent_voice(fluent_voice_dir: &std::path::Path) -> Result<()> {
@@ -17,11 +17,7 @@ async fn clone_from_git(fluent_voice_dir: &std::path::Path) -> Result<()> {
         if attempt > 1 {
             info!("Retrying git clone (attempt {}/{})", attempt, MAX_RETRIES);
             // Brief delay before retry
-            #[cfg(feature = "runtime")]
             tokio::time::sleep(std::time::Duration::from_secs(2)).await;
-
-            #[cfg(not(feature = "runtime"))]
-            std::thread::sleep(std::time::Duration::from_secs(2));
         }
 
         let output = Command::new("git")

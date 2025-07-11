@@ -10,7 +10,7 @@ struct QrCodeTool;
 
 impl McpTool for QrCodeTool {
     const NAME: &'static str = "qr-code";
-    
+
     fn description(builder: DescriptionBuilder) -> DescriptionBuilder {
         builder
             .does("Generate QR codes as PNG images from text or data input")
@@ -29,7 +29,10 @@ impl McpTool for QrCodeTool {
     fn schema(builder: SchemaBuilder) -> Value {
         builder
             .required_string("data", "Text or data to encode in the QR code")
-            .optional_string("ecc", "Error correction level (1=low, 2=medium, 3=quartile, 4=high, default=4)")
+            .optional_string(
+                "ecc",
+                "Error correction level (1=low, 2=medium, 3=quartile, 4=high, default=4)",
+            )
             .build()
     }
 
@@ -55,13 +58,16 @@ impl McpTool for QrCodeTool {
                     content: vec![Content {
                         annotations: None,
                         text: None,
-                        mime_type: Some("image/png".into()), 
+                        mime_type: Some("image/png".into()),
                         r#type: ContentType::Image,
                         data: Some(base64_data),
                     }],
                 })
             }
-            Err(e) => Ok(ContentBuilder::error(&format!("Failed to generate QR code: {}", e))),
+            Err(e) => Ok(ContentBuilder::error(&format!(
+                "Failed to generate QR code: {}",
+                e
+            ))),
         }
     }
 }
@@ -74,7 +80,7 @@ fn generate_qr_code(data: &str, ecc: QrCodeEcc) -> Result<String, Box<dyn std::e
 
     let png_bytes = code.generate(Color::Grayscale(0, 255))?;
     let base64_data = base64::engine::general_purpose::STANDARD.encode(png_bytes);
-    
+
     Ok(base64_data)
 }
 

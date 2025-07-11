@@ -119,3 +119,90 @@ Based on actual `cargo check` output, here are ALL warnings that need fixing:
 106. QA: Rate TlsManager methods fix quality (1-10)
 
 All items marked as pending until completed and verified with cargo check.
+
+# MCP Streamable HTTP Transport Implementation
+
+## sweetmcp-daemon Configuration
+
+- [ ] Add MCP_BIND configuration parameter for port 33399 to daemon config structure
+  - DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
+
+- [ ] Act as an Objective QA Rust developer and rate the work performed previously on adding MCP_BIND configuration - verify the parameter is properly typed, documented, and integrated with existing config validation without breaking changes.
+
+- [ ] Update daemon service worker to launch pingora with MCP endpoint binding
+  - DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
+
+- [ ] Act as an Objective QA Rust developer and rate the work performed previously on updating service worker - verify pingora launches correctly with MCP binding, handles failures gracefully, and maintains existing functionality.
+
+## sweetmcp-pingora Protocol Support
+
+- [ ] Extend `Proto` enum in normalize.rs to include `McpStreamableHttp` variant
+  - DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
+
+- [ ] Act as an Objective QA Rust developer and rate the work performed previously on extending Proto enum - verify new variant integrates properly with existing protocol handling and serialization.
+
+- [ ] Implement MCP Streamable HTTP detection in `is_mcp_request()` function in edge.rs
+  - DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
+
+- [ ] Act as an Objective QA Rust developer and rate the work performed previously on MCP request detection - verify detection logic correctly identifies MCP requests without false positives/negatives.
+
+- [ ] Add MCP Streamable HTTP parsing to `to_json_rpc()` function in normalize.rs
+  - DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
+
+- [ ] Act as an Objective QA Rust developer and rate the work performed previously on MCP HTTP parsing - verify parsing handles all valid MCP message formats and produces correct JSON-RPC output.
+
+- [ ] Implement MCP HTTP response formatting in `from_json_rpc()` function in normalize.rs
+  - DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
+
+- [ ] Act as an Objective QA Rust developer and rate the work performed previously on MCP response formatting - verify responses conform to MCP Streamable HTTP specification and handle all JSON-RPC response types.
+
+## MCP Session Management
+
+- [ ] Add MCP session tracking to EdgeService for connection persistence
+  - DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
+
+- [ ] Act as an Objective QA Rust developer and rate the work performed previously on session tracking - verify sessions are properly created, maintained, and cleaned up without memory leaks.
+
+- [ ] Implement session resumability per MCP specification requirements
+  - DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
+
+- [ ] Act as an Objective QA Rust developer and rate the work performed previously on session resumability - verify sessions can be properly resumed after connection interruption per MCP spec.
+
+- [ ] Add bidirectional streaming support for MCP notifications and progress updates
+  - DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
+
+- [ ] Act as an Objective QA Rust developer and rate the work performed previously on bidirectional streaming - verify streaming works correctly in both directions with proper backpressure handling.
+
+## Production Quality Implementation
+
+- [ ] Implement MCP-compliant error handling and HTTP status codes
+  - DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
+
+- [ ] Act as an Objective QA Rust developer and rate the work performed previously on error handling - verify all error conditions produce MCP-compliant responses with correct HTTP status codes.
+
+- [ ] Add structured logging for MCP operations and session lifecycle
+  - DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
+
+- [ ] Act as an Objective QA Rust developer and rate the work performed previously on logging - verify logging provides sufficient observability without performance impact or log spam.
+
+- [ ] Implement rate limiting specific to MCP sessions and operations
+  - DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
+
+- [ ] Act as an Objective QA Rust developer and rate the work performed previously on rate limiting - verify rate limits protect against abuse while not interfering with legitimate MCP usage patterns.
+
+- [ ] Add metrics collection for MCP request/response times and session stats
+  - DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
+
+- [ ] Act as an Objective QA Rust developer and rate the work performed previously on metrics collection - verify metrics provide actionable insights into MCP performance and usage without overhead.
+
+## Integration & Validation
+
+- [ ] Verify existing stdio transport continues working without regression
+  - DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
+
+- [ ] Act as an Objective QA Rust developer and rate the work performed previously on stdio compatibility - verify all existing stdio-based MCP functionality remains intact and unaffected.
+
+- [ ] Test end-to-end MCP communication with Claude CLI using HTTP transport
+  - DO NOT MOCK, FABRICATE, FAKE or SIMULATE ANY OPERATION or DATA. Make ONLY THE MINIMAL, SURGICAL CHANGES required. Do not modify or rewrite any portion of the app outside scope.
+
+- [ ] Act as an Objective QA Rust developer and rate the work performed previously on end-to-end testing - verify Claude CLI can successfully connect and perform all MCP operations over HTTP transport.

@@ -14,7 +14,7 @@ use htmd::HtmlToMarkdown;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use sweetmcp_plugin_builder::prelude::*;
-use sweetmcp_plugin_builder::{CallToolResult, Ready, Content, ContentType};
+use sweetmcp_plugin_builder::{CallToolResult, Content, ContentType, Ready};
 // Sixel encoding is implemented inline below based on sixel6vt renderer
 use base64::Engine;
 use syntect::{highlighting::ThemeSet, html::highlighted_html_for_string, parsing::SyntaxSet};
@@ -187,7 +187,7 @@ struct FetchTool;
 
 impl McpTool for FetchTool {
     const NAME: &'static str = "fetch";
-    
+
     fn description(builder: DescriptionBuilder) -> DescriptionBuilder {
         builder
             .does("Retrieve and transform web content from any URL with advanced processing capabilities")
@@ -212,7 +212,10 @@ impl McpTool for FetchTool {
                 "Format for the content (markdown, json, or txt)",
                 &["markdown", "json", "txt"],
             )
-            .optional_bool("syntax_highlighting", "Whether to apply syntax highlighting to the content")
+            .optional_bool(
+                "syntax_highlighting",
+                "Whether to apply syntax highlighting to the content",
+            )
             .optional_string("theme", "Theme to use for syntax highlighting")
             .build()
     }
@@ -454,7 +457,9 @@ fn apply_syntax_highlighting(
 /// Create the plugin instance
 fn plugin() -> McpPlugin<Ready> {
     mcp_plugin("fetch")
-        .description("Advanced web content fetching with multi-stage fallback and format conversion")
+        .description(
+            "Advanced web content fetching with multi-stage fallback and format conversion",
+        )
         .tool::<FetchTool>()
         .serve()
 }

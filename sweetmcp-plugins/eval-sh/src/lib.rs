@@ -1,4 +1,3 @@
-
 use rustpython_vm::{self as vm, Settings, scope::Scope};
 use std::{cell::RefCell, collections::HashMap, rc::Rc};
 
@@ -51,7 +50,7 @@ struct ShellTool;
 
 impl McpTool for ShellTool {
     const NAME: &'static str = "eval_shell";
-    
+
     fn description(builder: DescriptionBuilder) -> DescriptionBuilder {
         builder
             .does("Execute shell commands in a sandboxed environment")

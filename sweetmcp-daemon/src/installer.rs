@@ -394,13 +394,9 @@ async fn generate_sweetmcp_wildcard_certificate(xdg_config_home: &Path) -> Resul
     let cert_dir = xdg_config_home.join("sweetmcp");
 
     // Create cert directory if it doesn't exist
-    #[cfg(feature = "runtime")]
     tokio::fs::create_dir_all(&cert_dir)
         .await
         .context("Failed to create certificate directory")?;
-
-    #[cfg(not(feature = "runtime"))]
-    fs::create_dir_all(&cert_dir).context("Failed to create certificate directory")?;
 
     let wildcard_cert_path = cert_dir.join("wildcard.cyrup.pem");
 
@@ -515,13 +511,8 @@ async fn generate_sweetmcp_wildcard_certificate(xdg_config_home: &Path) -> Resul
     let combined_pem = format!("{}\n{}", cert_pem, key_pem);
 
     // Write combined PEM file
-    #[cfg(feature = "runtime")]
     tokio::fs::write(&wildcard_cert_path, &combined_pem)
         .await
-        .context("Failed to write wildcard certificate")?;
-
-    #[cfg(not(feature = "runtime"))]
-    fs::write(&wildcard_cert_path, &combined_pem)
         .context("Failed to write wildcard certificate")?;
 
     // Set secure permissions on certificate file
@@ -529,27 +520,14 @@ async fn generate_sweetmcp_wildcard_certificate(xdg_config_home: &Path) -> Resul
     {
         use std::os::unix::fs::PermissionsExt;
 
-        #[cfg(feature = "runtime")]
-        {
-            let mut perms = tokio::fs::metadata(&wildcard_cert_path)
-                .await
-                .context("Failed to get file metadata")?
-                .permissions();
-            perms.set_mode(0o600); // Owner read/write only
-            tokio::fs::set_permissions(&wildcard_cert_path, perms)
-                .await
-                .context("Failed to set file permissions")?;
-        }
-
-        #[cfg(not(feature = "runtime"))]
-        {
-            let mut perms = fs::metadata(&wildcard_cert_path)
-                .context("Failed to get file metadata")?
-                .permissions();
-            perms.set_mode(0o600); // Owner read/write only
-            fs::set_permissions(&wildcard_cert_path, perms)
-                .context("Failed to set file permissions")?;
-        }
+        let mut perms = tokio::fs::metadata(&wildcard_cert_path)
+            .await
+            .context("Failed to get file metadata")?
+            .permissions();
+        perms.set_mode(0o600); // Owner read/write only
+        tokio::fs::set_permissions(&wildcard_cert_path, perms)
+            .await
+            .context("Failed to set file permissions")?;
     }
 
     info!(

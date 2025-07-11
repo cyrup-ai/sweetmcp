@@ -21,25 +21,13 @@ use std::path::{Path, PathBuf};
 fn main() {
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
 
-    #[cfg(feature = "runtime")]
-    {
-        let rt = tokio::runtime::Runtime::new().expect("Failed to create Tokio runtime");
-        if let Err(e) = rt.block_on(real_main()) {
-            error!("{e:#}");
-            std::process::exit(1);
-        }
-    }
-
-    #[cfg(not(feature = "runtime"))]
-    {
-        if let Err(e) = real_main_sync() {
-            error!("{e:#}");
-            std::process::exit(1);
-        }
+    let rt = tokio::runtime::Runtime::new().expect("Failed to create Tokio runtime");
+    if let Err(e) = rt.block_on(real_main()) {
+        error!("{e:#}");
+        std::process::exit(1);
     }
 }
 
-#[cfg(feature = "runtime")]
 async fn real_main() -> Result<()> {
     let args = cli::Args::parse();
 
@@ -52,16 +40,13 @@ async fn real_main() -> Result<()> {
             foreground,
             config,
             system,
-        } => run_daemon(foreground, config, system),
+        } => run_daemon(foreground, config, system).await,
         cli::Cmd::Install {
             dry_run,
             sign,
             identity,
         } => installer::install(dry_run, sign, identity).await,
-        cli::Cmd::Uninstall { dry_run } => {
-            // Use async uninstall method
-            installer::uninstall_async(dry_run).await
-        }
+        cli::Cmd::Uninstall { dry_run } => installer::uninstall_async(dry_run).await,
         cli::Cmd::Sign {
             binary,
             identity,
@@ -72,38 +57,12 @@ async fn real_main() -> Result<()> {
     }
 }
 
-#[cfg(not(feature = "runtime"))]
-fn real_main_sync() -> Result<()> {
-    let args = cli::Args::parse();
 
-    match args.sub.unwrap_or(cli::Cmd::Run {
-        foreground: false,
-        config: None,
-        system: false,
-    }) {
-        cli::Cmd::Run {
-            foreground,
-            config,
-            system,
-        } => run_daemon(foreground, config, system),
-        cli::Cmd::Install {
-            dry_run,
-            sign,
-            identity,
-        } => {
-            // Use synchronous installation when runtime feature is disabled
-            // This integrates install_sync which calls install_daemon internally
-            installer::install_sync(dry_run, sign, identity)
-        }
-        cli::Cmd::Uninstall { dry_run } => installer::uninstall(dry_run),
-        cli::Cmd::Sign { .. } => {
-            error!("Sign command requires async runtime. Enable 'runtime' feature.");
-            std::process::exit(1);
-        }
-    }
-}
-
-fn run_daemon(force_foreground: bool, config_path: Option<String>, use_system: bool) -> Result<()> {
+async fn run_daemon(
+    force_foreground: bool,
+    config_path: Option<String>,
+    use_system: bool,
+) -> Result<()> {
     let should_stay_foreground = force_foreground || daemon::need_foreground();
 
     if !should_stay_foreground {
@@ -135,7 +94,11 @@ fn run_daemon(force_foreground: bool, config_path: Option<String>, use_system: b
     info!("Using config from: {}", cfg_path.display());
 
     manager::install_signal_handlers();
-    let mgr = ServiceManager::new(&cfg)?;
+    let mut mgr = ServiceManager::new(&cfg)?;
+
+    // Start SSE server if enabled
+    mgr.start_sse_server(&cfg).await?;
+
     daemon::systemd_ready(); // tell systemd we are ready
     info!("Cyrup daemon started (pid {})", std::process::id());
     mgr.run()?;
@@ -143,7 +106,7 @@ fn run_daemon(force_foreground: bool, config_path: Option<String>, use_system: b
     Ok(())
 }
 
-#[cfg(feature = "runtime")]
+
 async fn handle_sign_command(
     binary: Option<String>,
     identity: Option<String>,

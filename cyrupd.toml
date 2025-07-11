@@ -1,0 +1,24 @@
+# SweetMCP Daemon Production Configuration
+
+# Service directories and settings
+services_dir = "/etc/cyrupd/services"
+log_dir = "/var/log/cyrupd"
+default_user = "cyrupd"
+default_group = "cyops"
+auto_restart = true
+
+# MCP Server binding
+mcp_bind = "0.0.0.0:33399"
+
+# Services managed by the daemon
+services = []
+
+# SSE Server Configuration for Claude Code
+[sse]
+enabled = true
+port = 8080
+mcp_server_url = "http://127.0.0.1:3000"
+max_connections = 100
+ping_interval = 30
+session_timeout = 300
+cors_origins = ["http://localhost", "https://localhost", "http://127.0.0.1", "https://cyrup.ai", "https://cyrup.cloud", "https://cyrup.dev"]

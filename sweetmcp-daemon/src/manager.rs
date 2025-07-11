@@ -9,6 +9,8 @@ use once_cell::sync::Lazy;
 use std::collections::HashMap;
 use std::time::{Duration, Instant};
 
+use tokio::sync::oneshot;
+
 /// Global event bus size – small fixed size → zero heap growth.
 const BUS_BOUND: usize = 128;
 
@@ -26,6 +28,8 @@ pub struct ServiceManager {
     workers: HashMap<String, Sender<Cmd>>,
     pending_restarts: HashMap<String, RestartState>,
     lifecycle: Lifecycle,
+    sse_shutdown_tx: Option<oneshot::Sender<()>>,
+    sse_task: Option<tokio::task::JoinHandle<()>>,
 }
 
 impl ServiceManager {
@@ -80,7 +84,38 @@ impl ServiceManager {
             workers,
             pending_restarts: HashMap::new(),
             lifecycle: Lifecycle::default(),
+            sse_shutdown_tx: None,
+            sse_task: None,
         })
+    }
+
+    /// Start the SSE server if configured and runtime is available
+    pub async fn start_sse_server(&mut self, cfg: &ServiceConfig) -> Result<()> {
+        use std::net::SocketAddr;
+
+        if let Some(sse_config) = &cfg.sse {
+            if sse_config.enabled {
+                info!("Starting SSE server on port {}", sse_config.port);
+
+                let (shutdown_tx, shutdown_rx) = oneshot::channel();
+                let sse_cfg: crate::service::sse::SseConfig = sse_config.clone().into();
+                let addr: SocketAddr = ([127, 0, 0, 1], sse_config.port).into();
+
+                let task = tokio::spawn(async move {
+                    if let Err(e) =
+                        crate::service::sse::start_sse_server(sse_cfg, shutdown_rx).await
+                    {
+                        error!("SSE server error: {}", e);
+                    }
+                });
+
+                self.sse_shutdown_tx = Some(shutdown_tx);
+                self.sse_task = Some(task);
+
+                info!("SSE server started on {}", addr);
+            }
+        }
+        Ok(())
     }
 
     /// Central event‑loop.  Runs until SIGINT / SIGTERM.
@@ -131,6 +166,13 @@ impl ServiceManager {
                             ts: chrono::Utc::now(),
                             pid: Some(std::process::id()),
                         }).ok();
+
+                        // Shutdown SSE server if running
+                        if let Some(shutdown_tx) = self.sse_shutdown_tx.take() {
+                            info!("Shutting down SSE server");
+                            shutdown_tx.send(()).ok();
+                        }
+
                         for tx in self.workers.values() { tx.send(Cmd::Shutdown).ok(); }
                         break;
                     }
