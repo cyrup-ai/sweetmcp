@@ -11,7 +11,12 @@ auto_restart = true
 mcp_bind = "0.0.0.0:33399"
 
 # Services managed by the daemon
-services = []
+services = ["autoconfig"]
+
+# Auto-configuration service for MCP clients
+[autoconfig]
+enabled = true
+auto_restart = true
 
 # SSE Server Configuration for Claude Code
 [sse]

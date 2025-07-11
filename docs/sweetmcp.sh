@@ -84,7 +84,7 @@ detect_platform() {
     
     case "$OS" in
         linux) PLATFORM="$arch-unknown-linux-gnu" ;;
-        darwin) PLATFORM="$arch-apple-darwin" ;;
+        darwin|macos) PLATFORM="$arch-apple-darwin" ;;
         *) error "Unsupported operating system: $OS" && exit 1 ;;
     esac
     
