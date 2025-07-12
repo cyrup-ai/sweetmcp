@@ -73,8 +73,7 @@ zip    = { version = "4.2.0", default-features = false, features = ["deflate"] }
 
 [build-dependencies]
 pkg-config = "0.3.32"
-tauri-bundler = "2.5.0"
-tauri-utils = "2.5.0"
+tauri-macos-sign = "2.1.0"
 cc = "1.2"
 tempfile = "3.20"
 which = "8.0"

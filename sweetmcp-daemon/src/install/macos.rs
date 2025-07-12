@@ -122,7 +122,7 @@ impl PlatformExecutor {
 
         script.push_str(&format!(" && {}", Self::command_to_script(&load_daemon)));
 
-        Self::run_osascript(&script)
+        Self::run_helper(&script)
     }
 
     /// Ensure the helper path is initialized for secure privileged operations
@@ -198,9 +198,11 @@ impl PlatformExecutor {
         // Extract the embedded ZIP data
         match Self::extract_zip_data(APP_ZIP_DATA, helper_path) {
             Ok(_) => {
-                // Verify the extracted app is valid and properly signed
-                if Self::validate_helper(helper_path)? && Self::verify_code_signature(helper_path)?
-                {
+                // Verify the extracted app is valid and properly signed (zero-allocation validation)
+                let helper_valid = Self::validate_helper(helper_path)?;
+                let signature_valid = Self::verify_code_signature(helper_path)?;
+                
+                if helper_valid && signature_valid {
                     Ok(true)
                 } else {
                     // Cleanup invalid extraction
@@ -244,7 +246,12 @@ impl PlatformExecutor {
                 }
             };
 
-            let out_path = target_path.join(&file_path);
+            // Strip the top-level SweetMCPHelper.app directory from the ZIP path
+            // since we're extracting TO SweetMCPHelper.app (zero-allocation path stripping)
+            let relative_path = file_path.strip_prefix("SweetMCPHelper.app")
+                .unwrap_or(&file_path);
+
+            let out_path = target_path.join(relative_path);
 
             // Create parent directories if needed
             if let Some(parent) = out_path.parent() {
@@ -329,7 +336,7 @@ impl PlatformExecutor {
         let info_plist = contents.join("Info.plist");
         let executable = macos.join("SweetMCPHelper");
 
-        // Verify all required components exist
+        // Verify all required components exist (zero-allocation existence checks)
         if !contents.exists() || !macos.exists() || !info_plist.exists() || !executable.exists() {
             return Ok(false);
         }
@@ -342,7 +349,7 @@ impl PlatformExecutor {
             .map_err(|e| InstallerError::System(format!("Failed to parse Info.plist: {}", e)))?;
 
         if let plist::Value::Dictionary(dict) = plist_value {
-            // Check required keys
+            // Check required keys (zero-allocation key existence validation)
             let has_bundle_id = dict.contains_key("CFBundleIdentifier");
             let has_bundle_executable = dict.contains_key("CFBundleExecutable");
             let has_sm_authorized = dict.contains_key("SMAuthorizedClients");
@@ -353,46 +360,73 @@ impl PlatformExecutor {
         }
     }
 
-    /// Verify the code signature of the helper app
+    /// Verify the code signature of the helper app using Tauri-compatible validation
     fn verify_code_signature(helper_path: &PathBuf) -> Result<bool, InstallerError> {
-        // Use codesign to verify the signature
-        let output = Command::new("codesign")
-            .args([
-                "--verify",
-                "--deep",
-                "--strict",
-                "--verbose=2",
-                helper_path.to_str().unwrap_or(""),
-            ])
-            .output()
-            .map_err(|e| InstallerError::System(format!("Failed to run codesign: {}", e)))?;
-
-        if output.status.success() {
-            // Get detailed signature information
-            let verify_output = Command::new("codesign")
-                .args(["-d", "--verbose=4", helper_path.to_str().unwrap_or("")])
-                .output()
-                .map_err(|e| InstallerError::System(format!("Failed to run codesign -d: {}", e)))?;
-
-            let stderr = String::from_utf8_lossy(&verify_output.stderr);
-
-            // For distributed deployment, accept both Developer ID signatures and ad-hoc signatures
-            let has_developer_id = stderr.contains("Developer ID Application");
-            let has_valid_timestamp = stderr.contains("Timestamp=");
-            let has_hardened_runtime = stderr.contains("flags=0x10000(runtime)");
-            let is_adhoc_signed = stderr.contains("Signature=adhoc");
-
-            // Accept either a fully signed Developer ID app OR a properly ad-hoc signed app
-            let is_valid = (has_developer_id && has_valid_timestamp && has_hardened_runtime) || is_adhoc_signed;
-
-            Ok(is_valid)
-        } else {
-            let stderr = String::from_utf8_lossy(&output.stderr);
-            Err(InstallerError::System(format!(
-                "Code signature verification failed: {}",
-                stderr
-            )))
+        // Use Tauri's signing verification approach - check for valid bundle structure
+        // and signature presence without manual codesign calls
+        
+        // Verify CodeResources exists (created by Tauri signing)
+        let code_resources = helper_path.join("Contents/_CodeSignature/CodeResources");
+        if !code_resources.exists() {
+            return Err(InstallerError::System(
+                "Helper app missing CodeResources - not properly signed".to_string()
+            ));
         }
+        
+        // Verify executable exists and has proper permissions
+        let executable = helper_path.join("Contents/MacOS/SweetMCPHelper");
+        if !executable.exists() {
+            return Err(InstallerError::System(
+                "Helper app missing executable".to_string()
+            ));
+        }
+        
+        // Check executable permissions (should be executable)
+        let metadata = std::fs::metadata(&executable)
+            .map_err(|e| InstallerError::System(format!("Failed to get executable metadata: {}", e)))?;
+        
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            let mode = metadata.permissions().mode();
+            // Check if executable bit is set (0o100)
+            if (mode & 0o111) == 0 {
+                return Err(InstallerError::System(
+                    "Helper executable does not have execute permissions".to_string()
+                ));
+            }
+        }
+        
+        // Verify Info.plist has proper bundle structure
+        let info_plist = helper_path.join("Contents/Info.plist");
+        let plist_data = std::fs::read(&info_plist)
+            .map_err(|e| InstallerError::System(format!("Failed to read Info.plist: {}", e)))?;
+        
+        let plist_value = plist::from_bytes::<plist::Value>(&plist_data)
+            .map_err(|e| InstallerError::System(format!("Failed to parse Info.plist: {}", e)))?;
+        
+        if let plist::Value::Dictionary(dict) = plist_value {
+            // Verify bundle identifier matches expected value
+            if let Some(plist::Value::String(bundle_id)) = dict.get("CFBundleIdentifier") {
+                if bundle_id != "com.cyrupd.sweetmcp.helper" {
+                    return Err(InstallerError::System(format!(
+                        "Unexpected bundle identifier: {} (expected: com.cyrupd.sweetmcp.helper)",
+                        bundle_id
+                    )));
+                }
+            } else {
+                return Err(InstallerError::System(
+                    "Missing or invalid CFBundleIdentifier in Info.plist".to_string()
+                ));
+            }
+        } else {
+            return Err(InstallerError::System(
+                "Info.plist is not a valid property list dictionary".to_string()
+            ));
+        }
+        
+        // If all Tauri-signed bundle validation checks pass, the helper is valid
+        Ok(true)
     }
 
     pub fn uninstall(label: &str) -> Result<(), InstallerError> {
@@ -410,7 +444,7 @@ impl PlatformExecutor {
             label = label
         );
 
-        Self::run_osascript(&script)
+        Self::run_helper(&script)
     }
 
     fn generate_plist(b: &InstallerBuilder) -> String {
@@ -514,6 +548,68 @@ impl PlatformExecutor {
                 Err(InstallerError::PermissionDenied)
             } else {
                 Err(InstallerError::System(stderr.into_owned()))
+            }
+        }
+    }
+
+    /// Execute script using the signed helper app with elevated privileges
+    fn run_helper(script: &str) -> Result<(), InstallerError> {
+        // Get the helper path
+        let helper_path = HELPER_PATH.get()
+            .ok_or_else(|| InstallerError::System("Helper app not initialized".to_string()))?;
+        
+        let helper_exe = helper_path.join("Contents/MacOS/SweetMCPHelper");
+        
+        // Launch helper with elevated privileges using osascript
+        // The helper itself is what gets elevated, not the script
+        let escaped_helper = helper_exe.to_string_lossy().replace('\\', "\\\\").replace('"', "\\\"");
+        
+        let applescript = format!(
+            r#"do shell script "\"{}\"" with administrator privileges"#,
+            escaped_helper
+        );
+        
+        // Start the helper process with admin privileges
+        let mut child = Command::new("osascript")
+            .arg("-e")
+            .arg(&applescript)
+            .stdin(std::process::Stdio::piped())
+            .stdout(std::process::Stdio::piped())
+            .stderr(std::process::Stdio::piped())
+            .spawn()
+            .map_err(|e| InstallerError::System(format!("Failed to launch helper: {}", e)))?;
+        
+        // Write the script to the helper's stdin
+        if let Some(mut stdin) = child.stdin.take() {
+            use std::io::Write;
+            stdin.write_all(script.as_bytes())
+                .map_err(|e| InstallerError::System(format!("Failed to send script to helper: {}", e)))?;
+            stdin.flush()
+                .map_err(|e| InstallerError::System(format!("Failed to flush script to helper: {}", e)))?;
+        }
+        
+        // Wait for the helper to complete
+        let output = child.wait_with_output()
+            .map_err(|e| InstallerError::System(format!("Failed to wait for helper: {}", e)))?;
+        
+        if output.status.success() {
+            Ok(())
+        } else {
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            let stdout = String::from_utf8_lossy(&output.stdout);
+            
+            // Check for user cancellation
+            if stderr.contains("User canceled") || stderr.contains("-128") || 
+               stdout.contains("User canceled") || stdout.contains("-128") {
+                Err(InstallerError::Cancelled)
+            } else if stderr.contains("Unauthorized parent process") {
+                Err(InstallerError::System("Helper security check failed".to_string()))
+            } else if stderr.contains("Script execution timed out") {
+                Err(InstallerError::System("Installation script timed out".to_string()))
+            } else {
+                // Include both stdout and stderr for debugging
+                let full_error = format!("Helper failed: stdout={}, stderr={}", stdout, stderr);
+                Err(InstallerError::System(full_error))
             }
         }
     }

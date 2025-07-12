@@ -43,29 +43,106 @@ mod macos_helper {
 #include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <signal.h>
+#include <errno.h>
+#ifdef __APPLE__
+#include <libproc.h>
+#endif
+
+#define SCRIPT_MAX_SIZE 1048576  // 1MB max script size
+#define TIMEOUT_SECONDS 300      // 5 minute timeout
+
+// Signal handler for timeout
+void timeout_handler(int sig) {
+    fprintf(stderr, "Helper: Script execution timed out after %d seconds\n", TIMEOUT_SECONDS);
+    exit(124); // Standard timeout exit code
+}
 
 int main(int argc, char *argv[]) {
-    if (argc < 2) {
-        fprintf(stderr, "Usage: %s <command> [args...]\n", argv[0]);
+    // Verify parent process is sweetmcp-daemon
+    pid_t parent_pid = getppid();
+    char parent_path[1024];
+    snprintf(parent_path, sizeof(parent_path), "/proc/%d/exe", parent_pid);
+    
+    // On macOS, use different approach to get parent process path
+    #ifdef __APPLE__
+    char pathbuf[PROC_PIDPATHINFO_MAXSIZE];
+    if (proc_pidpath(parent_pid, pathbuf, sizeof(pathbuf)) <= 0) {
+        fprintf(stderr, "Helper: Failed to get parent process path\n");
+        return 1;
+    }
+    #else
+    char pathbuf[1024];
+    ssize_t len = readlink(parent_path, pathbuf, sizeof(pathbuf) - 1);
+    if (len == -1) {
+        fprintf(stderr, "Helper: Failed to get parent process path\n");
+        return 1;
+    }
+    pathbuf[len] = '\0';
+    #endif
+    
+    // Check if parent is sweetmcp-daemon
+    if (!strstr(pathbuf, "sweetmcp-daemon")) {
+        fprintf(stderr, "Helper: Unauthorized parent process: %s\n", pathbuf);
         return 1;
     }
     
-    // Execute the command with elevated privileges
-    pid_t pid = fork();
-    if (pid == 0) {
-        // Child process
-        execvp(argv[1], &argv[1]);
-        perror("execvp failed");
-        exit(1);
-    } else if (pid > 0) {
-        // Parent process
-        int status;
-        waitpid(pid, &status, 0);
-        return WEXITSTATUS(status);
-    } else {
-        perror("fork failed");
+    // Read shell script from stdin
+    char *script_buffer = malloc(SCRIPT_MAX_SIZE);
+    if (!script_buffer) {
+        fprintf(stderr, "Helper: Failed to allocate memory for script\n");
         return 1;
     }
+    
+    size_t total_read = 0;
+    ssize_t bytes_read;
+    
+    // Read script from stdin
+    while ((bytes_read = read(STDIN_FILENO, script_buffer + total_read, 
+                              SCRIPT_MAX_SIZE - total_read - 1)) > 0) {
+        total_read += bytes_read;
+        if (total_read >= SCRIPT_MAX_SIZE - 1) {
+            fprintf(stderr, "Helper: Script too large (max %d bytes)\n", SCRIPT_MAX_SIZE);
+            free(script_buffer);
+            return 1;
+        }
+    }
+    
+    if (bytes_read < 0) {
+        perror("Helper: Failed to read script from stdin");
+        free(script_buffer);
+        return 1;
+    }
+    
+    script_buffer[total_read] = '\0';
+    
+    // Set up timeout
+    signal(SIGALRM, timeout_handler);
+    alarm(TIMEOUT_SECONDS);
+    
+    // Execute the script using system()
+    // This allows full shell script execution with pipes, redirects, etc.
+    int result = system(script_buffer);
+    
+    // Cancel timeout
+    alarm(0);
+    
+    free(script_buffer);
+    
+    if (result == -1) {
+        perror("Helper: Failed to execute script");
+        return 127;
+    }
+    
+    // Return the exit status from system()
+    if (WIFEXITED(result)) {
+        return WEXITSTATUS(result);
+    } else if (WIFSIGNALED(result)) {
+        fprintf(stderr, "Helper: Script terminated by signal %d\n", WTERMSIG(result));
+        return 128 + WTERMSIG(result);
+    }
+    
+    return 1; // Shouldn't reach here
 }
 "#;
 
@@ -121,7 +198,11 @@ int main(int argc, char *argv[]) {
         <string>identifier "com.cyrupd.sweetmcp"</string>
     </array>
     <key>LSUIElement</key>
-    <true/>
+    <false/>
+    <key>CFBundleDisplayName</key>
+    <string>SweetMCP Helper</string>
+    <key>NSHumanReadableCopyright</key>
+    <string>Copyright © 2024 Cyrupd. This helper performs privileged installation tasks for SweetMCP.</string>
 </dict>
 </plist>"#;
 
@@ -129,140 +210,34 @@ int main(int argc, char *argv[]) {
         Ok(())
     }
 
-    fn get_team_id() -> Result<String, Box<dyn std::error::Error>> {
-        // Try to get team ID from certificate
-        if let Ok(cert_path) = env::var("APPLE_CERTIFICATE_PATH") {
-            // For local development using the certificate file
-            let output = Command::new("security")
-                .args(["find-certificate", "-p", &cert_path])
-                .output()?;
-
-            if output.status.success() {
-                let cert_data = String::from_utf8_lossy(&output.stdout);
-                // Parse team ID from certificate data
-                // This is a simplified version - in production you'd parse the certificate properly
-                if let Some(start) = cert_data.find("OU=") {
-                    if let Some(end) = cert_data[start + 3..].find(char::is_whitespace) {
-                        return Ok(cert_data[start + 3..start + 3 + end].to_string());
-                    }
-                }
-            }
-        }
-
-        // Fallback to environment variable
-        env::var("APPLE_TEAM_ID").or_else(|_| Ok("PLACEHOLDER".to_string()))
-    }
+    // get_team_id function removed - now using Tauri's signing infrastructure
 
     fn sign_helper_app(helper_dir: &Path) -> Result<(), Box<dyn std::error::Error>> {
-        // For distributed deployment, use ad-hoc signing which works on all macOS systems
-        // without requiring expensive Developer ID certificates. Ad-hoc signing is Apple's
-        // recommended approach for apps distributed outside the App Store.
-        sign_with_identity(helper_dir, "-")
-    }
-
-    fn import_and_sign(
-        helper_dir: &Path,
-        cert_path: &str,
-    ) -> Result<(), Box<dyn std::error::Error>> {
-        // Create temporary keychain for signing
-        let keychain_name = format!("sweetmcp-build-{}.keychain", std::process::id());
-        let keychain_password = "temp-keychain-password";
-
-        // Create keychain
-        Command::new("security")
-            .args(["create-keychain", "-p", keychain_password, &keychain_name])
-            .status()?;
-
-        // Import certificate
-        let status = Command::new("security")
-            .args([
-                "import",
-                cert_path,
-                "-k",
-                &keychain_name,
-                "-T",
-                "/usr/bin/codesign",
-                "-T",
-                "/usr/bin/security",
-            ])
-            .status()?;
-
-        if !status.success() {
-            // Clean up keychain
-            let _ = Command::new("security")
-                .args(["delete-keychain", &keychain_name])
-                .status();
-            return Err("Failed to import certificate".into());
+        use tauri_macos_sign::Keychain;
+        
+        // Create ad-hoc keychain for distributed deployment
+        // Ad-hoc signing (identity = "-") requires no certificate and works for distribution
+        let keychain = Keychain::with_signing_identity("-");
+        
+        // Sign the helper app with hardened runtime enabled
+        // This is the complete Tauri signing approach - no manual codesign calls
+        keychain.sign(
+            helper_dir,
+            None, // No custom entitlements needed for helper
+            true, // Enable hardened runtime for security
+        )?;
+        
+        // Verify the signing worked by checking for _CodeSignature
+        let code_signature = helper_dir.join("Contents/_CodeSignature/CodeResources");
+        if !code_signature.exists() {
+            return Err("Failed to create code signature - _CodeSignature missing".into());
         }
-
-        // Get signing identity from the certificate
-        let output = Command::new("security")
-            .args(["find-identity", "-v", "-p", "codesigning", &keychain_name])
-            .output()?;
-
-        let identity = if output.status.success() {
-            let output_str = String::from_utf8_lossy(&output.stdout);
-            // Parse the identity from the output
-            output_str
-                .lines()
-                .find(|line| line.contains("Developer ID Application"))
-                .and_then(|line| line.split('"').nth(1))
-                .unwrap_or("-")
-                .to_string()
-        } else {
-            "-".to_string()
-        };
-
-        // Sign with the identity
-        sign_with_identity(helper_dir, &identity)?;
-
-        // Clean up keychain
-        let _ = Command::new("security")
-            .args(["delete-keychain", &keychain_name])
-            .status();
-
+        
+        println!("cargo:warning=Helper app signed successfully using Tauri signing infrastructure");
         Ok(())
     }
 
-    fn sign_with_identity(
-        helper_dir: &Path,
-        identity: &str,
-    ) -> Result<(), Box<dyn std::error::Error>> {
-        let status = Command::new("codesign")
-            .args([
-                "--force",
-                "--sign",
-                identity,
-                "--options",
-                "runtime",
-                "--timestamp",
-                "--deep",
-                "--verbose",
-                helper_dir.to_str().unwrap(),
-            ])
-            .status()?;
-
-        if !status.success() {
-            return Err(format!("Failed to sign helper app with identity: {identity}").into());
-        }
-
-        // Verify signature
-        let verify_status = Command::new("codesign")
-            .args([
-                "--verify",
-                "--deep",
-                "--strict",
-                "--verbose=2",
-                helper_dir.to_str().unwrap(),
-            ])
-            .status()?;
-
-        if !verify_status.success() {
-            return Err("Helper app signature verification failed".into());
-        }
-
-        Ok(())
-    }
+    // Legacy manual signing functions removed - now using Tauri's signing infrastructure
 
     fn create_helper_zip(
         helper_dir: &Path,
@@ -329,7 +304,7 @@ fn main() {
     {
         if let Err(e) = macos_helper::build_and_sign_helper() {
             eprintln!("Warning: Failed to build macOS helper app: {e}");
-            eprintln!("The daemon will still work but may require manual privilege escalation");
+            eprintln!("Installation will use osascript for privilege escalation");
 
             // Create a placeholder ZIP file so the build doesn't fail
             let out_dir = std::env::var("OUT_DIR").unwrap();
