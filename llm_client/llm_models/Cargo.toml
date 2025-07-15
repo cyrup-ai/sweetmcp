@@ -1,0 +1,31 @@
+[package]
+description="llm_models: Load and download LLM models, metadata, and tokenizers"
+edition.workspace=true
+homepage.workspace=true
+license.workspace=true
+name="llm_models"
+readme="README.md"
+repository.workspace=true
+version="0.0.2"
+
+[dependencies]
+anyhow.workspace=true
+byteorder="1.5.0"
+colorful.workspace=true
+dotenvy.workspace=true
+hf-hub="0.4.1"
+indenter.workspace=true
+llm_prompt.workspace=true
+minijinja.workspace=true
+paste="1.0.15"
+serde.workspace=true
+serde_json.workspace=true
+thiserror.workspace=true
+tiktoken-rs="0.6.0"
+tokenizers={version="0.21.0", optional=true}
+tracing.workspace=true
+half = { version = "2", features = ["serde"] } # Added for f16/bf16 support in GGUF
+
+[features]
+default=["tokenizers"]
+model-tokenizers=["tokenizers"]
