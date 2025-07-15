@@ -4,7 +4,7 @@ members = [
     "sweetmcp-axum",
     "sweetmcp-pingora", 
     "sweetmcp-daemon",
-    "sweetmcp-memory",
+    "sweetmcp_memory",
     "sweetmcp-client-autoconfig",
     "sweetmcp-plugin-builder",
     "sweetmcp-voice-tools",

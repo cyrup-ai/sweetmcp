@@ -1,5 +1,5 @@
 [package]
-name = "sweetmcp-memory"
+name = "sweetmcp_memory"
 version = "0.1.0"
 edition = "2024"
 description = "Cognitive Memory System with quantum-inspired routing and emergent evolution"
@@ -98,3 +98,7 @@ path = "examples/memory_types.rs"
 [[example]]
 name = "async_patterns"
 path = "examples/async_patterns.rs"
+
+[lib]
+name = "sweetmcp_memory"
+path = "src/lib.rs"
