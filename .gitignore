@@ -286,7 +286,3 @@ Cache*/
 .claude
 **/.claude/*
 **/.claude/settings.local.json
-./docs/pingora
-./docs/async-graphql
-docs/pingora
-docs/async-graphql
