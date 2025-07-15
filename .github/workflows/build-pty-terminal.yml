@@ -1,0 +1,377 @@
+name: Build PTY Terminal
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'sixel6vt/**'
+      - '.github/workflows/build-pty-terminal.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'sixel6vt/**'
+  release:
+    types: [ published ]
+  workflow_dispatch:
+    inputs:
+      platforms:
+        description: 'Platforms to build (comma-separated)'
+        required: false
+        default: 'current'
+        type: choice
+        options:
+          - current
+          - all
+          - macos-aarch64
+          - macos-x86_64
+          - windows-x86_64
+          - windows-aarch64
+          - linux-x86_64
+          - linux-aarch64
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      should-build: ${{ steps.changes.outputs.pty-terminal }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            pty-terminal:
+              - 'sixel6vt/**'
+              - '.github/workflows/build-pty-terminal.yml'
+
+  build-matrix:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.should-build == 'true' || github.event_name == 'workflow_dispatch' || github.event_name == 'release'
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - id: set-matrix
+        run: |
+          if [ "${{ github.event_name }}" = "release" ] || [ "${{ github.event.inputs.platforms }}" = "all" ]; then
+            echo 'matrix={"include":[
+              {"os":"macos-latest","target":"aarch64-apple-darwin","platform":"macos-aarch64","artifact-name":"macos-apple-silicon"},
+              {"os":"macos-13","target":"x86_64-apple-darwin","platform":"macos-x86_64","artifact-name":"macos-intel"},
+              {"os":"windows-latest","target":"x86_64-pc-windows-msvc","platform":"windows-x86_64","artifact-name":"windows-x64"},
+              {"os":"windows-latest","target":"aarch64-pc-windows-msvc","platform":"windows-aarch64","artifact-name":"windows-arm64"},
+              {"os":"ubuntu-latest","target":"x86_64-unknown-linux-gnu","platform":"linux-x86_64","artifact-name":"linux-x64"},
+              {"os":"ubuntu-latest","target":"aarch64-unknown-linux-gnu","platform":"linux-aarch64","artifact-name":"linux-arm64"}
+            ]}' >> $GITHUB_OUTPUT
+          elif [ "${{ github.event.inputs.platforms }}" != "" ] && [ "${{ github.event.inputs.platforms }}" != "current" ]; then
+            case "${{ github.event.inputs.platforms }}" in
+              *macos-aarch64*) platforms='[{"os":"macos-latest","target":"aarch64-apple-darwin","platform":"macos-aarch64","artifact-name":"macos-apple-silicon"}' ;;
+              *macos-x86_64*) platforms='[{"os":"macos-13","target":"x86_64-apple-darwin","platform":"macos-x86_64","artifact-name":"macos-intel"}' ;;
+              *windows-x86_64*) platforms='[{"os":"windows-latest","target":"x86_64-pc-windows-msvc","platform":"windows-x86_64","artifact-name":"windows-x64"}' ;;
+              *windows-aarch64*) platforms='[{"os":"windows-latest","target":"aarch64-pc-windows-msvc","platform":"windows-aarch64","artifact-name":"windows-arm64"}' ;;
+              *linux-x86_64*) platforms='[{"os":"ubuntu-latest","target":"x86_64-unknown-linux-gnu","platform":"linux-x86_64","artifact-name":"linux-x64"}' ;;
+              *linux-aarch64*) platforms='[{"os":"ubuntu-latest","target":"aarch64-unknown-linux-gnu","platform":"linux-aarch64","artifact-name":"linux-arm64"}' ;;
+            esac
+            echo "matrix={\"include\":$platforms]}" >> $GITHUB_OUTPUT
+          else
+            # Build for current platform only (development builds)
+            echo 'matrix={"include":[
+              {"os":"ubuntu-latest","target":"x86_64-unknown-linux-gnu","platform":"linux-x86_64","artifact-name":"linux-x64"}
+            ]}' >> $GITHUB_OUTPUT
+          fi
+
+  build:
+    needs: build-matrix
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        targets: ${{ matrix.target }}
+        components: rustfmt, clippy
+
+    - name: Cache Rust dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          sixel6vt/target
+        key: ${{ runner.os }}-cargo-${{ matrix.target }}-${{ hashFiles('sixel6vt/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-${{ matrix.target }}-
+          ${{ runner.os }}-cargo-
+
+    - name: Install system dependencies (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          pkg-config \
+          libssl-dev \
+          libgtk-3-dev \
+          libayatana-appindicator3-dev \
+          librsvg2-dev \
+          libwebkit2gtk-4.0-dev \
+          libfontconfig1-dev \
+          libfreetype6-dev \
+          libasound2-dev \
+          libudev-dev \
+          wget \
+          file
+
+    - name: Install system dependencies (macOS)
+      if: runner.os == 'macOS'
+      run: |
+        # Install required tools for building and packaging
+        if ! command -v create-dmg &> /dev/null; then
+          brew install create-dmg
+        fi
+
+    - name: Install system dependencies (Windows)
+      if: runner.os == 'Windows'
+      shell: powershell
+      run: |
+        # Install WiX Toolset for MSI creation
+        if (!(Get-Command "candle.exe" -ErrorAction SilentlyContinue)) {
+          Write-Host "Installing WiX Toolset..."
+          Invoke-WebRequest -Uri "https://github.com/wixtoolset/wix3/releases/download/wix3112rtm/wix311.exe" -OutFile "wix311.exe"
+          Start-Process -FilePath "wix311.exe" -ArgumentList "/quiet" -Wait
+          # Add WiX to PATH
+          $env:PATH += ";C:\Program Files (x86)\WiX Toolset v3.11\bin"
+          echo "C:\Program Files (x86)\WiX Toolset v3.11\bin" >> $env:GITHUB_PATH
+        }
+
+    - name: Install cross-compilation tools
+      if: matrix.target != '' && !contains(matrix.target, runner.arch)
+      run: |
+        cargo install cross --git https://github.com/cross-rs/cross
+
+    - name: Set up signing (macOS)
+      if: runner.os == 'macOS' && github.event_name == 'release'
+      env:
+        MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+        MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
+        MACOS_NOTARIZATION_APPLE_ID: ${{ secrets.MACOS_NOTARIZATION_APPLE_ID }}
+        MACOS_NOTARIZATION_TEAM_ID: ${{ secrets.MACOS_NOTARIZATION_TEAM_ID }}
+        MACOS_NOTARIZATION_PWD: ${{ secrets.MACOS_NOTARIZATION_PWD }}
+      run: |
+        if [ -n "$MACOS_CERTIFICATE" ]; then
+          echo "Setting up macOS code signing..."
+          echo "$MACOS_CERTIFICATE" | base64 --decode > certificate.p12
+          security create-keychain -p "" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "" build.keychain
+          security import certificate.p12 -k build.keychain -P "$MACOS_CERTIFICATE_PWD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "" build.keychain
+          rm certificate.p12
+          echo "ENABLE_SIGNING=1" >> $GITHUB_ENV
+        fi
+
+    - name: Set up signing (Windows)
+      if: runner.os == 'Windows' && github.event_name == 'release'
+      env:
+        WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
+        WINDOWS_CERTIFICATE_PWD: ${{ secrets.WINDOWS_CERTIFICATE_PWD }}
+      shell: powershell
+      run: |
+        if ($env:WINDOWS_CERTIFICATE) {
+          Write-Host "Setting up Windows code signing..."
+          $cert = [Convert]::FromBase64String($env:WINDOWS_CERTIFICATE)
+          [IO.File]::WriteAllBytes("certificate.pfx", $cert)
+          Import-PfxCertificate -FilePath "certificate.pfx" -CertStoreLocation "Cert:\LocalMachine\My" -Password (ConvertTo-SecureString -String $env:WINDOWS_CERTIFICATE_PWD -AsPlainText -Force)
+          Remove-Item "certificate.pfx"
+          echo "ENABLE_SIGNING=1" >> $env:GITHUB_ENV
+        }
+
+    - name: Check code formatting
+      working-directory: sixel6vt
+      run: cargo fmt -- --check
+
+    - name: Run Clippy
+      working-directory: sixel6vt
+      run: cargo clippy --target ${{ matrix.target }} -- -D warnings
+
+    - name: Run tests
+      working-directory: sixel6vt
+      run: cargo test --target ${{ matrix.target }}
+
+    - name: Build release binary
+      working-directory: sixel6vt
+      env:
+        CARGO_TARGET_DIR: target
+      run: |
+        if command -v cross &> /dev/null && [ "${{ matrix.target }}" != "$(rustc -vV | grep host | cut -d' ' -f2)" ]; then
+          cross build --release --target ${{ matrix.target }}
+        else
+          cargo build --release --target ${{ matrix.target }}
+        fi
+
+    - name: Create installers
+      working-directory: sixel6vt
+      env:
+        TARGET_PLATFORM: ${{ matrix.platform }}
+      run: |
+        cargo run --bin build-installers -- --platform ${{ matrix.platform }}
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: pty-terminal-${{ matrix.artifact-name }}
+        path: |
+          sixel6vt/dist/
+          sixel6vt/target/installers/
+        retention-days: 30
+
+    - name: Upload to release
+      if: github.event_name == 'release'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        cd sixel6vt
+        for file in dist/*; do
+          if [ -f "$file" ]; then
+            gh release upload ${{ github.event.release.tag_name }} "$file"
+          fi
+        done
+
+  create-universal-macos:
+    if: github.event_name == 'release' || github.event.inputs.platforms == 'all'
+    needs: build
+    runs-on: macos-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download macOS artifacts
+      uses: actions/download-artifact@v4
+      with:
+        pattern: pty-terminal-macos-*
+        merge-multiple: true
+        path: macos-artifacts
+
+    - name: Create universal macOS binary
+      run: |
+        mkdir -p universal-macos
+        # Extract binaries from app bundles
+        cd macos-artifacts
+        
+        # Find the Intel and Apple Silicon binaries
+        INTEL_APP=$(find . -name "*.app" -path "*intel*" | head -1)
+        ARM_APP=$(find . -name "*.app" -path "*apple-silicon*" | head -1)
+        
+        if [ -n "$INTEL_APP" ] && [ -n "$ARM_APP" ]; then
+          INTEL_BIN="$INTEL_APP/Contents/MacOS/rio-ext-test"
+          ARM_BIN="$ARM_APP/Contents/MacOS/rio-ext-test"
+          
+          # Create universal binary
+          lipo -create "$INTEL_BIN" "$ARM_BIN" -output "../universal-macos/rio-ext-test"
+          
+          # Create universal app bundle based on ARM version (newer)
+          cp -r "$ARM_APP" "../universal-macos/PTY Terminal.app"
+          cp "../universal-macos/rio-ext-test" "../universal-macos/PTY Terminal.app/Contents/MacOS/"
+          
+          # Create universal DMG
+          cd ../universal-macos
+          hdiutil create -volname "PTY Terminal Universal" -srcfolder "PTY Terminal.app" -ov -format UDZO "PTY_Terminal_Universal.dmg"
+        fi
+
+    - name: Upload universal macOS build
+      if: github.event_name == 'release'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        if [ -f "universal-macos/PTY_Terminal_Universal.dmg" ]; then
+          gh release upload ${{ github.event.release.tag_name }} "universal-macos/PTY_Terminal_Universal.dmg"
+        fi
+
+    - name: Upload universal artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: pty-terminal-macos-universal
+        path: universal-macos/
+        retention-days: 30
+
+  security-scan:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run security audit
+      working-directory: sixel6vt
+      run: |
+        cargo install cargo-audit
+        cargo audit
+
+    - name: Run dependency check
+      working-directory: sixel6vt
+      run: |
+        cargo tree --duplicates
+
+  publish-draft-release:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [build, security-scan]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Extract version
+      id: version
+      working-directory: sixel6vt
+      run: |
+        VERSION=$(grep '^version =' Cargo.toml | sed 's/version = "\(.*\)"/\1/')
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+    - name: Create draft release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # Check if draft release already exists
+        if ! gh release view "v${{ steps.version.outputs.version }}" --json isDraft --jq '.isDraft' 2>/dev/null | grep -q true; then
+          # Create new draft release
+          gh release create "v${{ steps.version.outputs.version }}" \
+            --draft \
+            --title "PTY Terminal v${{ steps.version.outputs.version }}" \
+            --notes "Automated draft release for PTY Terminal v${{ steps.version.outputs.version }}"
+        fi
+
+  notify:
+    needs: [build, security-scan]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+    - name: Notify build status
+      env:
+        WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      run: |
+        if [ -n "$WEBHOOK_URL" ]; then
+          if [ "${{ needs.build.result }}" = "success" ] && [ "${{ needs.security-scan.result }}" = "success" ]; then
+            STATUS="✅ Success"
+            COLOR="3066993"
+          else
+            STATUS="❌ Failed"
+            COLOR="15158332"
+          fi
+          
+          curl -H "Content-Type: application/json" \
+               -d "{\"embeds\":[{\"title\":\"PTY Terminal Build\",\"description\":\"Build Status: $STATUS\",\"color\":$COLOR,\"fields\":[{\"name\":\"Commit\",\"value\":\"`${{ github.sha }}\`\",\"inline\":true},{\"name\":\"Branch\",\"value\":\"`${{ github.ref_name }}\`\",\"inline\":true}]}]}" \
+               "$WEBHOOK_URL"
+        fi

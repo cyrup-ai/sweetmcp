@@ -1,0 +1,44 @@
+# Platform-specific build configurations for rio-ext-test
+
+[target.x86_64-apple-darwin]
+# macOS x86_64 configuration
+linker = "clang"
+rustflags = [
+    "-C", "link-arg=-mmacosx-version-min=10.15"
+]
+
+[target.aarch64-apple-darwin]
+# macOS ARM64 configuration
+linker = "clang" 
+rustflags = [
+    "-C", "link-arg=-mmacosx-version-min=11.0"
+]
+
+[target.x86_64-pc-windows-msvc]
+# Windows x86_64 configuration
+rustflags = [
+    "-C", "target-feature=+crt-static",
+    "-C", "link-arg=/SUBSYSTEM:WINDOWS"
+]
+
+[target.x86_64-unknown-linux-gnu]
+# Linux x86_64 configuration
+rustflags = [
+    "-C", "target-feature=+crt-static"
+]
+
+[target.aarch64-unknown-linux-gnu]
+# Linux ARM64 configuration
+linker = "aarch64-linux-gnu-gcc"
+rustflags = [
+    "-C", "target-feature=+crt-static"
+]
+
+# Build settings
+[build]
+jobs = 4
+incremental = true
+
+# Environment-specific settings
+[env]
+MACOSX_DEPLOYMENT_TARGET = { value = "10.15", condition = { target-os = "macos" } }

@@ -1,0 +1,289 @@
+# PTY Terminal Build Configuration
+# This file defines build settings and automation parameters
+
+[package]
+name = "PTY Terminal"
+binary_name = "rio-ext-test"
+display_name = "PTY Terminal"
+description = "Advanced terminal emulator with sixel support"
+vendor = "SweetMCP"
+copyright = "Copyright © 2024 SweetMCP"
+license = "MIT OR Apache-2.0"
+homepage = "https://github.com/sweetmcp/sixel6vt"
+repository = "https://github.com/sweetmcp/sixel6vt"
+
+[build]
+# Default build settings
+default_profile = "release"
+enable_lto = true
+enable_panic_abort = true
+strip_symbols = true
+optimize_size = false
+
+# Cross-compilation settings
+enable_cross_compilation = true
+prefer_cross_tool = true
+fallback_to_cargo = true
+
+# Code quality checks
+require_fmt_check = true
+require_clippy_pass = true
+require_tests_pass = true
+clippy_deny_warnings = true
+
+[targets]
+# Supported build targets
+supported = [
+    "x86_64-apple-darwin",
+    "aarch64-apple-darwin",
+    "x86_64-pc-windows-msvc",
+    "aarch64-pc-windows-msvc",
+    "x86_64-unknown-linux-gnu",
+    "aarch64-unknown-linux-gnu",
+]
+
+# Target-specific settings
+[targets.macos]
+deployment_target = "10.15"
+deployment_target_arm64 = "11.0"
+frameworks = ["Security", "CoreFoundation", "SystemConfiguration"]
+enable_hardened_runtime = true
+enable_notarization = true
+
+[targets.windows]
+subsystem = "windows"
+required_libs = ["user32", "shell32", "advapi32"]
+enable_authenticode = true
+enable_timestamp = true
+
+[targets.linux]
+required_libs = ["pthread", "dl", "m"]
+enable_appimage = true
+enable_deb_package = true
+enable_rpm_package = false
+
+[signing]
+# Code signing configuration
+enable_signing = false  # Set to true in production
+sign_release_builds_only = true
+
+[signing.macos]
+# macOS code signing
+identity = ""  # Set from environment or command line
+team_id = ""   # Apple Developer Team ID
+enable_hardened_runtime = true
+enable_secure_timestamp = true
+entitlements_file = "signing/entitlements.plist"
+
+# Notarization settings
+notarization_apple_id = ""  # Set from environment
+notarization_password = ""  # App-specific password
+notarization_team_id = ""   # Team ID
+
+[signing.windows]
+# Windows Authenticode signing
+certificate_path = ""       # Path to .pfx file
+certificate_password = ""   # Certificate password
+timestamp_url = "http://timestamp.digicert.com"
+description = "PTY Terminal"
+
+[signing.linux]
+# Linux package signing (for repositories)
+gpg_key_id = ""
+gpg_passphrase = ""
+
+[installers]
+# Installer creation settings
+create_installers = true
+create_universal_macos = true
+
+[installers.macos]
+# macOS installer settings
+create_dmg = true
+dmg_background = "assets/dmg-background.png"
+dmg_icon_size = 128
+dmg_window_size = [600, 400]
+dmg_icon_positions = { "PTY Terminal.app" = [150, 200], "Applications" = [450, 200] }
+
+# App bundle settings
+bundle_identifier = "com.sweetmcp.pty-terminal"
+bundle_name = "PTY Terminal"
+bundle_display_name = "PTY Terminal"
+bundle_icon = "assets/icon/icon.icns"
+bundle_copyright = "Copyright © 2024 SweetMCP"
+
+[installers.windows]
+# Windows installer settings
+create_msi = true
+msi_upgrade_code = "12345678-1234-1234-1234-123456789012"
+msi_manufacturer = "SweetMCP"
+msi_product_name = "PTY Terminal"
+msi_install_scope = "perMachine"
+
+# NSIS installer (alternative)
+create_nsis = false
+nsis_installer_icon = "assets/icon/icon.ico"
+nsis_header_image = "assets/installer-header.bmp"
+
+[installers.linux]
+# Linux installer settings
+create_appimage = true
+create_deb = true
+create_rpm = false
+
+# Debian package settings
+deb_section = "utils"
+deb_priority = "optional"
+deb_depends = ["libc6"]
+deb_maintainer = "SweetMCP <info@sweetmcp.com>"
+
+# Desktop entry
+desktop_name = "PTY Terminal"
+desktop_comment = "Advanced terminal emulator with sixel support"
+desktop_categories = ["System", "TerminalEmulator"]
+desktop_icon = "pty-terminal"
+
+[distribution]
+# Distribution settings
+create_checksums = true
+checksum_algorithms = ["sha256", "sha512"]
+create_build_manifest = true
+include_debug_symbols = false
+
+# Artifact naming
+use_semantic_versioning = true
+include_git_hash = false
+include_build_date = false
+
+[ci]
+# Continuous integration settings
+enable_draft_releases = true
+enable_security_scanning = true
+enable_dependency_audit = true
+enable_performance_benchmarks = false
+
+# Platform matrix for CI
+ci_platforms = [
+    { os = "ubuntu-latest", target = "x86_64-unknown-linux-gnu" },
+    { os = "macos-latest", target = "aarch64-apple-darwin" },
+    { os = "macos-13", target = "x86_64-apple-darwin" },
+    { os = "windows-latest", target = "x86_64-pc-windows-msvc" },
+]
+
+# Release platforms (more comprehensive)
+release_platforms = [
+    { os = "ubuntu-latest", target = "x86_64-unknown-linux-gnu" },
+    { os = "ubuntu-latest", target = "aarch64-unknown-linux-gnu" },
+    { os = "macos-latest", target = "aarch64-apple-darwin" },
+    { os = "macos-13", target = "x86_64-apple-darwin" },
+    { os = "windows-latest", target = "x86_64-pc-windows-msvc" },
+    { os = "windows-latest", target = "aarch64-pc-windows-msvc" },
+]
+
+[dependencies]
+# External tools and dependencies
+required_tools = [
+    "rustc",
+    "cargo",
+    "rustfmt",
+    "clippy",
+]
+
+# Platform-specific tools
+[dependencies.macos]
+required_tools = ["codesign", "hdiutil", "create-dmg"]
+optional_tools = ["xcrun", "notarytool"]
+
+[dependencies.windows]
+required_tools = ["candle", "light"]  # WiX Toolset
+optional_tools = ["signtool"]
+
+[dependencies.linux]
+required_tools = ["dpkg-deb", "rpmbuild"]
+optional_tools = ["appimagetool"]
+
+[development]
+# Development workflow settings
+auto_format_on_build = true
+auto_clippy_on_build = true
+run_tests_on_build = true
+watch_mode_enabled = false
+
+# Local development
+local_build_dir = "target/local-build"
+local_dist_dir = "dist"
+enable_incremental_builds = true
+
+[testing]
+# Test configuration
+test_timeout = 300  # seconds
+enable_integration_tests = true
+enable_ui_tests = false
+enable_performance_tests = false
+
+# Test coverage
+enable_coverage = false
+coverage_threshold = 80
+
+[documentation]
+# Documentation generation
+generate_docs = true
+include_private_docs = false
+enable_doc_tests = true
+docs_output_dir = "target/doc"
+
+[environment]
+# Environment variable mappings
+[environment.variables]
+RUST_LOG = "info"
+RUST_BACKTRACE = "1"
+
+[environment.build_variables]
+# Variables set during build
+CARGO_TARGET_DIR = "{build_dir}"
+ENABLE_SIGNING = "{signing_enabled}"
+ENABLE_LTO = "{lto_enabled}"
+
+[hooks]
+# Build hooks and custom scripts
+pre_build = []
+post_build = []
+pre_test = []
+post_test = []
+pre_package = []
+post_package = []
+
+# Custom script examples
+[hooks.examples]
+pre_build = [
+    "echo 'Starting build process...'",
+    "scripts/pre-build-check.sh",
+]
+post_build = [
+    "scripts/verify-binary.sh",
+    "echo 'Build completed successfully'",
+]
+
+[cache]
+# Caching configuration
+enable_cargo_cache = true
+enable_target_cache = true
+cache_duration_days = 7
+
+# Cache directories
+cargo_cache_dir = "~/.cargo"
+target_cache_dir = "target"
+
+[logging]
+# Build logging configuration
+log_level = "info"
+log_format = "compact"
+enable_timestamps = true
+log_file = "build.log"
+
+# Per-component logging
+[logging.components]
+build = "info"
+test = "info"
+package = "info"
+sign = "debug"

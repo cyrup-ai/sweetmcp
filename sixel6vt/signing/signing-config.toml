@@ -1,0 +1,108 @@
+# Platform-Specific Signing Configuration for rio-ext-test
+
+[general]
+app_name = "rio-ext-test"
+version = "0.1.0"
+bundle_id = "com.sweetmcp.rio-ext-test"
+description = "Advanced terminal emulator with sixel graphics support"
+homepage = "https://github.com/sweetmcp/rio-ext-test"
+
+[macos]
+# macOS Code Signing Configuration
+developer_id_env = "MACOS_DEVELOPER_ID"
+keychain_profile_env = "MACOS_KEYCHAIN_PROFILE"
+team_id_env = "MACOS_TEAM_ID"
+deployment_target = "10.15"
+deployment_target_arm64 = "11.0"
+
+# Required entitlements for macOS
+entitlements = [
+    "com.apple.security.app-sandbox",
+    "com.apple.security.network.client",
+    "com.apple.security.network.server",
+    "com.apple.security.files.user-selected.read-write"
+]
+
+# Frameworks to link
+frameworks = [
+    "Security",
+    "CoreFoundation", 
+    "SystemConfiguration"
+]
+
+[windows]
+# Windows Code Signing Configuration
+cert_path_env = "WINDOWS_CERT_PATH"
+cert_password_env = "WINDOWS_CERT_PASSWORD"
+timestamp_url = "http://timestamp.digicert.com"
+subject_name = "SweetMCP"
+
+# Windows-specific libraries
+libraries = [
+    "user32",
+    "shell32",
+    "advapi32"
+]
+
+[linux]
+# Linux Package Configuration
+maintainer_env = "LINUX_MAINTAINER"
+maintainer_default = "SweetMCP <support@sweetmcp.com>"
+gpg_key_id_env = "LINUX_GPG_KEY_ID"
+gpg_passphrase_env = "LINUX_GPG_PASSPHRASE"
+
+# Package dependencies
+[linux.dependencies]
+deb = [
+    "libc6 (>= 2.31)",
+    "libgcc-s1 (>= 3.0)",
+    "libstdc++6 (>= 3.4)"
+]
+rpm = [
+    "glibc >= 2.31",
+    "libgcc >= 3.0",
+    "libstdc++ >= 3.4"
+]
+
+# Desktop entry configuration
+[desktop]
+name = "Rio Ext Test"
+comment = "Advanced terminal emulator with sixel graphics support"
+exec = "rio-ext-test"
+icon = "terminal"
+categories = ["System", "TerminalEmulator"]
+startup_notify = true
+
+# Build configuration
+[build]
+rust_edition = "2021"
+target_dir = "target"
+release_profile = "release"
+
+# Cross-compilation targets
+[build.targets]
+macos_x86_64 = "x86_64-apple-darwin"
+macos_arm64 = "aarch64-apple-darwin"
+windows_x86_64 = "x86_64-pc-windows-msvc"
+linux_x86_64 = "x86_64-unknown-linux-gnu"
+linux_arm64 = "aarch64-unknown-linux-gnu"
+
+# Signing environment variables documentation
+[environment]
+description = """
+Required environment variables for signing:
+
+macOS:
+- MACOS_DEVELOPER_ID: Developer ID Application certificate name
+- MACOS_KEYCHAIN_PROFILE: Keychain profile for notarization  
+- MACOS_TEAM_ID: Apple Developer Team ID
+
+Windows:
+- WINDOWS_CERT_PATH: Path to .p12/.pfx certificate file
+- WINDOWS_CERT_PASSWORD: Certificate password
+
+Linux:
+- LINUX_MAINTAINER: Package maintainer (optional)
+- LINUX_GPG_KEY_ID: GPG key ID for signing packages
+- LINUX_GPG_PASSPHRASE: GPG key passphrase (optional)
+"""

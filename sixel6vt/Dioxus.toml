@@ -1,0 +1,36 @@
+[application]
+# App (Project) Name
+name = "sixel6vt"
+default_platform = "desktop"
+
+[desktop.app]
+title = "Sixel6VT Terminal"
+icon = ["assets/icon/icon-32x32.png"]
+
+[bundle]
+identifier = "com.sweetmcp.sixel6vt"
+publisher = "SweetMCP"
+icon = ["assets/icon/icon-512x512.png"]
+version = "1.0.0"
+copyright = "Copyright (c) SweetMCP Team. All rights reserved."
+category = "DeveloperTool"
+short_description = "Advanced sixel-capable terminal emulator"
+long_description = """
+Sixel6VT is an advanced terminal emulator with support for sixel graphics, 
+providing modern terminal capabilities with graphical display support for 
+enhanced developer productivity.
+"""
+
+[bundle.linux.deb]
+depends = ["libglib2.0-0", "libgtk-3-0", "libwebkit2gtk-4.0-37"]
+
+[bundle.macos]
+frameworks = []
+minimum_system_version = "10.12"
+signing_identity = ""
+exception_domain = ""
+
+[bundle.windows]
+icon_path = "assets/icon/icon.ico"
+allow_downgrades = true
+wix_language = "en-US"

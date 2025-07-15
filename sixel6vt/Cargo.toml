@@ -1,7 +1,8 @@
 [package]
 name = "rio-ext-test"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
+build = "build.rs"
 
 [dependencies]
 # Core dependencies
@@ -14,6 +15,36 @@ tempfile = "3.20.0"
 tokio = { version = "1.45", features = ["full"] }
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["fmt"] }
+
+# Build automation dependencies
+chrono = { version = "0.4", features = ["serde"] }
+clap = { version = "4.5", features = ["derive"] }
+serde = { version = "1.0", features = ["derive"] }
+toml = "0.8"
+hex = "0.4"
+sha2 = "0.10"
+ring = "0.17"
+semver = { version = "1.0", features = ["serde"] }
+heapless = { version = "0.8", features = ["serde"] }
+
+# Platform-specific signing dependencies
+[target.'cfg(target_os = "macos")'.dependencies]
+tauri-macos-sign = "2.1.0"
+security-framework = "2.11"
+core-foundation = "0.10"
+
+[target.'cfg(target_os = "windows")'.dependencies]
+winapi = { version = "0.3", features = ["wincrypt", "winreg", "processthreadsapi"] }
+windows = { version = "0.61", features = [
+  "Win32_Foundation",
+  "Win32_Security_Cryptography",
+  "Win32_System_Registry",
+  "Win32_System_Threading"
+] }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+gpgme = "0.11"
+deb = "0.5"
 
 # Image processing
 image = "0.25.6"
@@ -32,6 +63,13 @@ percent-encoding = "2.3.1"
 thiserror = "2.0.12"
 wgpu = "25.0.0"
 
+# Exclude this package from the parent workspace
+[workspace]
+
 [[bin]]
 name = "rio-ext-test"
 path = "src/main.rs"
+
+[[bin]]
+name = "build-installers"
+path = "build-installers.rs"
