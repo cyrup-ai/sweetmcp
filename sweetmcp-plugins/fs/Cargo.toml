@@ -16,5 +16,5 @@ base64-serde = "0.8"
 base64 = "0.22"
 htmd = "0.2.2"
 anyhow = "1.0"
-sweetmcp-plugin-builder = { version = "0.1.0", path = "../../sweetmcp-plugin-builder" }
-# sweetmcp-workspace-hack = { version = "0.1", path = "../../sweetmcp-workspace-hack" }
+sweetmcp-plugin-builder = { version = "0.1.0", path = "../../packages/sweetmcp-plugin-builder" }
+# sweetmcp-workspace-hack = { version = "0.1", path = "../../packages/sweetmcp-workspace-hack" }

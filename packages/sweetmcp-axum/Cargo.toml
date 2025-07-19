@@ -1,0 +1,83 @@
+[package]
+name = "sweetmcp-axum"
+version = "0.1.0"
+edition = "2024"
+authors = ["CYRUP.ai Dev Team"]
+description = " A fast, secure MCP server that extends its capabilities through WebAssembly plugins"
+keywords = ["rust", "ai", "mcp", "cyrup", "llm", "tools"]
+readme = "README.md"
+license = "Apache-2.0"
+repository = "https://github.com/cyrup-ai/sweet-mcp-server"
+documentation = "docs.https://cyrup.ai/docs/sweet-mcp-server"
+homepage = "https://cyrup.ai"
+
+[dependencies]
+futures-util = "0.3"
+
+anyhow = "1.0.98"
+base64 = "0.22.1"
+chrono = "0.4.41"
+clap = { version = "4.5.40", features = ["derive", "env", "cargo", "color", "wrap_help"] }
+crossterm = "0.29.0"
+dirs = "6.0"
+docker_credential = "1.3.2"
+env_logger = "0.11.8"
+extism = "1.11.1"
+flate2 = { version = "1.1.2", default-features = false, features = ["rust_backend"] }
+hex = "0.4.3"
+jsonschema = "0.30"
+lazy_static = "1.5"
+log = "0.4.27"
+maplit = "1.0.2"
+minijinja = { version = "2.11.0", features = ["json"] }
+octocrab = "0.44.1"
+oci-client = "0.15.0"
+ratatui = "0.29.0"
+reqwest = { version = "0.12", features = ["json"] }
+rpc-router = "0.1.3"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+serde_yaml = "0.9"
+sha2 = "0.10.9"
+sigstore = { version = "0.12.1", features = ["cosign", "verify", "bundle"] }
+surrealdb = { version = "2.3.6", features = ["kv-surrealkv", "protocol-http"] }
+surrealdb-migrations = "2.3.0"
+tar = "0.4.44"
+tokio = { version = "1.46", features = ["full", "test-util"] }
+tokio-stream = "0.1"
+futures = "0.3"
+toml = "0.8"
+tree_magic_mini = "3.1.6"
+url = { version = "2.5.4", features = ["serde"] }
+uuid = { version = "1.17.0", features = ["v4", "serde"] }
+# hmac = "0.12.1" # Removed
+# thiserror = "2.0.12" # Removed
+# futures-core = "0.3.31" # Removed
+once_cell = "1"
+tracing = "0.1.41"
+thiserror = "2.0.12"
+futures-core = "0.3.31"
+nix = { version = "0.30", features = ["signal", "fs", "process", "user"], default-features = false }
+users = "0.11.0"
+async-recursion = "1.1.1"
+libc = "0.2.174"
+glob = "0.3.2"
+crossbeam-channel = "0.5.15"
+sweetmcp-daemon = { path = "../sweetmcp-daemon" }
+sweetmcp_memory = { path = "../sweetmcp-memory", default-features = false, features = ["surreal-vector"] }
+sweetmcp-workspace-hack = { version = "0.1", path = "../sweetmcp-workspace-hack" }
+
+# Zero-allocation performance optimizations
+arrayvec = { version = "0.7", features = ["serde"] }  # Fixed-size arrays without heap allocation
+smallvec = { version = "1.13" }         # Small vectors that avoid heap allocation
+dashmap = { version = "6.1" }           # Lock-free concurrent HashMap for blazing-fast performance
+memchr = { version = "2.7" }            # SIMD-accelerated string matching
+# fluent_ai = { path = "../../../fluent-ai/packages/fluent-ai" } # Temporarily disabled due to dependency issues
+# cynic = "3.10.0" # Removed
+# cynic-codegen = "3.10.0" # Removed
+# cynic-introspection = "3.10.0" # Removed
+
+
+[lib]
+name = "sweetmcp_axum"
+path = "src/lib.rs"

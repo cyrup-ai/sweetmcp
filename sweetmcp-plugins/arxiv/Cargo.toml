@@ -17,4 +17,4 @@ feed-rs = "2.3"
 urlencoding = "2.1"
 base64 = "0.22"
 base64-serde = "0.8.0"
-# sweetmcp-workspace-hack = { version = "0.1", path = "../../sweetmcp-workspace-hack" }
+# sweetmcp-workspace-hack = { version = "0.1", path = "../../packages/sweetmcp-workspace-hack" }

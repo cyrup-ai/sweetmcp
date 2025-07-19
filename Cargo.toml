@@ -1,13 +1,14 @@
 [workspace]
 resolver = "3"
 members = [
-    "sweetmcp-axum",
-    "sweetmcp-pingora", 
-    "sweetmcp-daemon",
-    "sweetmcp_memory",
-    "sweetmcp-client-autoconfig",
-    "sweetmcp-plugin-builder",
-    "sweetmcp-voice-tools",
+    "packages/sweetmcp-axum",
+    "packages/sweetmcp-pingora", 
+    "packages/sweetmcp-daemon",
+    "packages/sweetmcp-memory",
+    "packages/sweetmcp-client-autoconfig",
+    "packages/sweetmcp-plugin-builder",
+    "packages/sweetmcp-voice-tools",
+    "packages/sweetmcp-workspace-hack",
     # WebAssembly plugins - now properly configured with extism-pdk 1.4.1
     "sweetmcp-plugins/arxiv",
     "sweetmcp-plugins/browser",
@@ -22,7 +23,6 @@ members = [
     "sweetmcp-plugins/qr-code",
     "sweetmcp-plugins/reasoner",
     "sweetmcp-plugins/time",
-    "sweetmcp-workspace-hack",
 ]
 
 [workspace.dependencies]
@@ -48,10 +48,6 @@ plist = { version = "1.7.2" }
 parking_lot = { version = "0.12.4" }
 colorful = { version = "0.3" }
 indenter = { version = "0.3" }
-llm_devices = { path = "../llm_client/llm_devices" }
-llm_interface = { path = "../llm_client/llm_interface" }
-llm_models = { path = "../llm_client/llm_models" }
-llm_prompt = { path = "../llm_client/llm_prompt" }
 llm_utils = { version = "0.0.11" }
 url = { version = "2.5" }
 serial_test = { version = "3.2" }
