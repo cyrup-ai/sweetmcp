@@ -36,8 +36,7 @@ pub use crate::{optimize_vectors, search_vectors};
 // Re-export optimization algorithm modules
 pub use optimization_algorithms::*;
 
-// Re-export search strategies
-pub mod search_strategies;
+// Re-export search strategies (already declared above)
 pub use search_strategies::SearchStrategy;
 
 // Re-export related modules for convenience

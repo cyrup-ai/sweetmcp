@@ -4,7 +4,7 @@
 //! with zero-allocation patterns and blazing-fast performance.
 
 use std::time::{Duration, Instant};
-use super::tracking::PerformanceCategory;
+use super::super::tracking::PerformanceCategory;
 
 /// Individual metrics report
 #[derive(Debug, Clone)]
@@ -39,6 +39,48 @@ pub struct MetricsReport {
     pub influence_performance: PerformanceCategory,
     /// Overall performance category
     pub overall_performance: PerformanceCategory,
+}
+
+/// Entanglement-specific metrics summary
+#[derive(Debug, Clone)]
+pub struct EntanglementMetricsSummary {
+    /// Number of entanglements created
+    pub entanglements_created: u64,
+    /// Number of entanglements removed
+    pub entanglements_removed: u64,
+    /// Number of entanglements pruned
+    pub entanglements_pruned: u64,
+    /// Net entanglements (created - removed)
+    pub net_entanglements: u64,
+    /// Total entanglement operations
+    pub entanglement_operations: u64,
+    /// Number of entanglement failures
+    pub entanglement_failures: u64,
+    /// Success rate (0.0 to 1.0)
+    pub success_rate: f64,
+    /// Cache hit rate (0.0 to 1.0)
+    pub cache_hit_rate: f64,
+    /// Average operation time in microseconds
+    pub average_operation_time_us: f64,
+    /// Operations per second
+    pub operations_per_second: f64,
+    /// Number of topology analyses
+    pub topology_analyses: u64,
+    /// Number of influence calculations
+    pub influence_calculations: u64,
+    /// Average influence calculation time in microseconds
+    pub average_influence_time_us: f64,
+    /// Influence calculations per second
+    pub influence_calculations_per_second: f64,
+}
+
+impl EntanglementMetricsSummary {
+    /// Check if metrics indicate good performance
+    pub fn has_good_performance(&self) -> bool {
+        self.success_rate > 0.8 && 
+        self.cache_hit_rate > 0.7 &&
+        self.operations_per_second > 100.0
+    }
 }
 
 /// Summary report aggregating multiple metrics

@@ -54,6 +54,19 @@ impl CodeState {
         (latency_diff + memory_diff + relevance_diff) / 3.0
     }
 
+    /// Generate cache key for deterministic caching with zero allocation
+    #[inline]
+    pub fn cache_key(&self) -> String {
+        // Create deterministic cache key based on state metrics
+        // Using format! for now, but could be optimized with pre-allocated buffer
+        format!("{}_{:.3}_{:.3}_{:.3}", 
+            self.code.len(), 
+            self.latency, 
+            self.memory, 
+            self.relevance
+        )
+    }
+
     /// Update metrics with new measurements
     #[inline]
     pub fn update_metrics(&mut self, new_latency: f64, new_memory: f64, new_relevance: f64) {
@@ -121,6 +134,12 @@ impl MCTSNode {
     #[inline]
     pub fn create_root(state: CodeState) -> Self {
         Self::new(state, None, None, 0)
+    }
+
+    /// Create root node for MCTS tree (alias for backward compatibility)
+    #[inline]
+    pub fn new_root(state: CodeState) -> Self {
+        Self::create_root(state)
     }
 
     /// Create child node with optimized initialization

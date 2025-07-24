@@ -7,6 +7,7 @@ pub mod network_topology;
 pub mod quality_assessment;
 pub mod neighborhood_analysis;
 pub mod bottleneck_detection;
+pub mod network_influence;
 
 // Re-export key types and functions for ergonomic access
 pub use network_topology::{
@@ -26,6 +27,10 @@ pub use neighborhood_analysis::{
 pub use bottleneck_detection::{
     BottleneckDetector, NetworkBottleneck, BottleneckType, BottleneckImpact,
     ImpactType, RecoveryDifficulty, BottleneckResolutionPlan, ResolutionAction, ActionType,
+};
+
+pub use network_influence::{
+    NetworkInfluenceCalculator, NetworkInfluenceMetrics, InfluenceDistribution, InfluenceStats,
 };
 
 // Common imports for all submodules

@@ -24,17 +24,17 @@ pub mod engine;
 pub mod analysis;
 pub mod metrics;
 
-// Create core module alias for backward compatibility
-pub mod core {
-    pub use super::engine_core::*;
-    pub use super::entanglement_types::*;
-}
+// Add missing core module with proper exports
+pub mod core;
+
+// Re-export core types for backward compatibility
+pub use core::QuantumEntanglementManager;
 
 // Re-export core types and functionality
 pub use engine_core::QuantumEntanglementEngine;
 pub use engine_operations::OptimizationResult;
 pub use engine_optimization::OptimizationPrediction;
-pub use engine_analysis::{EngineHealthReport, NetworkAnalysisReport, OptimizationPriority};
+pub use engine_health::{EngineHealthReport, NetworkAnalysisReport, OptimizationPriority};
 pub use engine_health::NetworkPerformanceMetrics;
 pub use engine_health_types::{CriticalNode, CriticalityType, HealthStatus};
 pub use engine_issue_types::{NetworkIssue, IssueSeverity, IssueCategory};

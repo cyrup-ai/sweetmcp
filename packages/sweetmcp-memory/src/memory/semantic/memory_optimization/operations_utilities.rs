@@ -102,7 +102,8 @@ impl OptimizationExecutor {
 
     /// Get item access frequency (simplified heuristic)
     #[inline]
-    fn get_item_access_frequency(&self, item: &SemanticItem) -> f64 {
+    /// Get item access frequency (simplified heuristic)
+    pub fn get_item_access_frequency(&self, item: &SemanticItem) -> f64 {
         // Use last_accessed timestamp to estimate frequency
         match &item.last_accessed {
             Some(timestamp) => {
@@ -118,13 +119,13 @@ impl OptimizationExecutor {
 
     /// Check if item is frequently accessed
     #[inline]
-    pub fn is_frequently_accessed(&self, item: &SemanticItem) -> bool {
+    pub(crate) fn is_frequently_accessed(&self, item: &SemanticItem) -> bool {
         self.get_item_access_frequency(item) > 0.5
     }
 
     /// Calculate cache efficiency
     #[inline]
-    pub fn calculate_cache_efficiency(
+    pub(crate) fn calculate_cache_efficiency(
         &self,
         items: &HashMap<String, SemanticItem>,
         relationships: &HashMap<String, SemanticRelationship>,
@@ -149,7 +150,8 @@ impl OptimizationExecutor {
 
     /// Calculate relationship locality
     #[inline]
-    fn calculate_relationship_locality(
+    /// Calculate relationship locality
+    pub(crate) fn calculate_relationship_locality(
         &self,
         items: &HashMap<String, SemanticItem>,
         relationships: &HashMap<String, SemanticRelationship>,
@@ -183,7 +185,7 @@ impl OptimizationExecutor {
 
     /// Calculate index efficiency
     #[inline]
-    pub fn calculate_index_efficiency(
+    pub(crate) fn calculate_index_efficiency(
         &self,
         items: &HashMap<String, SemanticItem>,
         relationships: &HashMap<String, SemanticRelationship>,
@@ -211,7 +213,7 @@ impl OptimizationExecutor {
 
     /// Calculate memory efficiency
     #[inline]
-    pub fn calculate_memory_efficiency(
+    pub(crate) fn calculate_memory_efficiency(
         &self,
         items: &HashMap<String, SemanticItem>,
         relationships: &HashMap<String, SemanticRelationship>,
@@ -228,7 +230,7 @@ impl OptimizationExecutor {
 
     /// Calculate access pattern efficiency
     #[inline]
-    pub fn calculate_access_pattern_efficiency(
+    pub(crate) fn calculate_access_pattern_efficiency(
         &self,
         items: &HashMap<String, SemanticItem>,
         relationships: &HashMap<String, SemanticRelationship>,
@@ -247,7 +249,8 @@ impl OptimizationExecutor {
 
     /// Calculate sequential access score
     #[inline]
-    fn calculate_sequential_access_score(&self, items: &HashMap<String, SemanticItem>) -> f64 {
+    /// Calculate sequential access score
+    pub(crate) fn calculate_sequential_access_score(&self, items: &HashMap<String, SemanticItem>) -> f64 {
         // Simplified heuristic: items with similar IDs accessed together
         let mut sequential_pairs = 0;
         let mut total_pairs = 0;
@@ -273,7 +276,8 @@ impl OptimizationExecutor {
 
     /// Check if two IDs are similar (for sequential access)
     #[inline]
-    fn are_ids_similar(&self, id1: &str, id2: &str) -> bool {
+    /// Check if two IDs are similar (for sequential access)
+    pub(crate) fn are_ids_similar(&self, id1: &str, id2: &str) -> bool {
         // Simple similarity check based on common prefixes
         let common_prefix_len = id1.chars()
             .zip(id2.chars())
@@ -290,7 +294,8 @@ impl OptimizationExecutor {
 
     /// Calculate temporal locality score
     #[inline]
-    fn calculate_temporal_locality_score(&self, items: &HashMap<String, SemanticItem>) -> f64 {
+    /// Calculate temporal locality score
+    pub(crate) fn calculate_temporal_locality_score(&self, items: &HashMap<String, SemanticItem>) -> f64 {
         // Items accessed around the same time have good temporal locality
         let mut temporal_groups = 0;
         let mut total_items = 0;
@@ -315,7 +320,8 @@ impl OptimizationExecutor {
 
     /// Calculate spatial locality score
     #[inline]
-    fn calculate_spatial_locality_score(
+    /// Calculate spatial locality score
+    pub(crate) fn calculate_spatial_locality_score(
         &self,
         items: &HashMap<String, SemanticItem>,
         relationships: &HashMap<String, SemanticRelationship>,
@@ -348,7 +354,7 @@ impl OptimizationExecutor {
 
     /// Check if relationship should be pruned
     #[inline]
-    pub fn should_prune_relationship(
+    pub(crate) fn should_prune_relationship(
         &self,
         relationship: &SemanticRelationship,
         items: &HashMap<String, SemanticItem>,
@@ -369,7 +375,7 @@ impl OptimizationExecutor {
 
     /// Calculate structure efficiency
     #[inline]
-    pub fn calculate_structure_efficiency(
+    pub(crate) fn calculate_structure_efficiency(
         &self,
         items: &HashMap<String, SemanticItem>,
         relationships: &HashMap<String, SemanticRelationship>,
@@ -383,7 +389,8 @@ impl OptimizationExecutor {
 
     /// Calculate HashMap efficiency
     #[inline]
-    fn calculate_hashmap_efficiency(&self, len: usize, capacity: usize) -> f64 {
+    /// Calculate HashMap efficiency
+    pub(crate) fn calculate_hashmap_efficiency(&self, len: usize, capacity: usize) -> f64 {
         if capacity == 0 {
             return 1.0;
         }
@@ -399,7 +406,7 @@ impl OptimizationExecutor {
 
     /// Check if item structure can be optimized
     #[inline]
-    pub fn can_optimize_item_structure(&self, item: &SemanticItem) -> bool {
+    pub(crate) fn can_optimize_item_structure(&self, item: &SemanticItem) -> bool {
         // Check for optimization opportunities
         let has_large_metadata = item.metadata.as_ref()
             .map(|m| serde_json::to_string(m).map_or(false, |s| s.len() > 1024))
@@ -412,7 +419,7 @@ impl OptimizationExecutor {
 
     /// Check if relationship structure can be optimized
     #[inline]
-    pub fn can_optimize_relationship_structure(&self, relationship: &SemanticRelationship) -> bool {
+    pub(crate) fn can_optimize_relationship_structure(&self, relationship: &SemanticRelationship) -> bool {
         // Check for optimization opportunities
         let has_weak_strength = relationship.strength.map(|s| s < 0.1).unwrap_or(true);
         let has_missing_metadata = relationship.metadata.is_none();
@@ -422,7 +429,7 @@ impl OptimizationExecutor {
 
     /// Check if item is orphaned
     #[inline]
-    pub fn is_orphaned_item(
+    pub(crate) fn is_orphaned_item(
         &self,
         item: &SemanticItem,
         relationships: &HashMap<String, SemanticRelationship>,
@@ -441,7 +448,7 @@ impl OptimizationExecutor {
 
     /// Calculate pool efficiency
     #[inline]
-    pub fn calculate_pool_efficiency(
+    pub(crate) fn calculate_pool_efficiency(
         &self,
         items: &HashMap<String, SemanticItem>,
         relationships: &HashMap<String, SemanticRelationship>,
@@ -455,7 +462,8 @@ impl OptimizationExecutor {
 
     /// Calculate pool utilization
     #[inline]
-    fn calculate_pool_utilization(&self, used: usize, capacity: usize) -> f64 {
+    /// Calculate pool utilization
+    pub(crate) fn calculate_pool_utilization(&self, used: usize, capacity: usize) -> f64 {
         if capacity == 0 {
             return 1.0;
         }
@@ -474,7 +482,7 @@ impl OptimizationExecutor {
 
     /// Get optimization priority score
     #[inline]
-    pub fn get_optimization_priority_score(
+    pub(crate) fn get_optimization_priority_score(
         &self,
         items: &HashMap<String, SemanticItem>,
         relationships: &HashMap<String, SemanticRelationship>,
@@ -496,7 +504,7 @@ impl OptimizationExecutor {
 
     /// Validate optimization safety
     #[inline]
-    pub fn validate_optimization_safety(
+    pub(crate) fn validate_optimization_safety(
         &self,
         items: &HashMap<String, SemanticItem>,
         relationships: &HashMap<String, SemanticRelationship>,
@@ -513,13 +521,13 @@ impl OptimizationExecutor {
 
     /// Get optimization recommendations priority
     #[inline]
-    pub fn get_recommendations_priority(&self) -> Vec<super::optimization_recommendations::RecommendationType> {
+    pub(crate) fn get_recommendations_priority(&self) -> Vec<super::optimization_recommendations::RecommendationType> {
         self.strategy.priority_order.clone()
     }
 
     /// Calculate optimization impact estimate
     #[inline]
-    pub fn calculate_optimization_impact(
+    pub(crate) fn calculate_optimization_impact(
         &self,
         recommendation_type: &super::optimization_recommendations::RecommendationType,
         items: &HashMap<String, SemanticItem>,

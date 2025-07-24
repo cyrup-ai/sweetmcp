@@ -22,6 +22,21 @@ pub struct SubsystemCoordinator {
 }
 
 impl SubsystemCoordinator {
+    /// Create new subsystem coordinator with lock-free initialization
+    pub fn new_lock_free(
+        legacy_manager: SurrealDBMemoryManager,
+        cognitive_mesh: Arc<CognitiveMesh>,
+        quantum_router: Arc<QuantumRouter>,
+        evolution_engine: Arc<tokio::sync::RwLock<EvolutionEngine>>,
+    ) -> Self {
+        Self {
+            legacy_manager,
+            cognitive_mesh,
+            quantum_router,
+            evolution_engine,
+        }
+    }
+
     /// Enhance a memory node with cognitive features
     pub async fn enhance_memory_cognitively(&self, memory: MemoryNode, enabled: bool) -> Result<CognitiveMemoryNode> {
         let mut cognitive_memory = CognitiveMemoryNode::from(memory);
@@ -51,6 +66,11 @@ impl SubsystemCoordinator {
             .await?;
 
         Ok(cognitive_memory)
+    }
+
+    /// Enhance a memory node with cognitive features (lock-free variant)
+    pub async fn enhance_memory_cognitively_lock_free(&self, memory: MemoryNode) -> Result<CognitiveMemoryNode> {
+        self.enhance_memory_cognitively(memory, true).await
     }
 
     /// Generate quantum signature for a memory
@@ -86,6 +106,15 @@ impl SubsystemCoordinator {
             cognitive_memory.is_enhanced()
         );
         Ok(())
+    }
+
+    /// Store cognitive metadata separately (lock-free variant)
+    pub async fn store_cognitive_metadata_lock_free(
+        &self,
+        memory_id: &str,
+        cognitive_memory: &CognitiveMemoryNode,
+    ) -> Result<()> {
+        self.store_cognitive_metadata(memory_id, cognitive_memory).await
     }
 
     /// Cognitive search implementation

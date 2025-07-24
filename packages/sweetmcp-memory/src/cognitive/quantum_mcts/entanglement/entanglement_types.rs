@@ -5,15 +5,15 @@
 
 use std::time::SystemTime;
 
-// Re-export analysis types from parent module
-pub use super::analysis::{NetworkTopology, EntanglementDistribution, NetworkAnalysisReport};
+// Re-export analysis types from parent module (removed non-existent types)
+pub use super::analysis::{NetworkTopology};
 pub use super::metrics::EntanglementMetrics;
 
 // Re-export core engine types
 pub use super::engine_core::QuantumEntanglementEngine;
 pub use super::engine_operations::OptimizationResult;
 pub use super::engine_optimization::OptimizationPrediction;
-pub use super::engine_analysis::{EngineHealthReport, OptimizationPriority};
+pub use super::engine_health::{EngineHealthReport, OptimizationPriority};
 pub use super::engine_health::NetworkPerformanceMetrics;
 pub use super::engine_health_types::{CriticalNode, CriticalityType, HealthStatus};
 pub use super::engine_issue_types::{NetworkIssue, IssueSeverity, IssueCategory};

@@ -162,6 +162,8 @@ impl QuantumRouter {
         })
     }
 
+
+
     /// Route a query using quantum-inspired algorithms
     pub async fn route_query(&self, query: &EnhancedQuery) -> CognitiveResult<RoutingDecision> {
         let start_time = Instant::now();

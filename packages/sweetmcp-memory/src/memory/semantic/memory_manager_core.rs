@@ -150,6 +150,27 @@ impl MemoryStatistics {
         true // No previous cleanup recorded
     }
 
+    /// Get cache hit rate (method interface for existing cache_hit_ratio field)
+    #[inline]
+    pub fn cache_hit_rate(&self) -> Option<f64> {
+        Some(self.cache_hit_ratio)
+    }
+
+    /// Get memory usage percentage (calculated from existing memory_usage_bytes)
+    #[inline]
+    pub fn memory_usage_percent(&self) -> Option<f64> {
+        // Calculate percentage based on total items and average memory per item
+        let total_items = self.total_items + self.total_relationships;
+        if total_items == 0 {
+            return Some(0.0);
+        }
+        
+        // Estimate percentage based on bytes per item (assuming 1KB baseline per item)
+        let bytes_per_item = self.memory_usage_bytes as f64 / total_items as f64;
+        let usage_percent = (bytes_per_item / 1024.0 * 100.0).min(100.0);
+        Some(usage_percent)
+    }
+
     /// Check if optimization is needed
     #[inline]
     pub fn needs_optimization(&self) -> bool {

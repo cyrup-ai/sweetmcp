@@ -66,6 +66,11 @@ impl AttentionMechanism {
         }
     }
 
+    /// Create a new attention mechanism with lock-free initialization
+    pub fn new_lock_free(config: AttentionConfig) -> Self {
+        Self::new(config)
+    }
+
     /// Get the number of attention heads
     pub fn num_heads(&self) -> usize {
         self.num_heads

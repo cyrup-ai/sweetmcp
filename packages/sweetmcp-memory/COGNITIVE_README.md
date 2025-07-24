@@ -1,6 +1,6 @@
 # Cognitive Memory System
 
-A production-grade memory management system with quantum-inspired routing, attention mechanisms, and self-optimization capabilities for the Cyrun platform.
+A production-grade memory management system with quantum-inspired routing, attention mechanisms, and self-optimization capabilities for the sweetmcp-memory platform.
 
 ## Overview
 
@@ -170,16 +170,19 @@ pub struct QuantumConfig {
 ## Testing
 
 Run all tests:
+
 ```bash
 cargo test
 ```
 
 Run integration tests:
+
 ```bash
 cargo test --test cognitive_integration_tests
 ```
 
 Run benchmarks:
+
 ```bash
 cargo bench
 ```
@@ -187,6 +190,7 @@ cargo bench
 ## Dependencies
 
 The cognitive system adds these dependencies:
+
 - `nalgebra`: Matrix operations and linear algebra
 - `petgraph`: Graph algorithms for entanglement networks
 - `dashmap`: Concurrent hash maps for performance
@@ -254,6 +258,7 @@ settings.evolution_rate = 0.05; // Slower evolution
 ### High Memory Usage
 
 If memory usage exceeds targets:
+
 1. Reduce `max_superposition_states` in quantum config
 2. Lower `attention_heads` count
 3. Increase garbage collection frequency
@@ -261,6 +266,7 @@ If memory usage exceeds targets:
 ### Slow Performance
 
 If latency exceeds targets:
+
 1. Disable error correction temporarily
 2. Use CPU-only quantum simulation
 3. Reduce evolution rate
@@ -268,6 +274,7 @@ If latency exceeds targets:
 ### Evolution Not Triggering
 
 If the system isn't self-optimizing:
+
 1. Check fitness metrics are being recorded
 2. Verify evolution rate > 0
 3. Ensure sufficient performance history

@@ -203,7 +203,7 @@ impl CognitiveMemoryManager {
             ..Default::default()
         };
 
-        let quantum_router = Arc::new(QuantumRouter::new_lock_free(state_manager, quantum_config).await?);
+        let quantum_router = Arc::new(QuantumRouter::new(state_manager, quantum_config).await?);
 
         // Lock-free evolution engine
         let evolution_engine = Arc::new(EvolutionEngine::new_lock_free(settings.evolution_rate));

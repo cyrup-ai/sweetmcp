@@ -19,7 +19,7 @@ use super::super::{
 
 impl OptimizationExecutor {
     /// Execute optimization recommendations with zero allocation patterns
-    pub async fn execute_optimizations(
+    pub(crate) async fn execute_optimizations(
         &mut self,
         recommendations: Vec<OptimizationRecommendation>,
         items: &mut HashMap<String, SemanticItem>,
@@ -82,7 +82,7 @@ impl OptimizationExecutor {
     }
 
     /// Execute single optimization recommendation
-    async fn execute_single_optimization(
+    pub(crate) async fn execute_single_optimization(
         &mut self,
         recommendation: &OptimizationRecommendation,
         items: &mut HashMap<String, SemanticItem>,
@@ -149,7 +149,7 @@ impl OptimizationExecutor {
     }
 
     /// Execute defragmentation optimization
-    async fn execute_defragmentation(
+    pub(crate) async fn execute_defragmentation(
         &self,
         items: &mut HashMap<String, SemanticItem>,
         relationships: &mut HashMap<String, SemanticRelationship>,
@@ -185,17 +185,17 @@ impl OptimizationExecutor {
         let final_fragmentation = self.calculate_fragmentation_level(items, relationships);
         let improvement = ((initial_fragmentation - final_fragmentation) / initial_fragmentation * 100.0).max(0.0);
 
-        Ok(SingleOptimizationResult::new(
+        Ok(SingleOptimizationResult::success(
             RecommendationType::Defragmentation,
             improvement,
-            format!("Reduced fragmentation from {:.1}% to {:.1}%", 
-                   initial_fragmentation * 100.0, final_fragmentation * 100.0),
-            true,
+            execution_time,
+            (initial_fragmentation * 100.0) as usize, // memory_saved: approximate as percentage of total
+            items.len(), // items_processed
         ))
     }
 
     /// Execute compression optimization
-    async fn execute_compression(
+    pub(crate) async fn execute_compression(
         &self,
         items: &mut HashMap<String, SemanticItem>,
         _relationships: &mut HashMap<String, SemanticRelationship>,
@@ -216,9 +216,10 @@ impl OptimizationExecutor {
         let final_size = self.calculate_total_memory_usage(items);
         let improvement = ((initial_size - final_size) / initial_size * 100.0).max(0.0);
 
-        Ok(SingleOptimizationResult::new(
+        Ok(SingleOptimizationResult::success(
             RecommendationType::Compression,
             improvement,
+            execution_time,
             format!("Compressed {} items, reduced memory usage by {:.1}%", 
                    compressed_count, improvement),
             compressed_count > 0,
@@ -226,7 +227,7 @@ impl OptimizationExecutor {
     }
 
     /// Execute cache optimization
-    async fn execute_cache_optimization(
+    pub(crate) async fn execute_cache_optimization(
         &self,
         items: &mut HashMap<String, SemanticItem>,
         relationships: &mut HashMap<String, SemanticRelationship>,
@@ -247,9 +248,10 @@ impl OptimizationExecutor {
         let final_cache_efficiency = self.calculate_cache_efficiency(items, relationships);
         let improvement = ((final_cache_efficiency - initial_cache_efficiency) / initial_cache_efficiency * 100.0).max(0.0);
 
-        Ok(SingleOptimizationResult::new(
+        Ok(SingleOptimizationResult::success(
             RecommendationType::CacheOptimization,
             improvement,
+            execution_time,
             format!("Optimized {} items for cache efficiency, improved by {:.1}%", 
                    optimized_count, improvement),
             optimized_count > 0,
@@ -257,7 +259,7 @@ impl OptimizationExecutor {
     }
 
     /// Execute index optimization
-    async fn execute_index_optimization(
+    pub(crate) async fn execute_index_optimization(
         &self,
         items: &mut HashMap<String, SemanticItem>,
         relationships: &mut HashMap<String, SemanticRelationship>,
@@ -283,9 +285,10 @@ impl OptimizationExecutor {
         let final_index_efficiency = self.calculate_index_efficiency(items, relationships);
         let improvement = ((final_index_efficiency - initial_index_efficiency) / initial_index_efficiency * 100.0).max(0.0);
 
-        Ok(SingleOptimizationResult::new(
+        Ok(SingleOptimizationResult::success(
             RecommendationType::IndexOptimization,
             improvement,
+            execution_time,
             format!("Rebuilt {} indexes, improved efficiency by {:.1}%", 
                    rebuilt_indexes, improvement),
             rebuilt_indexes > 0,
@@ -293,7 +296,7 @@ impl OptimizationExecutor {
     }
 
     /// Execute memory reallocation optimization
-    async fn execute_memory_reallocation(
+    pub(crate) async fn execute_memory_reallocation(
         &self,
         items: &mut HashMap<String, SemanticItem>,
         relationships: &mut HashMap<String, SemanticRelationship>,
@@ -319,9 +322,10 @@ impl OptimizationExecutor {
         let final_memory_efficiency = self.calculate_memory_efficiency(items, relationships);
         let improvement = ((final_memory_efficiency - initial_memory_efficiency) / initial_memory_efficiency * 100.0).max(0.0);
 
-        Ok(SingleOptimizationResult::new(
+        Ok(SingleOptimizationResult::success(
             RecommendationType::MemoryReallocation,
             improvement,
+            execution_time,
             format!("Reallocated {} memory blocks, improved efficiency by {:.1}%", 
                    reallocated_blocks, improvement),
             reallocated_blocks > 0,
@@ -329,7 +333,7 @@ impl OptimizationExecutor {
     }
 
     /// Execute access pattern optimization
-    async fn execute_access_pattern_optimization(
+    pub(crate) async fn execute_access_pattern_optimization(
         &self,
         items: &mut HashMap<String, SemanticItem>,
         relationships: &mut HashMap<String, SemanticRelationship>,
@@ -354,9 +358,10 @@ impl OptimizationExecutor {
         let final_access_efficiency = self.calculate_access_pattern_efficiency(items, relationships);
         let improvement = ((final_access_efficiency - initial_access_efficiency) / initial_access_efficiency * 100.0).max(0.0);
 
-        Ok(SingleOptimizationResult::new(
+        Ok(SingleOptimizationResult::success(
             RecommendationType::AccessPatternOptimization,
             improvement,
+            execution_time,
             format!("Optimized {} access patterns, improved efficiency by {:.1}%", 
                    optimized_patterns, improvement),
             optimized_patterns > 0,
@@ -364,7 +369,7 @@ impl OptimizationExecutor {
     }
 
     /// Execute relationship pruning optimization
-    async fn execute_relationship_pruning(
+    pub(crate) async fn execute_relationship_pruning(
         &self,
         items: &mut HashMap<String, SemanticItem>,
         relationships: &mut HashMap<String, SemanticRelationship>,
@@ -394,9 +399,10 @@ impl OptimizationExecutor {
             0.0
         };
 
-        Ok(SingleOptimizationResult::new(
+        Ok(SingleOptimizationResult::success(
             RecommendationType::RelationshipPruning,
             improvement,
+            execution_time,
             format!("Pruned {} weak relationships, reduced count by {:.1}%", 
                    pruned_count, improvement),
             pruned_count > 0,
@@ -404,7 +410,7 @@ impl OptimizationExecutor {
     }
 
     /// Execute data structure optimization
-    async fn execute_data_structure_optimization(
+    pub(crate) async fn execute_data_structure_optimization(
         &self,
         items: &mut HashMap<String, SemanticItem>,
         relationships: &mut HashMap<String, SemanticRelationship>,
@@ -443,7 +449,7 @@ impl OptimizationExecutor {
     }
 
     /// Execute garbage collection optimization
-    async fn execute_gc_optimization(
+    pub(crate) async fn execute_gc_optimization(
         &self,
         items: &mut HashMap<String, SemanticItem>,
         relationships: &mut HashMap<String, SemanticRelationship>,
@@ -487,7 +493,7 @@ impl OptimizationExecutor {
     }
 
     /// Execute memory pool optimization
-    async fn execute_memory_pool_optimization(
+    pub(crate) async fn execute_memory_pool_optimization(
         &self,
         items: &mut HashMap<String, SemanticItem>,
         relationships: &mut HashMap<String, SemanticRelationship>,
@@ -521,7 +527,7 @@ impl OptimizationExecutor {
     }
 
     /// Filter recommendations based on safety constraints
-    fn filter_recommendations(&self, recommendations: Vec<OptimizationRecommendation>) -> Result<Vec<OptimizationRecommendation>> {
+    pub(crate) fn filter_recommendations(&self, recommendations: Vec<OptimizationRecommendation>) -> Result<Vec<OptimizationRecommendation>> {
         let mut filtered = Vec::with_capacity(recommendations.len());
         
         for recommendation in recommendations {
@@ -536,7 +542,7 @@ impl OptimizationExecutor {
     }
 
     /// Prioritize recommendations based on strategy
-    fn prioritize_recommendations(&self, recommendations: Vec<OptimizationRecommendation>) -> Vec<OptimizationRecommendation> {
+    pub(crate) fn prioritize_recommendations(&self, recommendations: Vec<OptimizationRecommendation>) -> Vec<OptimizationRecommendation> {
         let mut prioritized = recommendations;
         
         // Sort by priority order defined in strategy
@@ -558,14 +564,12 @@ impl OptimizationExecutor {
     }
 
     /// Check if recommendation should be skipped
-    #[inline]
-    fn should_skip_recommendation(&self, recommendation: &OptimizationRecommendation) -> bool {
+    pub(crate) fn should_skip_recommendation(&self, recommendation: &OptimizationRecommendation) -> bool {
         recommendation.expected_improvement < self.strategy.min_improvement_threshold
     }
 
     /// Check if optimization should stop early
-    #[inline]
-    fn should_stop_early(&self, results: &[SingleOptimizationResult]) -> bool {
+    pub(crate) fn should_stop_early(&self, results: &[SingleOptimizationResult]) -> bool {
         let total_improvement: f64 = results.iter()
             .map(|r| r.improvement_achieved)
             .sum();
@@ -574,8 +578,7 @@ impl OptimizationExecutor {
     }
 
     /// Check if recommendation is safe to execute
-    #[inline]
-    fn is_safe_recommendation(&self, recommendation: &OptimizationRecommendation) -> bool {
+    pub(crate) fn is_safe_recommendation(&self, recommendation: &OptimizationRecommendation) -> bool {
         // Check against safety constraints
         match recommendation.recommendation_type {
             RecommendationType::MemoryReallocation | 
@@ -588,8 +591,7 @@ impl OptimizationExecutor {
     }
 
     /// Calculate efficiency score
-    #[inline]
-    fn calculate_efficiency_score(&self, improvement: f64, execution_time: Duration) -> f64 {
+    pub(crate) fn calculate_efficiency_score(&self, improvement: f64, execution_time: Duration) -> f64 {
         if execution_time.as_secs_f64() > 0.0 {
             improvement / execution_time.as_secs_f64()
         } else {

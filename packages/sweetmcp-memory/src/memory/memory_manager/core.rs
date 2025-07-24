@@ -36,6 +36,16 @@ impl SurrealDBMemoryManager {
         Self { db }
     }
 
+    /// Initialize the SurrealDBMemoryManager with database setup
+    /// 
+    /// # Returns
+    /// Result indicating initialization success or error
+    pub async fn initialize(&self) -> Result<(), crate::utils::error::Error> {
+        // Perform any necessary database initialization
+        // For now, this is a no-op but provides the required interface
+        Ok(())
+    }
+
     /// Convert MemoryMetadataSchema to MemoryMetadata
     /// 
     /// This utility function converts database metadata schema to domain metadata

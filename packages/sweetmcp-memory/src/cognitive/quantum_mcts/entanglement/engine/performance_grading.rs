@@ -12,6 +12,19 @@ use super::{
     maintenance_statistics::EngineStatistics,
 };
 
+/// Trend direction for performance analysis
+#[derive(Debug, Clone, PartialEq)]
+pub enum TrendDirection {
+    /// Performance is improving
+    Improving,
+    /// Performance is stable
+    Stable,
+    /// Performance is declining
+    Declining,
+    /// Trend is unclear or insufficient data
+    Unknown,
+}
+
 /// Performance grades for different aspects
 #[derive(Debug, Clone)]
 pub struct PerformanceGrades {

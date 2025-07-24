@@ -50,8 +50,8 @@ impl StatisticsUtils {
         }
         
         if data.len() < window_size {
-            let sum: f64 = data.iter().filter(|&&x| !x.is_nan()).sum();
-            let count = data.iter().filter(|&&x| !x.is_nan()).count();
+            let sum: f64 = data.iter().filter_map(|x| if !x.is_nan() { Some(*x) } else { None }).sum();
+            let count = data.iter().filter(|x| !x.is_nan()).count();
             if count > 0 {
                 return vec![sum / count as f64];
             } else {
@@ -64,11 +64,11 @@ impl StatisticsUtils {
         // Calculate first window
         let mut window_sum: f64 = data.iter()
             .take(window_size)
-            .filter(|&&x| !x.is_nan())
+            .filter_map(|x| if !x.is_nan() { Some(*x) } else { None })
             .sum();
         let mut window_count = data.iter()
             .take(window_size)
-            .filter(|&&x| !x.is_nan())
+            .filter_map(|x| if !x.is_nan() { Some(*x) } else { None })
             .count();
         
         if window_count > 0 {
@@ -143,8 +143,14 @@ impl StatisticsUtils {
         // Filter out NaN values for calculation
         let valid_data: Vec<(usize, f64)> = data.iter()
             .enumerate()
-            .filter(|(_, &value)| !value.is_nan())
-            .map(|(i, &value)| (i, value))
+            .filter_map(|(i, value)| {
+                let val = *value;
+                if !val.is_nan() {
+                    Some((i, val))
+                } else {
+                    None
+                }
+            })
             .collect();
         
         if valid_data.len() < 2 {
@@ -257,7 +263,7 @@ impl StatisticsUtils {
             return 0.0;
         }
         
-        let sum: f64 = probabilities.iter().filter(|&&p| p > 0.0).sum();
+        let sum: f64 = probabilities.iter().filter_map(|p| if *p > 0.0 { Some(*p) } else { None }).sum();
         if sum <= 1e-10 {
             return 0.0;
         }
@@ -300,7 +306,7 @@ impl StatisticsUtils {
         }
         
         let mut valid_data: Vec<f64> = data.iter()
-            .filter(|&&x| !x.is_nan())
+            .filter_map(|x| if !x.is_nan() { Some(*x) } else { None })
             .copied()
             .collect();
         
@@ -393,7 +399,7 @@ impl StatisticsUtils {
         }
         
         let valid_data: Vec<f64> = data.iter()
-            .filter(|&&x| !x.is_nan())
+            .filter_map(|x| if !x.is_nan() { Some(*x) } else { None })
             .copied()
             .collect();
         

@@ -11,7 +11,7 @@ use super::{
     pruning::PruningResult,
     balancing::BalancingResult,
     health::NetworkHealthReport,
-    super::super::{
+    super::{
         analysis::NetworkTopology,
         metrics::EntanglementMetricsSummary,
     },

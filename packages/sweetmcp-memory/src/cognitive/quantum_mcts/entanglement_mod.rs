@@ -46,9 +46,7 @@ pub use self::analysis::{
 };
 pub use self::metrics::{
     EntanglementMetrics,
-    EntanglementMetricsSummary,
     PerformanceTracker,
-    MetricsCollector,
     EntanglementBenchmark,
     BenchmarkResults,
 };
@@ -62,7 +60,7 @@ pub use self::engine::{
 // Re-export decomposed modules
 pub use entanglement_coordinator::EntanglementCoordinator;
 pub use entanglement_analysis::{ComprehensiveAnalysisReport, AnalysisExportData, SerializableAnalysisData};
-pub use entanglement_factory as factory;
+pub use entanglement_factory::*;
 
 /// Quick access functions for common operations
 pub mod quick {

@@ -30,9 +30,7 @@ pub mod tree_stats_types;
 pub mod tree_stats_analyzer;
 pub mod tree_stats_mod;
 
-// Re-export sibling modules for internal use
-pub use super::node_state;
-pub use super::config;
+// Re-export sibling modules for internal use (removed duplicates - already declared above)
 
 // Ergonomic re-exports for tree statistics
 pub use tree_stats_mod::{

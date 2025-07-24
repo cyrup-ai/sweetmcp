@@ -55,9 +55,10 @@ atomic-counter = { version = "1.0" }    # Lock-free atomic counters
 tokio-util = { version = "0.7" }        # Tokio utilities for cancellation
 dashmap = { version = "6.1" }           # Lock-free concurrent hash maps
 memchr = { version = "2.7" }            # SIMD-accelerated string matching
-fastrand = "2.0.1"
+fastrand = "2.3.0"
 jwalk = "0.8.1"
 rayon = "1.10.0"
+walkdir = "2.5.0"
 
 [features]
 default = []
@@ -89,3 +90,7 @@ cc = "1.2"
 tempfile = "3.20"
 which = "8.0"
 zip = { version = "4.2.0", default-features = false, features = ["deflate"] }
+# Dependencies needed for build scripts
+jwalk = "0.8.1"
+rayon = "1.10.0"
+fastrand = "2.3.0"

@@ -12,6 +12,9 @@ pub use super::mcts::types::{MCTSNode, CodeState};
 pub use super::evolution::EvolutionRules;
 pub use super::evolution::EvolutionRules as EvolutionRule;
 
+// Re-export vector optimization types for cognitive usage
+pub use crate::vector::async_vector_optimization::coordinator_types::OptimizationSpec;
+
 /// Cognitive state representing the current understanding and context
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CognitiveState {
@@ -275,6 +278,18 @@ pub enum CognitiveError {
 
     #[error("Evaluation failed: {0}")]
     EvaluationFailed(String),
+
+    #[error("Execution failed: {0}")]
+    ExecutionFailed(String),
+
+    #[error("Invalid configuration: {0}")]
+    InvalidConfiguration(String),
+
+    #[error("Invalid parameter: {0}")]
+    InvalidParameter(String),
+
+    #[error("Invalid operation: {0}")]
+    InvalidOperation(String),
 }
 
 pub type CognitiveResult<T> = Result<T, CognitiveError>;

@@ -14,6 +14,8 @@ use crate::cognitive::{
 use super::super::{
     core::QuantumEntanglementManager,
     metrics::EntanglementMetrics,
+};
+use super::super::super::{
     config::QuantumMCTSConfig,
 };
 

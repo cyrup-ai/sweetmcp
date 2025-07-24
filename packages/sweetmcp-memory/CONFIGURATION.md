@@ -33,7 +33,8 @@ ANTHROPIC_API_KEY=sk-ant-...           # For Anthropic embeddings
 ## How Memory Works
 
 The memory system automatically:
-- Generates embeddings for your content using OpenAI/Anthropic
+
+- Generates embeddings for your content using candle
 - Stores them in SurrealDB with vector indexes
 - Creates graph relationships between related memories
 - Provides semantic search across all memories
@@ -138,11 +139,13 @@ The system automatically provides:
 For local LLM operations with ollama:
 
 ### Required Setup
+
 1. Install ollama: `curl https://ollama.ai/install.sh | sh`
 2. Start ollama: `ollama serve`
 3. Pull models: `ollama pull llama2` and `ollama pull nomic-embed-text`
 
 ### Configuration
+
 ```rust
 use surreal_memory::{MemoryConfig, utils::config::*};
 
@@ -200,20 +203,24 @@ let config = MemoryConfig {
 ## Troubleshooting
 
 ### "Failed to connect to database"
+
 - For file storage: Ensure directory exists for `file://./data/memory.db`
 - For SurrealDB server: Check SurrealDB is running: `surreal start --log debug`
 - Verify connection string format is correct
 
 ### "Invalid API key"
+
 - For OpenAI/Anthropic: Ensure API key is set and has credits
 - For ollama: Ensure ollama server is running on localhost:11434
 
 ### "ollama connection failed"
+
 - Check ollama is running: `ollama list`
 - Verify models are pulled: `ollama pull llama2` and `ollama pull nomic-embed-text`
 - Test ollama API: `curl http://localhost:11434/api/tags`
 
 ### "Memory not found"
+
 - Memories are indexed asynchronously - allow a moment after creation
 - Check the memory ID is correct
 - Verify namespace/database match
@@ -228,6 +235,7 @@ let config = MemoryConfig {
 ## What You Don't Need to Worry About
 
 The system handles these automatically:
+
 - Vector index management
 - Graph relationship creation
 - Embedding generation and updates

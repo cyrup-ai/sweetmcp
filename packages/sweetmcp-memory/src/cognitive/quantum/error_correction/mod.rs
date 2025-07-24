@@ -6,10 +6,15 @@
 
 // Stabilizer quantum error correction
 pub mod stabilizer_core_types;
-pub mod stabilizer_css_types;
-pub mod stabilizer_basic_operations;
-pub mod stabilizer_mod;
-pub use stabilizer_mod::*;
+
+// Surface code quantum
+// Re-export surface code module
+pub mod surface_code;
+
+// Backward compatibility alias
+pub use surface_code::SurfaceCode as QuantumErrorCorrection;
+pub use surface_code::SurfaceCode as TopologicalCode;
+pub use surface_code::SurfaceCode as ErrorCorrectionCode;
 
 // Main quantum error correction types
 pub mod quantum_error_correction;
@@ -24,9 +29,9 @@ pub use quantum_error_correction::{
 pub mod topological_types;
 pub use topological_types::*;
 
-// Ensure all types are properly exported
+// Ensure all types are properly exported (removed LogicalOperatorType duplicate)
 pub use topological_types::{
-    TopologicalCodeType, StabilizerType, ColorType, LogicalOperatorType,
+    TopologicalCodeType, StabilizerType, ColorType,
 };
 
 // Main error correction types for external use are now in quantum_error_correction module

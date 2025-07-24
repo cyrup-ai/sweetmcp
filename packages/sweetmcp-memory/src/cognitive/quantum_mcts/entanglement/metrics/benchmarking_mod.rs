@@ -3,11 +3,11 @@
 //! This module provides ergonomic re-exports and integration for all benchmarking
 //! components with zero allocation patterns and blazing-fast performance.
 
-// Core benchmarking modules
-pub mod benchmarking_core;
-pub mod benchmarking_results;
-pub mod benchmarking_comparison;
-pub mod benchmarking_monitor;
+// Re-export from sibling modules
+pub use super::benchmarking_core::*;
+pub use super::benchmarking_results::*;
+pub use super::benchmarking_comparison::*;
+pub use super::benchmarking_monitor::*;
 
 // Re-export core types and functionality
 pub use benchmarking_core::{

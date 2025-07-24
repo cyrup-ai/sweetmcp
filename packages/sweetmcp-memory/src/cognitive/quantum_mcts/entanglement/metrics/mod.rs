@@ -14,6 +14,7 @@ pub use benchmarking_mod as benchmarking;
 
 use std::time::{Duration, Instant};
 use std::sync::Arc;
+use crate::monitoring::metrics::MetricsCollector;
 
 // Re-export key types for ergonomic access
 pub use counters::{EntanglementCounters, CounterSnapshot};
@@ -33,6 +34,10 @@ pub use reporting::{
     DashboardVisualizer, MetricsReporting, PerformanceGrade, AggregatedMetrics,
     PerformanceTrend
 };
+
+// Type aliases for ergonomic access
+pub type EntanglementMetricsSummary = AggregatedMetrics;
+pub type MetricsCollector = MetricsReporter;
 
 /// Comprehensive metrics collection and analysis system
 #[derive(Debug)]

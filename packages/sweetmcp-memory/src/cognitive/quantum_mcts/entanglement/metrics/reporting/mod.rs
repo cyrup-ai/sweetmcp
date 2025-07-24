@@ -13,7 +13,7 @@ pub mod visualization;
 // Re-export core types for ergonomic access
 pub use types::{
     MetricsReport, SummaryReport, PerformanceDashboard, HistoricalDataPoint,
-    PerformanceTrend, AggregatedMetrics, PerformanceGrade
+    PerformanceTrend, AggregatedMetrics, PerformanceGrade, EntanglementMetricsSummary
 };
 
 // Re-export generation functionality

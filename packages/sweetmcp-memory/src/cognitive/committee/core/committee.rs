@@ -15,7 +15,8 @@ use sha2::{Digest, Sha256};
 
 use crate::cognitive::mcts::CodeState;
 use crate::cognitive::types::{CognitiveError, ImpactFactors, OptimizationSpec};
-use super::agents::{CommitteeAgent, AgentEvaluation, AgentPerspective};
+use super::agents::{CommitteeAgent, AgentEvaluation};
+use super::agent_perspectives::AgentPerspective;
 use super::evaluation::{EvaluationRubric, ConsensusDecision, EvaluationContext, ScoringWeights};
 
 /// Committee configuration for evaluation behavior

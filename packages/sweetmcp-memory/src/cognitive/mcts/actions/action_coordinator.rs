@@ -6,7 +6,11 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::time::Instant;
-use super::super::types::{ActionMetadata, NodeStatistics};
+use std::sync::Arc;
+use super::super::types::{ActionMetadata, NodeStatistics, CodeState};
+use super::action_generator::ActionGenerator;
+use crate::cognitive::types::{OptimizationSpec};
+use crate::cognitive::committee::EvaluationCommittee;
 
 /// Action coordinator for managing MCTS action execution
 #[derive(Debug)]
@@ -19,16 +23,63 @@ pub struct ActionCoordinator {
     pub config: CoordinatorConfig,
     /// Performance metrics
     pub metrics: CoordinatorMetrics,
+    /// Action generator for generating possible actions (optional)
+    pub action_generator: Option<ActionGenerator>,
 }
 
 impl ActionCoordinator {
-    /// Create new action coordinator
+    /// Create new action coordinator with basic configuration
     pub fn new(config: CoordinatorConfig) -> Self {
         Self {
             active_actions: HashMap::with_capacity(config.initial_capacity),
             statistics: CoordinatorStatistics::new(),
             config,
             metrics: CoordinatorMetrics::new(),
+            action_generator: None,
+        }
+    }
+
+    /// Create new action coordinator with proper dependencies
+    pub fn new_with_generator(
+        optimization_spec: Arc<OptimizationSpec>,
+        committee: Arc<EvaluationCommittee>,
+        user_objective: String,
+    ) -> Self {
+        let action_generator = ActionGenerator::new(
+            optimization_spec,
+            committee,
+            user_objective,
+        );
+
+        Self {
+            active_actions: HashMap::with_capacity(1000),
+            statistics: CoordinatorStatistics::new(),
+            config: CoordinatorConfig::default(),
+            metrics: CoordinatorMetrics::new(),
+            action_generator: Some(action_generator),
+        }
+    }
+
+    /// Get possible actions for a given state
+    pub fn get_possible_actions(&mut self, state: &CodeState) -> Vec<String> {
+        if let Some(ref mut generator) = self.action_generator {
+            generator.get_possible_actions(state)
+        } else {
+            // Fallback to basic actions if no generator is available
+            vec![
+                "optimize_memory_allocation".to_string(),
+                "reduce_computational_complexity".to_string(),
+                "improve_algorithm_efficiency".to_string(),
+                "parallelize_independent_work".to_string(),
+                "inline_critical_functions".to_string(),
+            ]
+        }
+    }
+
+    /// Clear caches if action generator is available
+    pub fn clear_caches(&mut self) {
+        if let Some(ref mut generator) = self.action_generator {
+            generator.clear_cache();
         }
     }
 

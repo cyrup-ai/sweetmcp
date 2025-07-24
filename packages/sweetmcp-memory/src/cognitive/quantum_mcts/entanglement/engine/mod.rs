@@ -13,13 +13,13 @@ use crate::cognitive::{
     quantum::EntanglementGraph,
     types::CognitiveError,
 };
-use super::super::{
+use super::{
     core::QuantumEntanglementManager,
     analysis::{NetworkTopology, NetworkTopologyAnalyzer},
     metrics::{EntanglementMetrics, PerformanceTracker},
-    config::QuantumMCTSConfig,
 };
-use super::super::super::{
+use super::super::{
+    config::QuantumMCTSConfig,
     node_state::QuantumMCTSNode,
 };
 
@@ -31,16 +31,8 @@ pub mod combined_optimization;
 pub mod maintenance_statistics;
 pub mod maintenance_assessment;
 pub mod performance_grading;
-pub mod balancing_core;
-pub mod balancing_algorithms;
-pub mod balancing_optimization;
 
-// Import submodule functionality
-use operation_types::{EngineOperationType, EngineOperationResult, EngineOperationDetails};
-use engine_factory::{QuantumEntanglementEngineFactory, WorkloadType};
-use maintenance_statistics::{EngineStatistics, MaintenanceAssessment, MaintenancePriority, MaintenanceAction};
-use maintenance_assessment::{MaintenancePlan, ResourceRequirements};
-use performance_grading::{PerformanceGrades, EnginePerformanceReport, TrendDirection};
+// Import submodule functionality (removed duplicate imports - using pub use instead)
 
 // Re-export all types for ergonomic usage
 pub use self::{
@@ -49,11 +41,10 @@ pub use self::{
     maintenance_statistics::{EngineStatistics, MaintenanceAssessment, MaintenancePriority, MaintenanceAction},
     maintenance_assessment::{MaintenancePlan, ResourceRequirements},
     performance_grading::{PerformanceGrades, EnginePerformanceReport, TrendDirection},
-    balancing_core::{BalancingResult, NodeBalance, BalancingStrategy, NetworkBalanceAnalysis, DistributionStatistics},
+    balancing::{BalancingResult, NodeBalance, BalancingStrategy, NetworkBalanceAnalysis, DistributionStatistics},
     core::{QuantumEntanglementEngine, EngineStatus},
     optimization::{OptimizationResult, CreationResult},
     pruning::{PruningResult, PruningStrategy, StrengthStatistics, RecentPruningStatistics},
-    balancing::{BalancingResult, NodeBalance, BalancingStrategy, NetworkBalanceAnalysis, DistributionStatistics},
     health::{NetworkHealthReport, HealthCheckConfig, HealthIssue, IssueSeverity},
 };
 

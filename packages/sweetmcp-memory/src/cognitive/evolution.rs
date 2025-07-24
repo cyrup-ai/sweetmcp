@@ -10,8 +10,7 @@ use crate::cognitive::types::{
     PendingOptimizationResult, EvolutionRules,
 };
 
-// Re-export EvolutionRules for external use
-pub use crate::cognitive::types::EvolutionRules;
+// Re-export removed to fix circular import (EvolutionRules already available via types module)
 use std::sync::Arc;
 use tokio::sync::{RwLock, mpsc, oneshot};
 use tracing::{error, info};
@@ -245,6 +244,8 @@ impl EvolutionEngine {
             }),
         }
     }
+
+
 
     pub async fn evolve(&mut self) -> Result<bool, CognitiveError> {
         self.generation_count += 1;
