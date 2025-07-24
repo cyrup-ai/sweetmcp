@@ -11,8 +11,8 @@ pub mod entanglement_coordinator;
 pub mod entanglement_analysis;
 pub mod entanglement_factory;
 
-// Alias for ergonomic access
-pub use entanglement_mod as entanglement;
+// Import entanglement directory as the primary module
+pub mod entanglement;
 pub mod expansion;
 pub mod improvement;
 pub mod node_state;

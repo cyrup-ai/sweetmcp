@@ -3,11 +3,12 @@
 //! This module provides comprehensive MCTS node search functionality
 //! with zero-allocation patterns and blazing-fast performance.
 
-pub mod node_search_types;
-pub mod node_search_bottleneck;
-pub mod node_search_basic;
-pub mod node_search_statistics;
-pub mod node_search_advanced;
+// Re-export from sibling modules
+pub use super::node_search_types;
+pub use super::node_search_bottleneck;
+pub use super::node_search_basic;
+pub use super::node_search_statistics;
+pub use super::node_search_advanced;
 
 // Re-export core types for ergonomic access
 pub use node_search_types::{

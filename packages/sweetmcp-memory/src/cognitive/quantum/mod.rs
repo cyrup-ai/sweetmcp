@@ -20,6 +20,8 @@ pub mod types;
 pub use complex::Complex64;
 pub use config::{QuantumOrchestrationConfig, RecursiveState};
 pub use entanglement::{EntanglementGraph, EntanglementLink};
+// Alias for backward compatibility
+pub use EntanglementGraph as EntanglementMap;
 pub use error_correction::{ErrorCorrectionCode, QuantumErrorCorrection};
 pub use hardware::{QuantumConfig, QuantumHardwareBackend};
 pub use mcts_integration::QuantumOrchestrator;

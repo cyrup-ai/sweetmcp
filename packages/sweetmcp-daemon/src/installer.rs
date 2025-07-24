@@ -63,7 +63,7 @@ impl<T, E> AsyncTask<Result<T, E>> {
     pub async fn into_result(self) -> Result<T, E> {
         self.await
     }
-    
+
     /// Map the success value if the task completes successfully
     pub async fn map_ok<U, F>(self, f: F) -> Result<U, E>
     where
@@ -74,7 +74,7 @@ impl<T, E> AsyncTask<Result<T, E>> {
             Err(error) => Err(error),
         }
     }
-    
+
     /// Map the error value if the task completes with an error
     pub async fn map_err<F, U>(self, f: F) -> Result<T, U>
     where
@@ -386,10 +386,14 @@ async fn uninstall_impl(dry: bool) -> Result<()> {
         Ok(()) => {
             info!("Daemon uninstalled successfully");
         }
-        Err(InstallerError::Cancelled) => return Err(anyhow::anyhow!("Uninstallation cancelled by user")),
-        Err(InstallerError::PermissionDenied) => return Err(anyhow::anyhow!(
-            "Permission denied. Please provide administrator credentials."
-        )),
+        Err(InstallerError::Cancelled) => {
+            return Err(anyhow::anyhow!("Uninstallation cancelled by user"))
+        }
+        Err(InstallerError::PermissionDenied) => {
+            return Err(anyhow::anyhow!(
+                "Permission denied. Please provide administrator credentials."
+            ))
+        }
         Err(e) => return Err(e.into()),
     }
 
@@ -400,9 +404,16 @@ async fn uninstall_impl(dry: bool) -> Result<()> {
     // Remove auto-generated certificates from ~/.config/sweetmcp
     let sweetmcp_config_dir = config_dir.join("sweetmcp");
     if sweetmcp_config_dir.exists() {
-        info!("Removing auto-generated certificates from: {}", sweetmcp_config_dir.display());
-        fs::remove_dir_all(&sweetmcp_config_dir)
-            .with_context(|| format!("Failed to remove certificates directory: {}", sweetmcp_config_dir.display()))?;
+        info!(
+            "Removing auto-generated certificates from: {}",
+            sweetmcp_config_dir.display()
+        );
+        fs::remove_dir_all(&sweetmcp_config_dir).with_context(|| {
+            format!(
+                "Failed to remove certificates directory: {}",
+                sweetmcp_config_dir.display()
+            )
+        })?;
     }
 
     // Remove /opt/sweetmcp if it exists (system-level components)

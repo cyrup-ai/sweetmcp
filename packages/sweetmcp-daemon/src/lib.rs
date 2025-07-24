@@ -18,5 +18,5 @@ pub use config::{HealthCheckConfig, LogRotationConfig, ServiceConfig, ServiceDef
 pub use daemon::daemonise;
 pub use ipc::{Cmd, Evt};
 pub use manager::ServiceManager;
-pub use security::{VulnerabilityScanner, AuditResult, AuditThresholds, VulnerabilityMetrics};
+pub use security::{AuditResult, AuditThresholds, VulnerabilityMetrics, VulnerabilityScanner};
 pub use state_machine::{Action, Event, State, Transition};

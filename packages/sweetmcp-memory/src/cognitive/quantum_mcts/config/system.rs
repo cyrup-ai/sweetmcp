@@ -25,6 +25,26 @@ pub enum ArchType {
     Unknown,
 }
 
+/// Standalone memory usage estimation function for external use
+pub fn estimate_memory_usage(config: &QuantumMCTSConfig) -> u64 {
+    SystemAnalyzer::get().estimate_memory_usage(config)
+}
+
+/// Check if system is compatible with configuration
+pub fn is_system_compatible(config: &QuantumMCTSConfig) -> bool {
+    SystemAnalyzer::get().is_compatible(config)
+}
+
+/// Get recommended configuration for current system
+pub fn get_recommended_config() -> QuantumMCTSConfig {
+    SystemAnalyzer::get().recommended_config()
+}
+
+/// Get system-optimized configuration
+pub fn get_system_optimized_config() -> QuantumMCTSConfig {
+    SystemAnalyzer::get().system_optimized_config()
+}
+
 /// System resource analyzer with caching for performance
 pub struct SystemAnalyzer {
     resources: &'static SystemResources,

@@ -8,12 +8,16 @@ pub mod tree_expansion;
 pub mod node_creation;
 pub mod evaluation;
 pub mod pruning;
+pub mod quantum_expander;
 
 // Re-export key types and functionality
 pub use tree_expansion::{TreeExpansionEngine, QuantumTransformation};
 pub use node_creation::{QuantumNodeFactory};
 pub use evaluation::{QuantumNodeEvaluator, EvaluationResult, QualityMetrics, EvaluationStats};
 pub use pruning::{QuantumTreePruner, PruningStrategy, PruningResult, PruningStats};
+pub use quantum_expander::{
+    QuantumExpander, QuantumExpansionConfig, QuantumExpansionStatistics, QuantumExpansionMetrics,
+};
 
 use std::collections::HashMap;
 use std::sync::Arc;

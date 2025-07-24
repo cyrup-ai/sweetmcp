@@ -17,7 +17,9 @@ use super::{
 };
 
 // Import and re-export submodules from entanglement directory
-pub use crate::cognitive::quantum_mcts::entanglement::{
+// Note: Import directly from the entanglement directory, not through the alias
+// The entanglement directory is at the same level as this file
+use super::entanglement::{
     core, analysis, metrics, engine
 };
 

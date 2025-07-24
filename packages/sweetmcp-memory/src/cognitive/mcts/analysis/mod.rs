@@ -8,6 +8,14 @@ pub mod path_finder;
 pub mod node_search;
 pub mod structure_analysis;
 
+// Export all node_search submodules
+pub mod node_search_types;
+pub mod node_search_bottleneck;
+pub mod node_search_basic;
+pub mod node_search_statistics;
+pub mod node_search_advanced;
+pub mod node_search_mod;
+
 // Re-export key types and functions for ergonomic access
 pub use tree_analyzer::{
     TreeAnalyzer, NodeTypeCounts, VisitStatistics,
@@ -21,6 +29,17 @@ pub use node_search::{
     NodeSearch, NodeCriteria, NodeMatch, NodeSortCriteria,
     CharacteristicNodes, BottleneckNode, BottleneckType, BottleneckSeverity,
 };
+
+// Re-export from node_search submodules
+pub use node_search_types::*;
+pub use node_search_bottleneck::*;
+pub use node_search_basic::*;
+pub use node_search_statistics::*;
+pub use node_search_advanced::*;
+pub use node_search_mod::*;
+
+// Alias for backward compatibility
+pub use BottleneckNode as Bottleneck;
 
 pub use structure_analysis::{
     StructureAnalyzer, TreeStructureAnalysis, TreeHealthReport,

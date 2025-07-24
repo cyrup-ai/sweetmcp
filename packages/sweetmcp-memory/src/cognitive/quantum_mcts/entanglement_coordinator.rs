@@ -17,9 +17,9 @@ use super::{
 };
 
 // Import submodule types
-use super::analysis::{NetworkTopology, NetworkInfluenceCalculator, NetworkTopologyAnalyzer};
-use super::metrics::{EntanglementMetrics, EntanglementMetricsSummary, MetricsCollector};
-use super::engine::{QuantumEntanglementEngine, OptimizationResult, PruningResult, NetworkHealthReport};
+use super::entanglement::analysis::{NetworkTopology, NetworkInfluenceCalculator, NetworkTopologyAnalyzer};
+use super::entanglement::metrics::{EntanglementMetrics, EntanglementMetricsSummary, MetricsCollector};
+use super::entanglement::engine::{QuantumEntanglementEngine, OptimizationResult, PruningResult, NetworkHealthReport};
 
 /// Comprehensive entanglement coordinator with all functionality
 pub struct EntanglementCoordinator {

@@ -19,6 +19,10 @@ pub use coordinator_types::{
     OptimizationSpec, OptimizationPipelineResult, SearchMetrics, OptimizationMetrics,
     CoordinationMetrics,
 };
+
+// Re-export vector types for backward compatibility
+pub use crate::vector::vector_search::SearchResult as VectorSearchResult;
+pub use crate::vector::VectorStore;
 pub use coordinator_analysis::{
     RecentPerformance, PerformanceTrend, MetricsSummary, VectorCharacteristics,
     OptimizationRecommendation, OptimizationParameters,
@@ -28,10 +32,16 @@ pub use coordinator_config::{CoordinatorConfig, PerformanceMetrics};
 // Re-export macros
 pub use crate::{optimize_vectors, search_vectors};
 
+// Re-export submodules for internal use
+// Re-export optimization algorithm modules
+pub use optimization_algorithms::*;
+
+// Re-export search strategies
+pub mod search_strategies;
+pub use search_strategies::SearchStrategy;
+
 // Re-export related modules for convenience
 pub use super::async_vector_operations::{VectorSearchResult, VectorStore, DistanceMetric};
-pub use super::search_strategies::SearchStrategy;
-pub use super::optimization_algorithms::OptimizationAlgorithm;
 
 /// Create a new async vector optimization coordinator with default configuration
 #[inline]

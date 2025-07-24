@@ -25,7 +25,8 @@ pub fn tools_list_stream(
                     match serde_json::from_str::<ListToolsResult>(result) {
                         Ok(parsed) => {
                             for tool in parsed.tools {
-                                pm.tool_to_plugin.insert(tool.name.clone(), plugin_name.clone());
+                                pm.tool_to_plugin
+                                    .insert(tool.name.clone(), plugin_name.clone());
                                 if tx.send(Ok(tool)).await.is_err() {
                                     // Receiver likely dropped, stop sending
                                     log::warn!("Receiver dropped for tools_list_stream");

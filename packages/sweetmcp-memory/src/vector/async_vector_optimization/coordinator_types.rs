@@ -14,6 +14,56 @@ use crate::vector::async_vector_optimization::optimization_algorithms::{
     MemoryLayoutResult
 };
 
+/// Search metrics for performance tracking
+#[derive(Debug, Clone)]
+pub struct SearchMetrics {
+    /// Total search operations performed
+    pub total_searches: usize,
+    /// Average search time
+    pub avg_search_time_ms: f64,
+    /// Search success rate
+    pub success_rate: f64,
+    /// Results per search
+    pub avg_results_per_search: f64,
+}
+
+impl SearchMetrics {
+    /// Create new search metrics
+    pub fn new() -> Self {
+        Self {
+            total_searches: 0,
+            avg_search_time_ms: 0.0,
+            success_rate: 1.0,
+            avg_results_per_search: 0.0,
+        }
+    }
+}
+
+/// Optimization metrics for performance tracking
+#[derive(Debug, Clone)]
+pub struct OptimizationMetrics {
+    /// Total optimization operations performed
+    pub total_optimizations: usize,
+    /// Average optimization time
+    pub avg_optimization_time_ms: f64,
+    /// Optimization success rate
+    pub success_rate: f64,
+    /// Performance improvement ratio
+    pub improvement_ratio: f64,
+}
+
+impl OptimizationMetrics {
+    /// Create new optimization metrics
+    pub fn new() -> Self {
+        Self {
+            total_optimizations: 0,
+            avg_optimization_time_ms: 0.0,
+            success_rate: 1.0,
+            improvement_ratio: 1.0,
+        }
+    }
+}
+
 /// Coordination metrics for performance tracking
 #[derive(Debug, Clone)]
 pub struct CoordinationMetrics {

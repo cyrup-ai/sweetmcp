@@ -17,6 +17,18 @@ pub mod engine_issue_collection;
 pub mod entanglement_types;
 pub mod entanglement_optimization_utils;
 pub mod entanglement_health_utils;
+pub mod entanglement_integration;
+
+// Decomposed submodules - ensure proper directory structure
+pub mod engine;
+pub mod analysis;
+pub mod metrics;
+
+// Create core module alias for backward compatibility
+pub mod core {
+    pub use super::engine_core::*;
+    pub use super::entanglement_types::*;
+}
 
 // Re-export core types and functionality
 pub use engine_core::QuantumEntanglementEngine;
@@ -27,6 +39,12 @@ pub use engine_health::NetworkPerformanceMetrics;
 pub use engine_health_types::{CriticalNode, CriticalityType, HealthStatus};
 pub use engine_issue_types::{NetworkIssue, IssueSeverity, IssueCategory};
 pub use engine_issue_collection::{IssueCollection, IssueSummaryStats};
+
+// Re-export from decomposed submodules
+pub use engine::*;
+pub use analysis::*;
+pub use metrics::*;
+pub use core::*;
 
 // Re-export entanglement types
 pub use entanglement_types::{

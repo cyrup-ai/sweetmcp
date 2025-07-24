@@ -41,17 +41,15 @@ pub fn prompts_get_pending(
 
         let (plugin_name, prompt_metadata) = {
             // Lock-free search in DashMap
-            let found = plugin_manager.prompt_info
-                .iter()
-                .find(|entry| {
-                    let (_, (_, prompt)) = (entry.key(), entry.value());
-                    prompt.id == prompt_id
-                });
+            let found = plugin_manager.prompt_info.iter().find(|entry| {
+                let (_, (_, prompt)) = (entry.key(), entry.value());
+                prompt.id == prompt_id
+            });
             match found {
                 Some(entry) => {
                     let (_, (name, metadata)) = (entry.key(), entry.value());
                     (name.clone(), metadata.clone())
-                },
+                }
                 None => {
                     let _ = tx.send(Err(HandlerError::new(format!(
                         "Prompt '{}' not found",

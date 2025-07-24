@@ -89,7 +89,7 @@ impl AutoConfigService {
                 }
                 Cmd::Stop => {
                     info!("Stopping auto-config service");
-                    
+
                     // Trigger graceful cancellation
                     cancel_token.cancel();
 

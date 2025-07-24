@@ -9,13 +9,13 @@
 
 #![allow(dead_code)]
 
+use dashmap::DashMap;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::sync::Arc;
 use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::Arc;
 use std::time::{Duration, Instant};
 use tracing::{debug, info, warn};
-use dashmap::DashMap;
 
 /// Token bucket rate limiting algorithm configuration
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -341,11 +341,11 @@ impl AtomicF64 {
             inner: AtomicU64::new(value.to_bits()),
         }
     }
-    
+
     fn load(&self, order: Ordering) -> f64 {
         f64::from_bits(self.inner.load(order))
     }
-    
+
     fn store(&self, value: f64, order: Ordering) {
         self.inner.store(value.to_bits(), order);
     }
@@ -485,7 +485,8 @@ impl AdvancedRateLimitManager {
     ) -> bool {
         // Lock-free get or insert endpoint-level DashMap
         if !self.peer_limiters.contains_key(endpoint) {
-            self.peer_limiters.insert(endpoint.to_string(), DashMap::new());
+            self.peer_limiters
+                .insert(endpoint.to_string(), DashMap::new());
         }
 
         // Lock-free access to endpoint's peer limiters
@@ -530,7 +531,8 @@ impl AdvancedRateLimitManager {
     /// (reduces effective rate limits when system is stressed)
     pub fn update_load_multiplier(&self, multiplier: f64) {
         let clamped_multiplier = multiplier.clamp(0.1, 10.0);
-        self.load_multiplier.store(clamped_multiplier, Ordering::Relaxed);
+        self.load_multiplier
+            .store(clamped_multiplier, Ordering::Relaxed);
 
         if multiplier < 1.0 {
             info!(
@@ -571,7 +573,8 @@ impl AdvancedRateLimitManager {
         );
 
         // Lock-free access to peer limiters count
-        let total_peer_limiters: usize = self.peer_limiters
+        let total_peer_limiters: usize = self
+            .peer_limiters
             .iter()
             .map(|entry| entry.value().len())
             .sum();
@@ -594,15 +597,18 @@ impl AdvancedRateLimitManager {
 
     /// Remove peer limiters that haven't been used recently using lock-free operations
     pub fn cleanup_unused_limiters(&self) {
-        let initial_count: usize = self.peer_limiters
+        let initial_count: usize = self
+            .peer_limiters
             .iter()
             .map(|entry| entry.value().len())
             .sum();
 
         // Lock-free removal of peer limiters for endpoints that are no longer configured
-        self.peer_limiters.retain(|endpoint, _| self.endpoint_configs.contains_key(endpoint));
+        self.peer_limiters
+            .retain(|endpoint, _| self.endpoint_configs.contains_key(endpoint));
 
-        let final_count: usize = self.peer_limiters
+        let final_count: usize = self
+            .peer_limiters
             .iter()
             .map(|entry| entry.value().len())
             .sum();

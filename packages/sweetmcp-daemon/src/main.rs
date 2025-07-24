@@ -57,7 +57,6 @@ async fn real_main() -> Result<()> {
     }
 }
 
-
 async fn run_daemon(
     force_foreground: bool,
     config_path: Option<String>,
@@ -105,7 +104,6 @@ async fn run_daemon(
     info!("Cyrup daemon exiting");
     Ok(())
 }
-
 
 async fn handle_sign_command(
     binary: Option<String>,

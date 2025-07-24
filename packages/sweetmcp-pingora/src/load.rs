@@ -1,7 +1,7 @@
 //! 1-minute load-average + inflight counter overload check.
 //! Lock-free implementation using atomic operations for blazing-fast performance.
 
-use atomic_counter::{RelaxedCounter, AtomicCounter};
+use atomic_counter::{AtomicCounter, RelaxedCounter};
 use std::sync::atomic::{AtomicU64, Ordering};
 use sysinfo::System;
 
@@ -12,16 +12,16 @@ use sysinfo::System;
 pub struct Load {
     /// Inflight request counter using atomic operations - hot path field
     inflight: AtomicU64,
-    
+
     // Cache-line padding to prevent false sharing between atomic counters
     _pad1: [u8; 64 - 8], // 64 bytes (cache line) - 8 bytes (AtomicU64)
-    
+
     /// Total request counter for statistics - separate cache line
     total_requests: RelaxedCounter,
-    
+
     // Additional padding to ensure CPU count doesn't share cache line with hot counters
     _pad2: [u8; 64 - 8], // 64 bytes - 8 bytes (RelaxedCounter size)
-    
+
     /// CPU count cached at initialization for load average comparison - cold field
     cpus: usize,
 }
@@ -33,7 +33,7 @@ impl Load {
         let mut s = System::new();
         s.refresh_cpu_all();
         let cpus = s.cpus().len().max(1); // Ensure at least 1 CPU for calculations
-        
+
         Self {
             inflight: AtomicU64::new(0),
             _pad1: [0; 64 - 8], // Initialize padding with zeros
@@ -42,7 +42,7 @@ impl Load {
             cpus,
         }
     }
-    
+
     /// Increment inflight request counter atomically.
     /// Lock-free operation with relaxed ordering for maximum performance.
     #[inline]
@@ -50,21 +50,21 @@ impl Load {
         self.inflight.fetch_add(1, Ordering::Relaxed);
         self.total_requests.inc();
     }
-    
+
     /// Decrement inflight request counter atomically.
     /// Lock-free operation with relaxed ordering for maximum performance.
     #[inline]
     pub fn dec(&self) {
         self.inflight.fetch_sub(1, Ordering::Relaxed);
     }
-    
+
     /// Get current inflight request count atomically.
     /// Lock-free read operation for monitoring and diagnostics.
     #[inline]
     pub fn inflight_count(&self) -> u64 {
         self.inflight.load(Ordering::Relaxed)
     }
-    
+
     /// Get total request count since initialization.
     /// Lock-free read operation for statistics collection.
     #[inline]
@@ -80,14 +80,14 @@ impl Load {
         // Static call to load_average - no system state required
         let load_avg = System::load_average();
         let load1 = load_avg.one;
-        
+
         // Check both CPU load and inflight request limits
         let cpu_overloaded = load1 > self.cpus as f64;
         let requests_overloaded = self.inflight.load(Ordering::Relaxed) > max_inflight;
-        
+
         cpu_overloaded || requests_overloaded
     }
-    
+
     /// Get current system load metrics for monitoring.
     /// Lock-free operation returning load statistics.
     pub fn load_metrics(&self) -> LoadMetrics {

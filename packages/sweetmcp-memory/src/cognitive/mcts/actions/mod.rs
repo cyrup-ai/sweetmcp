@@ -6,6 +6,7 @@
 pub mod action_generator;
 pub mod action_applicator;
 pub mod action_validator;
+pub mod action_coordinator;
 
 // Re-export key types and functions for ergonomic access
 pub use action_generator::{
@@ -16,8 +17,17 @@ pub use action_applicator::{
     ActionApplicator, ApplicationCacheStats,
 };
 
+// Export aliases for backward compatibility
+pub use ActionCacheStats as CacheStatistics;
+pub use ApplicationCacheStats as ApplicationStatistics;
+
 pub use action_validator::{
     ActionValidator, ValidationResult, ValidationStats,
+};
+
+pub use action_coordinator::{
+    ActionCoordinator, CoordinatorStatistics, CoordinatorConfig,
+    CoordinatorMetrics, CoordinatorError,
 };
 
 // Common imports for all submodules

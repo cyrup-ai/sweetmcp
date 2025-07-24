@@ -10,9 +10,9 @@ use std::time::Instant;
 use crate::cognitive::types::CognitiveError;
 use super::{
     node_state::QuantumMCTSNode,
-    analysis::{NetworkTopology, EntanglementQuality, NetworkTopologyAnalyzer, NetworkBottleneck},
-    engine::{QuantumEntanglementEngine, NetworkHealthReport},
-    metrics::EntanglementMetricsSummary,
+    entanglement::analysis::{NetworkTopology, EntanglementQuality, NetworkTopologyAnalyzer, NetworkBottleneck},
+    entanglement::engine::{QuantumEntanglementEngine, NetworkHealthReport},
+    entanglement::metrics::EntanglementMetricsSummary,
 };
 
 /// Comprehensive analysis report combining all network metrics

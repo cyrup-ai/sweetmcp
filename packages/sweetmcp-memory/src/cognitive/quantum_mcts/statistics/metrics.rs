@@ -6,6 +6,56 @@
 use serde::Serialize;
 use crate::cognitive::quantum::Complex64;
 
+/// Convergence analysis metrics
+#[derive(Debug, Clone, Serialize)]
+pub struct ConvergenceMetrics {
+    /// Number of iterations to convergence
+    pub iterations_to_convergence: u32,
+    /// Final convergence rate
+    pub convergence_rate: f64,
+    /// Convergence stability score
+    pub stability_score: f64,
+    /// Whether convergence was achieved
+    pub converged: bool,
+}
+
+impl ConvergenceMetrics {
+    /// Create new convergence metrics
+    pub fn new(iterations: u32, rate: f64, stability: f64, converged: bool) -> Self {
+        Self {
+            iterations_to_convergence: iterations,
+            convergence_rate: rate,
+            stability_score: stability,
+            converged,
+        }
+    }
+}
+
+/// Performance metrics for quantum MCTS
+#[derive(Debug, Clone, Serialize)]
+pub struct PerformanceMetrics {
+    /// Average execution time per iteration
+    pub avg_execution_time_ms: f64,
+    /// Memory usage statistics
+    pub memory_usage_mb: f64,
+    /// Quantum circuit depth
+    pub circuit_depth: u32,
+    /// Gate count
+    pub gate_count: usize,
+}
+
+impl PerformanceMetrics {
+    /// Create new performance metrics
+    pub fn new(exec_time: f64, memory: f64, depth: u32, gates: usize) -> Self {
+        Self {
+            avg_execution_time_ms: exec_time,
+            memory_usage_mb: memory,
+            circuit_depth: depth,
+            gate_count: gates,
+        }
+    }
+}
+
 /// Tree depth analysis with detailed distribution
 #[derive(Debug, Clone, Serialize)]
 pub struct DepthStatistics {

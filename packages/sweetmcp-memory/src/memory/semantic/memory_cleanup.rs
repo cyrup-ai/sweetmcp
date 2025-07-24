@@ -14,6 +14,47 @@ use super::confidence::ConfidenceLevel;
 use super::semantic_item::SemanticItem;
 use super::semantic_relationship::SemanticRelationship;
 
+/// Memory optimization strategy
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum OptimizationStrategy {
+    /// Conservative optimization (preserve more data)
+    Conservative,
+    /// Balanced optimization (moderate cleanup)
+    Balanced,
+    /// Aggressive optimization (maximum cleanup)
+    Aggressive,
+    /// Custom optimization with specific parameters
+    Custom { threshold: f64, max_age_days: u32 },
+}
+
+/// Memory report for optimization analysis
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MemoryReport {
+    /// Total memory usage in bytes
+    pub total_memory_bytes: usize,
+    /// Number of active items
+    pub active_items: usize,
+    /// Number of stale items
+    pub stale_items: usize,
+    /// Memory fragmentation ratio
+    pub fragmentation_ratio: f64,
+    /// Optimization recommendations
+    pub recommendations: Vec<String>,
+}
+
+impl MemoryReport {
+    /// Create new memory report
+    pub fn new() -> Self {
+        Self {
+            total_memory_bytes: 0,
+            active_items: 0,
+            stale_items: 0,
+            fragmentation_ratio: 0.0,
+            recommendations: Vec::new(),
+        }
+    }
+}
+
 /// Memory cleanup report
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CleanupReport {

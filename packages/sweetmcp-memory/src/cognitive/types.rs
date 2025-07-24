@@ -5,6 +5,13 @@ use std::collections::HashMap;
 use std::fmt;
 use uuid::Uuid;
 
+// Re-export MCTS types for backward compatibility
+pub use super::mcts::types::{MCTSNode, CodeState};
+
+// Re-export evolution types with alias for backward compatibility
+pub use super::evolution::EvolutionRules;
+pub use super::evolution::EvolutionRules as EvolutionRule;
+
 /// Cognitive state representing the current understanding and context
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CognitiveState {

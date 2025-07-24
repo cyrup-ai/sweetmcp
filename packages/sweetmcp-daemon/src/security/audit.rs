@@ -166,7 +166,7 @@ impl Vulnerability {
     /// Check if vulnerability matches pattern using SIMD-accelerated search
     pub fn matches_pattern(&self, pattern: &[u8]) -> bool {
         let finder = memmem::Finder::new(pattern);
-        
+
         finder.find(self.id.as_bytes()).is_some()
             || finder.find(self.package.as_bytes()).is_some()
             || finder.find(self.description.as_bytes()).is_some()
@@ -210,28 +210,35 @@ impl AuditResult {
 
     /// Add vulnerability to result with capacity checking
     pub fn add_vulnerability(&mut self, vulnerability: Vulnerability) -> Result<(), AuditError> {
-        self.vulnerabilities.try_push(vulnerability)
+        self.vulnerabilities
+            .try_push(vulnerability)
             .map_err(|_| AuditError::TooManyVulnerabilities)
     }
 
     /// Get vulnerability count by severity
     pub fn count_by_severity(&self, severity: VulnerabilitySeverity) -> usize {
-        self.vulnerabilities.iter()
+        self.vulnerabilities
+            .iter()
             .filter(|v| v.severity == severity)
             .count()
     }
 
     /// Check if result passes given thresholds
     pub fn passes_thresholds(&self, thresholds: &AuditThresholds) -> bool {
-        self.count_by_severity(VulnerabilitySeverity::Critical) <= thresholds.critical_max.load(Ordering::Relaxed) as usize
-            && self.count_by_severity(VulnerabilitySeverity::High) <= thresholds.high_max.load(Ordering::Relaxed) as usize
-            && self.count_by_severity(VulnerabilitySeverity::Medium) <= thresholds.medium_max.load(Ordering::Relaxed) as usize
-            && self.count_by_severity(VulnerabilitySeverity::Low) <= thresholds.low_max.load(Ordering::Relaxed) as usize
+        self.count_by_severity(VulnerabilitySeverity::Critical)
+            <= thresholds.critical_max.load(Ordering::Relaxed) as usize
+            && self.count_by_severity(VulnerabilitySeverity::High)
+                <= thresholds.high_max.load(Ordering::Relaxed) as usize
+            && self.count_by_severity(VulnerabilitySeverity::Medium)
+                <= thresholds.medium_max.load(Ordering::Relaxed) as usize
+            && self.count_by_severity(VulnerabilitySeverity::Low)
+                <= thresholds.low_max.load(Ordering::Relaxed) as usize
     }
 
     /// Get total vulnerability weight for scoring
     pub fn total_weight(&self) -> u32 {
-        self.vulnerabilities.iter()
+        self.vulnerabilities
+            .iter()
             .map(|v| v.severity.weight())
             .sum()
     }
@@ -345,7 +352,7 @@ impl VulnerabilityScanner {
         self.total_scans.fetch_add(1, Ordering::Relaxed);
 
         let result = self.run_cargo_audit().await;
-        
+
         match &result {
             Ok(audit_result) => {
                 if audit_result.success {
@@ -399,16 +406,16 @@ impl VulnerabilityScanner {
         // Use SIMD-accelerated pattern matching to find vulnerability entries
         let vuln_pattern = b"\"type\":\"vulnerability\"";
         let finder = memmem::Finder::new(vuln_pattern);
-        
+
         let mut offset = 0;
         while let Some(pos) = finder.find(&output.as_bytes()[offset..]) {
             let start = offset + pos;
-            
+
             // Extract vulnerability JSON object
             if let Some(vuln) = self.extract_vulnerability_at(output, start) {
                 result.add_vulnerability(vuln)?;
             }
-            
+
             offset = start + vuln_pattern.len();
         }
 
@@ -488,22 +495,22 @@ impl VulnerabilityScanner {
     fn extract_json_field(&self, json: &str, field: &str) -> Option<String> {
         let pattern = format!("\"{}\":", field);
         let finder = memmem::Finder::new(pattern.as_bytes());
-        
+
         let pos = finder.find(json.as_bytes())?;
         let start = pos + pattern.len();
-        
+
         // Skip whitespace
         let mut value_start = start;
         while value_start < json.len() && json.as_bytes()[value_start].is_ascii_whitespace() {
             value_start += 1;
         }
-        
+
         if value_start >= json.len() || json.as_bytes()[value_start] != b'"' {
             return None;
         }
-        
+
         value_start += 1; // Skip opening quote
-        
+
         // Find closing quote
         let mut value_end = value_start;
         let mut escaped = false;
@@ -518,11 +525,11 @@ impl VulnerabilityScanner {
             }
             value_end += 1;
         }
-        
+
         if value_end >= json.len() {
             return None;
         }
-        
+
         Some(json[value_start..value_end].to_string())
     }
 
@@ -630,9 +637,12 @@ pub mod ci_cd {
     }
 
     /// Generate CI/CD failure message
-    pub fn generate_failure_message(result: &AuditResult, _thresholds: &AuditThresholds) -> ArrayString<512> {
+    pub fn generate_failure_message(
+        result: &AuditResult,
+        _thresholds: &AuditThresholds,
+    ) -> ArrayString<512> {
         let mut message = ArrayString::new();
-        
+
         let critical = result.count_by_severity(VulnerabilitySeverity::Critical);
         let high = result.count_by_severity(VulnerabilitySeverity::High);
         let medium = result.count_by_severity(VulnerabilitySeverity::Medium);
@@ -649,7 +659,7 @@ pub mod ci_cd {
     /// Format scan results for CI/CD output
     pub fn format_scan_results(result: &AuditResult) -> ArrayString<1024> {
         let mut output = ArrayString::new();
-        
+
         let _ = output.try_push_str(&format!(
             "Vulnerability Scan Results:\n\
             - Total vulnerabilities: {}\n\
@@ -698,7 +708,7 @@ mod tests {
     fn test_audit_result_thresholds() {
         let thresholds = AuditThresholds::new(0, 1, 5, 10);
         let mut result = AuditResult::new();
-        
+
         let vuln = Vulnerability::new(
             "RUSTSEC-2023-0001",
             "test-package",
@@ -706,12 +716,13 @@ mod tests {
             "Test vulnerability",
             "1.0.0",
             None,
-        ).unwrap();
-        
+        )
+        .unwrap();
+
         result.add_vulnerability(vuln).unwrap();
-        
+
         assert!(result.passes_thresholds(&thresholds));
-        
+
         let critical_vuln = Vulnerability::new(
             "RUSTSEC-2023-0002",
             "test-package-2",
@@ -719,10 +730,11 @@ mod tests {
             "Critical vulnerability",
             "1.0.0",
             None,
-        ).unwrap();
-        
+        )
+        .unwrap();
+
         result.add_vulnerability(critical_vuln).unwrap();
-        
+
         assert!(!result.passes_thresholds(&thresholds));
     }
 
@@ -735,7 +747,8 @@ mod tests {
             "Test vulnerability with pattern",
             "1.0.0",
             None,
-        ).unwrap();
+        )
+        .unwrap();
 
         assert!(vuln.matches_pattern(b"RUSTSEC"));
         assert!(vuln.matches_pattern(b"pattern"));

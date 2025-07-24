@@ -27,6 +27,11 @@ impl std::fmt::Display for ValidationError {
 
 impl std::error::Error for ValidationError {}
 
+/// Standalone validation function for external use
+pub fn validate_config(config: &QuantumMCTSConfig) -> Result<(), String> {
+    ConfigValidator::validate(config)
+}
+
 /// Configuration validator with comprehensive bounds checking
 pub struct ConfigValidator {
     errors: Vec<ValidationError>,

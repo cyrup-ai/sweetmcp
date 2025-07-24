@@ -11,6 +11,11 @@ pub mod collector;
 pub mod coordinator;
 pub mod counter_snapshot;
 pub mod metrics;
+pub use metrics::ConvergenceMetrics;
+pub mod node_state;
+pub use node_state::QuantumMCTSNode;
+pub mod config;
+pub use config::QuantumMCTSConfig;
 pub mod performance;
 pub mod performance_trends;
 pub mod prediction;
@@ -24,6 +29,10 @@ pub mod tree_stats;
 pub mod tree_stats_types;
 pub mod tree_stats_analyzer;
 pub mod tree_stats_mod;
+
+// Re-export sibling modules for internal use
+pub use super::node_state;
+pub use super::config;
 
 // Ergonomic re-exports for tree statistics
 pub use tree_stats_mod::{

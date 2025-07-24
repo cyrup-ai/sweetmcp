@@ -17,6 +17,11 @@ use super::{
     metrics::{RewardStatistics, ConvergenceMetrics},
 };
 
+/// Analyze tree statistics comprehensively
+pub fn analyze_tree(stats: &QuantumTreeStatistics) -> TreeAnalysis {
+    TreeStatisticsAnalyzer::analyze(stats)
+}
+
 /// Quick analysis utilities for common use cases
 pub mod quick {
     use super::*;

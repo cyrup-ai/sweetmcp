@@ -9,3 +9,7 @@ pub use super::node_search_bottleneck::*;
 pub use super::node_search_basic::*;
 pub use super::node_search_statistics::*;
 pub use super::node_search_advanced::*;
+pub use super::node_search_mod::*;
+
+// Ensure NodeSearch is available (alias from one of the submodules)
+pub use super::node_search_basic::BasicNodeSearch as NodeSearch;

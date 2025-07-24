@@ -1,13 +1,13 @@
 use std::sync::Arc;
 
+use dashmap::DashMap;
 use extism::convert::Json; // Ensure import exists
 use extism::*;
 use rpc_router::RpcResource;
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
-use tokio::sync::oneshot;
-use dashmap::DashMap;
 use std::sync::atomic::{AtomicBool, Ordering};
+use tokio::sync::oneshot;
 
 use crate::{
     config::PluginConfig,
@@ -216,7 +216,9 @@ pub async fn load_plugins(
                             continue;
                         }
                     }
-                    manager.tool_to_plugin.insert(tool.name, plugin_name.clone());
+                    manager
+                        .tool_to_plugin
+                        .insert(tool.name, plugin_name.clone());
                 }
             }
             Err(e) => {
@@ -252,7 +254,9 @@ pub async fn load_plugins(
                             continue;
                         }
                     }
-                    manager.prompt_info.insert(prompt_data.name.clone(), (plugin_name.clone(), prompt_data));
+                    manager
+                        .prompt_info
+                        .insert(prompt_data.name.clone(), (plugin_name.clone(), prompt_data));
                 }
             }
             Err(e) => {

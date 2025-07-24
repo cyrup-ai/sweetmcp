@@ -10,6 +10,24 @@ use crate::cognitive::quantum::{
 use std::collections::{HashMap, HashSet};
 use smallvec::SmallVec;
 
+// Re-export types from surface code module for backward compatibility
+pub use super::surface_code::syndrome_detection::StabilizerType;
+
+/// Color types for color codes
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum ColorType {
+    Red,
+    Green,
+    Blue,
+}
+
+/// Logical operator types
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum LogicalOperatorType {
+    X,
+    Z,
+}
+
 /// Types of topological codes
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum TopologicalCodeType {

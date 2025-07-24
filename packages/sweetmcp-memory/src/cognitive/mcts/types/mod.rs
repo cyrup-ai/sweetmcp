@@ -18,6 +18,7 @@ pub use tree_types::{
     MCTSTree, TreeConfig, TreeMetrics, OptimizationCache, CachedStatistics, TreeStatistics
 };
 pub use action_types::{
+    ActionMetadata, NodeStatistics, EfficiencyMetrics,
     ActionSpace, ActionConstraint, ActionContext, ActionResult, ActionResultMetadata,
     ActionHistoryEntry, ActionSpaceMetadata, ActionSpaceStatistics
 };

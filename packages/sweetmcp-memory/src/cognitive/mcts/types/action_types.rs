@@ -638,4 +638,170 @@ impl ActionSpaceStatistics {
         self.diversity_score > 0.3 && 
         self.average_reward > 0.0
     }
+}/// Action metadata for MCTS operations
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ActionMetadata {
+    /// Action identifier
+    pub action_id: String,
+    /// Action type classification
+    pub action_type: String,
+    /// Expected reward estimate
+    pub expected_reward: f64,
+    /// Confidence level (0.0 to 1.0)
+    pub confidence: f64,
+    /// Execution cost estimate
+    pub cost_estimate: f64,
+    /// Priority level
+    pub priority: u8,
+    /// Creation timestamp
+    pub created_at: std::time::Instant,
+    /// Last updated timestamp
+    pub updated_at: std::time::Instant,
+}
+
+impl ActionMetadata {
+    /// Create new action metadata
+    pub fn new(action_id: String, action_type: String) -> Self {
+        let now = std::time::Instant::now();
+        Self {
+            action_id,
+            action_type,
+            expected_reward: 0.0,
+            confidence: 0.5,
+            cost_estimate: 1.0,
+            priority: 5,
+            created_at: now,
+            updated_at: now,
+        }
+    }
+
+    /// Update expected reward
+    pub fn update_reward(&mut self, reward: f64) {
+        self.expected_reward = reward;
+        self.updated_at = std::time::Instant::now();
+    }
+
+    /// Update confidence level
+    pub fn update_confidence(&mut self, confidence: f64) {
+        self.confidence = confidence.clamp(0.0, 1.0);
+        self.updated_at = std::time::Instant::now();
+    }
+}
+
+/// Node statistics for MCTS performance tracking
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NodeStatistics {
+    /// Total number of visits
+    pub visit_count: u64,
+    /// Total reward accumulated
+    pub total_reward: f64,
+    /// Average reward per visit
+    pub average_reward: f64,
+    /// Maximum reward observed
+    pub max_reward: f64,
+    /// Minimum reward observed
+    pub min_reward: f64,
+    /// Standard deviation of rewards
+    pub reward_std_dev: f64,
+    /// Number of children nodes
+    pub child_count: usize,
+    /// Depth in the tree
+    pub depth: usize,
+    /// Last visit timestamp
+    pub last_visited: std::time::Instant,
+}
+
+impl NodeStatistics {
+    /// Create new node statistics
+    pub fn new() -> Self {
+        Self {
+            visit_count: 0,
+            total_reward: 0.0,
+            average_reward: 0.0,
+            max_reward: f64::NEG_INFINITY,
+            min_reward: f64::INFINITY,
+            reward_std_dev: 0.0,
+            child_count: 0,
+            depth: 0,
+            last_visited: std::time::Instant::now(),
+        }
+    }
+
+    /// Update statistics with new reward
+    pub fn update_reward(&mut self, reward: f64) {
+        self.visit_count += 1;
+        self.total_reward += reward;
+        self.average_reward = self.total_reward / self.visit_count as f64;
+        self.max_reward = self.max_reward.max(reward);
+        self.min_reward = self.min_reward.min(reward);
+        self.last_visited = std::time::Instant::now();
+        
+        // Update standard deviation (simplified calculation)
+        if self.visit_count > 1 {
+            let variance = (reward - self.average_reward).powi(2) / self.visit_count as f64;
+            self.reward_std_dev = variance.sqrt();
+        }
+    }
+}
+
+impl Default for NodeStatistics {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+/// Efficiency metrics for MCTS performance analysis
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EfficiencyMetrics {
+    /// Simulations per second
+    pub simulations_per_second: f64,
+    /// Average simulation time in microseconds
+    pub avg_simulation_time_us: f64,
+    /// Memory usage in bytes
+    pub memory_usage_bytes: usize,
+    /// CPU utilization percentage
+    pub cpu_utilization: f64,
+    /// Cache hit rate
+    pub cache_hit_rate: f64,
+    /// Branch factor efficiency
+    pub branch_factor_efficiency: f64,
+    /// Overall efficiency score (0.0 to 1.0)
+    pub efficiency_score: f64,
+    /// Last measurement timestamp
+    pub measured_at: std::time::Instant,
+}
+
+impl EfficiencyMetrics {
+    /// Create new efficiency metrics
+    pub fn new() -> Self {
+        Self {
+            simulations_per_second: 0.0,
+            avg_simulation_time_us: 0.0,
+            memory_usage_bytes: 0,
+            cpu_utilization: 0.0,
+            cache_hit_rate: 0.0,
+            branch_factor_efficiency: 0.0,
+            efficiency_score: 0.0,
+            measured_at: std::time::Instant::now(),
+        }
+    }
+
+    /// Update efficiency metrics
+    pub fn update(&mut self, simulations: u64, duration_us: u64, memory_bytes: usize) {
+        self.simulations_per_second = simulations as f64 / (duration_us as f64 / 1_000_000.0);
+        self.avg_simulation_time_us = duration_us as f64 / simulations as f64;
+        self.memory_usage_bytes = memory_bytes;
+        self.measured_at = std::time::Instant::now();
+        
+        // Calculate overall efficiency score
+        self.efficiency_score = (self.simulations_per_second / 1000.0).min(1.0) * 
+                               (1.0 - (self.memory_usage_bytes as f64 / 1_000_000.0).min(1.0)) *
+                               self.cache_hit_rate;
+    }
+}
+
+impl Default for EfficiencyMetrics {
+    fn default() -> Self {
+        Self::new()
+    }
 }

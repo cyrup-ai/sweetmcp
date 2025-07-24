@@ -7,8 +7,11 @@ use crate::cognitive::mcts::{CodeState, MCTS};
 use crate::cognitive::performance::PerformanceAnalyzer;
 use crate::cognitive::types::{
     CognitiveError, EvolutionMetadata, OptimizationOutcome, OptimizationSpec, OptimizationType,
-    PendingOptimizationResult,
+    PendingOptimizationResult, EvolutionRules,
 };
+
+// Re-export EvolutionRules for external use
+pub use crate::cognitive::types::EvolutionRules;
 use std::sync::Arc;
 use tokio::sync::{RwLock, mpsc, oneshot};
 use tracing::{error, info};

@@ -42,5 +42,8 @@ pub use memory_metadata::MemoryMetadata;
 pub use memory_node::MemoryNode;
 pub use memory_node::MemoryType;
 pub use memory_relationship::MemoryRelationship;
+
+// Alias for backward compatibility
+pub use memory_node::MemoryNode as Memory;
 pub use procedural::*;
 pub use semantic::*;

@@ -11,9 +11,25 @@ pub mod stabilizer_basic_operations;
 pub mod stabilizer_mod;
 pub use stabilizer_mod::*;
 
+// Main quantum error correction types
+pub mod quantum_error_correction;
+pub use quantum_error_correction::{
+    QuantumErrorCorrection, ErrorCorrectionCode, ErrorCorrectionCodeType,
+    CodeParameters, StabilizerGenerator, LogicalOperator, LogicalOperatorType,
+    PauliOperator, ErrorCorrectionConfig, ErrorCorrectionStatistics,
+    ErrorCorrectionMetrics, CorrectionResult, ErrorCorrectionError,
+};
+
 // Core type definitions
 pub mod topological_types;
 pub use topological_types::*;
+
+// Ensure all types are properly exported
+pub use topological_types::{
+    TopologicalCodeType, StabilizerType, ColorType, LogicalOperatorType,
+};
+
+// Main error correction types for external use are now in quantum_error_correction module
 
 // Pauli operator implementations
 pub mod topological_pauli;
@@ -99,6 +115,27 @@ pub struct ToricCode {
     
     /// Number of logical qubits (2 for standard toric code)
     pub logical_qubits: usize,
+}
+
+/// Color code lattice type for quantum error correction
+#[derive(Debug, Clone)]
+pub struct ColorCodeLattice {
+    pub width: usize,
+    pub height: usize,
+    pub colors: Vec<ColorType>,
+    pub stabilizers: Vec<StabilizerType>,
+}
+
+impl ColorCodeLattice {
+    /// Create new color code lattice
+    pub fn new(width: usize, height: usize) -> Self {
+        Self {
+            width,
+            height,
+            colors: Vec::new(),
+            stabilizers: Vec::new(),
+        }
+    }
 }
 
 /// Color code implementation

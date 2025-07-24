@@ -6,6 +6,8 @@
 // Re-export from the decomposed tree_stats modules
 pub use super::tree_stats_types::*;
 pub use super::tree_stats_analyzer::*;
-
-// Re-export the mod functionality if it exists
 pub use super::tree_stats_mod::*;
+
+// Re-export key types from other modules for backward compatibility
+pub use super::types::QuantumTreeStatistics;
+pub use super::metrics::{DepthStatistics, RewardStatistics, ConvergenceMetrics};

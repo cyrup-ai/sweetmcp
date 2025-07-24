@@ -12,12 +12,14 @@ use super::model::*;
 use crate::sampling::notifications::SamplingProgressNotification;
 
 /// Select the best LLM model using fluent-ai based on model preferences
-async fn select_llm_model(preferences: &Option<McpModelPreferences>) -> Result<(String, String), String> {
+async fn select_llm_model(
+    preferences: &Option<McpModelPreferences>,
+) -> Result<(String, String), String> {
     // Default priorities if not specified
     let mut cost_priority = 0.5;
     let mut speed_priority = 0.5;
     let mut intelligence_priority = 0.5;
-    
+
     // Use ArrayString for zero-allocation string handling (up to 64 chars)
     let mut model_hint: ArrayString<64> = ArrayString::new();
 
@@ -126,7 +128,7 @@ pub fn sampling_create_message_pending(request: CreateMessageRequest) -> AsyncSa
                         error!("Failed to select LLM model: {}", e);
                         return {
                             let _ = tx_result.send(Err(rpc_router::HandlerError::new(
-                                "Failed to select LLM model"
+                                "Failed to select LLM model",
                             )));
                             ()
                         };
@@ -135,7 +137,7 @@ pub fn sampling_create_message_pending(request: CreateMessageRequest) -> AsyncSa
 
                 // For now, create a simple response since the full API isn't available yet
                 // TODO: Replace with actual fluent-ai completion when API is ready
-                
+
                 // Use SmallVec for zero-allocation response building for typical response sizes
                 let mut response_parts: SmallVec<[&str; 8]> = SmallVec::new();
                 response_parts.push("Echo (fluent-ai ");
@@ -144,7 +146,7 @@ pub fn sampling_create_message_pending(request: CreateMessageRequest) -> AsyncSa
                 response_parts.push(&model);
                 response_parts.push("): ");
                 response_parts.push(prompt_text);
-                
+
                 let response_text = response_parts.join("");
                 let model_name = model.clone();
 
