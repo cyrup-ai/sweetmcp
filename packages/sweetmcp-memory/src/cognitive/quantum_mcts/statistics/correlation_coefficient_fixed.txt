@@ -1,13 +1,3 @@
-//! Mathematical analysis utilities for statistics
-//!
-//! This module provides comprehensive mathematical analysis functions with
-//! zero-allocation algorithms, numerical stability, and vectorized calculations.
-
-use std::cmp::Ordering;
-
-/// Mathematical analysis utilities for statistical operations
-pub struct StatisticsUtils;
-
     /// Calculate correlation coefficient between two datasets
     pub fn correlation_coefficient(x_data: &[f64], y_data: &[f64]) -> f64 {
         if x_data.len() != y_data.len() || x_data.len() < 2 {
@@ -55,4 +45,3 @@ pub struct StatisticsUtils;
         
         (numerator / denominator).clamp(-1.0, 1.0)
     }
-
