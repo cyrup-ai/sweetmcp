@@ -7,14 +7,18 @@
 pub mod committee;
 pub mod compiler;
 pub mod evolution;
+pub mod evolution_manager;
+pub mod llm_integration;
+pub mod manager;
 pub mod mcts;
+pub mod mesh;
 pub mod orchestrator;
 pub mod performance;
+pub mod subsystem_coordinator;
 pub mod types;
 
 // Core cognitive modules from existing implementation
 pub mod attention;
-pub mod manager;
 pub mod state;
 
 // Quantum-specific cognitive modules
@@ -31,8 +35,8 @@ pub use quantum_mcts::{QuantumMCTS, QuantumMCTSConfig, QuantumNodeState, Quantum
 pub use quantum_orchestrator::{QuantumOrchestrationConfig, QuantumOrchestrator, RecursiveState};
 pub use types::{
     CognitiveError, CognitiveMemoryNode, CognitiveSettings, EvolutionMetadata, ImpactFactors,
-    OptimizationOutcome, OptimizationSpec, OptimizationType, PendingOptimizationResult,
-    QuantumSignature, Model, ModelType,
+    Model, ModelType, OptimizationOutcome, OptimizationSpec, OptimizationType,
+    PendingOptimizationResult, QuantumSignature,
 };
 
 // Re-export existing cognitive components

@@ -10,13 +10,13 @@ use crate::query::{QueryPlan, QueryStep, QueryType, Result};
 pub struct IndexInfo {
     /// Index name
     pub name: String,
-    
+
     /// Indexed fields
     pub fields: Vec<String>,
-    
+
     /// Index type
     pub index_type: IndexType,
-    
+
     /// Index statistics
     pub stats: IndexStats,
 }
@@ -42,13 +42,13 @@ pub enum IndexType {
 pub struct IndexStats {
     /// Number of entries
     pub entry_count: u64,
-    
+
     /// Index size in bytes
     pub size_bytes: u64,
-    
+
     /// Average query time in milliseconds
     pub avg_query_time_ms: f64,
-    
+
     /// Last updated
     pub last_updated: chrono::DateTime<chrono::Utc>,
 }
@@ -66,37 +66,37 @@ impl IndexAwareQueryPlanner {
             indexes: HashMap::new(),
         }
     }
-    
+
     /// Register an index
     pub fn register_index(&mut self, index: IndexInfo) {
         self.indexes.insert(index.name.clone(), index);
     }
-    
+
     /// Plan a query using available indexes
     pub fn plan_query(&self, query_type: QueryType, fields: &[String]) -> Result<QueryPlan> {
         let mut steps = Vec::new();
         let mut use_index = false;
         let mut index_name = None;
         let mut cost = 100.0; // Base cost
-        
+
         // Check if we can use an index
         for (name, index) in &self.indexes {
             if self.can_use_index(index, query_type, fields) {
                 use_index = true;
                 index_name = Some(name.clone());
                 cost = 10.0; // Much lower cost with index
-                
+
                 steps.push(QueryStep {
                     name: "Index Lookup".to_string(),
                     description: format!("Use index '{}' for fast lookup", name),
                     cost: 5.0,
                     parallel: false,
                 });
-                
+
                 break;
             }
         }
-        
+
         if !use_index {
             steps.push(QueryStep {
                 name: "Full Scan".to_string(),
@@ -105,7 +105,7 @@ impl IndexAwareQueryPlanner {
                 parallel: true,
             });
         }
-        
+
         // Add filtering step
         steps.push(QueryStep {
             name: "Filter Results".to_string(),
@@ -113,7 +113,7 @@ impl IndexAwareQueryPlanner {
             cost: 10.0,
             parallel: true,
         });
-        
+
         // Add sorting step if needed
         if query_type == QueryType::Similarity {
             steps.push(QueryStep {
@@ -123,7 +123,7 @@ impl IndexAwareQueryPlanner {
                 parallel: false,
             });
         }
-        
+
         Ok(QueryPlan {
             query_type,
             cost,
@@ -132,14 +132,9 @@ impl IndexAwareQueryPlanner {
             steps,
         })
     }
-    
+
     /// Check if an index can be used for a query
-    fn can_use_index(
-        &self,
-        index: &IndexInfo,
-        query_type: QueryType,
-        fields: &[String],
-    ) -> bool {
+    fn can_use_index(&self, index: &IndexInfo, query_type: QueryType, fields: &[String]) -> bool {
         match query_type {
             QueryType::Exact => {
                 // Check if all query fields are in the index
@@ -168,7 +163,7 @@ impl Default for IndexAwareQueryPlanner {
 pub struct IndexOptimizer {
     /// Query history
     query_history: Vec<QueryInfo>,
-    
+
     /// Optimization threshold
     threshold: f64,
 }
@@ -190,7 +185,7 @@ impl IndexOptimizer {
             threshold,
         }
     }
-    
+
     /// Record a query execution
     pub fn record_query(
         &mut self,
@@ -205,19 +200,19 @@ impl IndexOptimizer {
             execution_time_ms,
             result_count,
         });
-        
+
         // Keep only recent history
         if self.query_history.len() > 1000 {
             let target_len = self.query_history.len() - 1000;
             self.query_history.drain(0..target_len);
         }
     }
-    
+
     /// Recommend indexes based on query patterns
     pub fn recommend_indexes(&self) -> Vec<IndexRecommendation> {
         let mut recommendations = Vec::new();
         let mut field_usage: HashMap<Vec<String>, (usize, f64)> = HashMap::new();
-        
+
         // Analyze query patterns
         for query in &self.query_history {
             if query.execution_time_ms > self.threshold {
@@ -227,7 +222,7 @@ impl IndexOptimizer {
                 entry.1 += query.execution_time_ms;
             }
         }
-        
+
         // Generate recommendations
         for (fields, (count, total_time)) in field_usage {
             if count >= 5 {
@@ -243,7 +238,7 @@ impl IndexOptimizer {
                 });
             }
         }
-        
+
         recommendations
     }
 }
@@ -253,13 +248,13 @@ impl IndexOptimizer {
 pub struct IndexRecommendation {
     /// Fields to index
     pub fields: Vec<String>,
-    
+
     /// Recommended index type
     pub index_type: IndexType,
-    
+
     /// Estimated performance improvement in ms
     pub estimated_improvement: f64,
-    
+
     /// Reason for recommendation
     pub reason: String,
 }

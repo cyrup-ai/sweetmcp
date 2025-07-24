@@ -1,14 +1,20 @@
 //! Transaction management module for mem0-rs
-//! 
+//!
 //! This module provides ACID transaction support for memory operations,
 //! ensuring data consistency and isolation.
 
+pub mod lock_manager;
+pub mod logging;
+pub mod operations;
 pub mod transaction_manager;
 
 #[cfg(test)]
 pub mod tests;
 
 // Re-export main types
+pub use lock_manager::*;
+pub use logging::*;
+pub use operations::*;
 pub use transaction_manager::*;
 
 use std::future::Future;
@@ -24,22 +30,22 @@ pub type Result<T> = std::result::Result<T, TransactionError>;
 pub enum TransactionError {
     #[error("Transaction aborted: {0}")]
     Aborted(String),
-    
+
     #[error("Deadlock detected")]
     Deadlock,
-    
+
     #[error("Conflict: {0}")]
     Conflict(String),
-    
+
     #[error("Transaction timeout")]
     Timeout,
-    
+
     #[error("Invalid transaction state: {0}")]
     InvalidState(String),
-    
+
     #[error("Rollback failed: {0}")]
     RollbackFailed(String),
-    
+
     #[error("Database error: {0}")]
     DatabaseError(String),
 }
@@ -90,7 +96,7 @@ impl Future for PendingCommit {
         match Pin::new(&mut self.rx).poll(cx) {
             Poll::Ready(Ok(result)) => Poll::Ready(result),
             Poll::Ready(Err(_)) => Poll::Ready(Err(TransactionError::DatabaseError(
-                "Commit task failed".to_string()
+                "Commit task failed".to_string(),
             ))),
             Poll::Pending => Poll::Pending,
         }
@@ -115,7 +121,7 @@ impl Future for PendingRollback {
         match Pin::new(&mut self.rx).poll(cx) {
             Poll::Ready(Ok(result)) => Poll::Ready(result),
             Poll::Ready(Err(_)) => Poll::Ready(Err(TransactionError::RollbackFailed(
-                "Rollback task failed".to_string()
+                "Rollback task failed".to_string(),
             ))),
             Poll::Pending => Poll::Pending,
         }
@@ -126,19 +132,19 @@ impl Future for PendingRollback {
 pub trait Transaction: Send + Sync {
     /// Get transaction ID
     fn id(&self) -> String;
-    
+
     /// Get current state
     fn state(&self) -> TransactionState;
-    
+
     /// Get isolation level
     fn isolation_level(&self) -> IsolationLevel;
-    
+
     /// Commit the transaction
     fn commit(self) -> PendingCommit;
-    
+
     /// Rollback the transaction
     fn rollback(self) -> PendingRollback;
-    
+
     /// Check if transaction is active
     fn is_active(&self) -> bool {
         self.state() == TransactionState::Active

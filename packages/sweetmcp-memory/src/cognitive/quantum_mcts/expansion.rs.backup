@@ -1,0 +1,14 @@
+//! Quantum expansion logic with zero-copy state cloning and parallel expansion
+//!
+//! This module provides blazing-fast quantum node expansion with superposition-based
+//! action selection, parallel state transformations, and optimized memory management.
+
+mod core;
+mod action_manager;
+mod metadata;
+mod engine;
+
+pub use core::QuantumExpander;
+pub use action_manager::ActionManager;
+pub use metadata::{ExpansionStats, ExpansionResult};
+pub use engine::QuantumExpansionEngine;

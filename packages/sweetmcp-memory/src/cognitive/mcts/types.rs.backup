@@ -1,0 +1,508 @@
+//! MCTS core data structures and types coordination facade
+//!
+//! This module provides a coordination facade for MCTS type operations,
+//! delegating to specialized submodules for blazing-fast performance with zero allocation
+//! optimizations and elegant ergonomic interfaces.
+
+mod node_types;
+mod tree_types;
+mod action_types;
+
+use std::collections::HashMap;
+use std::time::Instant;
+
+// Re-export all types from submodules for backward compatibility
+pub use node_types::{
+    CodeState, MCTSNode, NodeMetadata, QualityMetrics
+};
+pub use tree_types::{
+    MCTSTree, TreeConfig, TreeMetrics, OptimizationCache, CachedStatistics
+};
+pub use action_types::{
+    ActionSpace, ActionConstraint, ActionContext, ActionResult, ActionResultMetadata,
+    ActionHistoryEntry, ActionSpaceMetadata, ActionSpaceStatistics
+};
+
+// Re-export coordination types
+pub use self::types::{
+    MCTSTypeCoordinator, CoordinationMetrics, CoordinatorConfig, 
+    OptimizationResult, PerformanceStatistics
+};
+
+// Import coordination module
+use self::types as coordination_types;
+
+/// Action metadata for MCTS operations (legacy compatibility)
+#[derive(Debug, Clone)]
+pub struct ActionMetadata {
+    pub name: String,
+    pub estimated_impact: f64,
+    pub confidence: f64,
+    pub prerequisites: Vec<String>,
+    pub conflicts: Vec<String>,
+}
+
+impl ActionMetadata {
+    /// Create new action metadata
+    #[inline]
+    pub fn new(name: String) -> Self {
+        Self {
+            name,
+            estimated_impact: 0.5,
+            confidence: 0.5,
+            prerequisites: Vec::new(),
+            conflicts: Vec::new(),
+        }
+    }
+
+    /// Create action with impact and confidence
+    #[inline]
+    pub fn with_impact_confidence(name: String, impact: f64, confidence: f64) -> Self {
+        Self {
+            name,
+            estimated_impact: impact.clamp(0.0, 1.0),
+            confidence: confidence.clamp(0.0, 1.0),
+            prerequisites: Vec::new(),
+            conflicts: Vec::new(),
+        }
+    }
+
+    /// Add prerequisite action
+    #[inline]
+    pub fn with_prerequisite(mut self, prerequisite: String) -> Self {
+        self.prerequisites.push(prerequisite);
+        self
+    }
+
+    /// Add conflicting action
+    #[inline]
+    pub fn with_conflict(mut self, conflict: String) -> Self {
+        self.conflicts.push(conflict);
+        self
+    }
+
+    /// Check if action can be applied given applied actions
+    #[inline]
+    pub fn can_apply(&self, applied_actions: &[String]) -> bool {
+        // Check prerequisites are met
+        for prereq in &self.prerequisites {
+            if !applied_actions.contains(prereq) {
+                return false;
+            }
+        }
+
+        // Check no conflicts exist
+        for conflict in &self.conflicts {
+            if applied_actions.contains(conflict) {
+                return false;
+            }
+        }
+
+        true
+    }
+
+    /// Calculate priority score for action selection
+    #[inline]
+    pub fn priority_score(&self) -> f64 {
+        self.estimated_impact * self.confidence
+    }
+}
+
+/// High-level MCTS types facade for ergonomic usage
+pub struct MCTSTypes;
+
+impl MCTSTypes {
+    /// Create new MCTS coordinator with root state and actions
+    #[inline]
+    pub fn create_coordinator(root_state: CodeState, actions: Vec<String>) -> MCTSTypeCoordinator {
+        MCTSTypeCoordinator::new(root_state, actions)
+    }
+
+    /// Create performance-optimized coordinator
+    #[inline]
+    pub fn create_performance_coordinator(
+        root_state: CodeState, 
+        actions: Vec<String>
+    ) -> MCTSTypeCoordinator {
+        let config = CoordinatorConfig::performance_optimized();
+        MCTSTypeCoordinator::with_config(root_state, actions, config)
+    }
+
+    /// Create exploration-optimized coordinator
+    #[inline]
+    pub fn create_exploration_coordinator(
+        root_state: CodeState, 
+        actions: Vec<String>
+    ) -> MCTSTypeCoordinator {
+        let config = CoordinatorConfig::exploration_optimized();
+        MCTSTypeCoordinator::with_config(root_state, actions, config)
+    }
+
+    /// Create new code state with performance metrics
+    #[inline]
+    pub fn create_code_state(
+        code: String, 
+        latency: f64, 
+        memory: f64, 
+        relevance: f64
+    ) -> CodeState {
+        CodeState::new(code, latency, memory, relevance)
+    }
+
+    /// Create new MCTS tree with root node
+    #[inline]
+    pub fn create_tree(root_node: MCTSNode) -> MCTSTree {
+        let config = TreeConfig::new();
+        MCTSTree::new(root_node, config)
+    }
+
+    /// Create performance-optimized tree
+    #[inline]
+    pub fn create_performance_tree(root_node: MCTSNode) -> MCTSTree {
+        let config = TreeConfig::performance_optimized();
+        MCTSTree::new(root_node, config)
+    }
+
+    /// Create exploration-optimized tree
+    #[inline]
+    pub fn create_exploration_tree(root_node: MCTSNode) -> MCTSTree {
+        let config = TreeConfig::exploration_optimized();
+        MCTSTree::new(root_node, config)
+    }
+
+    /// Create new action space with actions
+    #[inline]
+    pub fn create_action_space(actions: Vec<String>) -> ActionSpace {
+        ActionSpace::new(actions)
+    }
+
+    /// Create weighted action space
+    #[inline]
+    pub fn create_weighted_action_space(
+        actions: Vec<String>, 
+        weights: Vec<f64>
+    ) -> Result<ActionSpace, String> {
+        ActionSpace::with_weights(actions, weights)
+    }
+
+    /// Create action context for constraint evaluation
+    #[inline]
+    pub fn create_action_context(depth: u16, visits: u32, memory: f64) -> ActionContext {
+        ActionContext::new(depth, visits, memory)
+    }
+
+    /// Create successful action result
+    #[inline]
+    pub fn create_success_result(
+        reward: f64, 
+        execution_time: std::time::Duration
+    ) -> ActionResult {
+        ActionResult::success(reward, execution_time)
+    }
+
+    /// Create failed action result
+    #[inline]
+    pub fn create_failure_result(
+        error: String, 
+        execution_time: std::time::Duration
+    ) -> ActionResult {
+        ActionResult::failure(error, execution_time)
+    }
+
+    /// Validate tree configuration
+    #[inline]
+    pub fn validate_tree_config(config: &TreeConfig) -> Result<(), String> {
+        config.validate()
+    }
+
+    /// Validate coordinator configuration
+    #[inline]
+    pub fn validate_coordinator_config(config: &CoordinatorConfig) -> Result<(), String> {
+        config.validate()
+    }
+}
+
+/// Convenience functions for common operations
+impl MCTSTypes {
+    /// Calculate UCB1 value for node selection
+    #[inline]
+    pub fn calculate_ucb1(
+        node_visits: u32,
+        node_reward: f64,
+        parent_visits: u32,
+        exploration_constant: f64,
+    ) -> f64 {
+        if node_visits == 0 {
+            return f64::INFINITY;
+        }
+
+        let exploitation = node_reward / node_visits as f64;
+        let exploration = exploration_constant * 
+            ((parent_visits as f64).ln() / node_visits as f64).sqrt();
+        
+        exploitation + exploration
+    }
+
+    /// Calculate performance score for code state
+    #[inline]
+    pub fn calculate_performance_score(latency: f64, memory: f64, relevance: f64) -> f64 {
+        let latency_score = 1.0 / (1.0 + latency);
+        let memory_score = 1.0 / (1.0 + memory);
+        let relevance_score = relevance / 100.0;
+        
+        (latency_score * 0.4 + memory_score * 0.3 + relevance_score * 0.3).clamp(0.0, 1.0)
+    }
+
+    /// Check if code state meets performance constraints
+    #[inline]
+    pub fn meets_performance_constraints(
+        state: &CodeState,
+        max_latency: f64,
+        max_memory: f64,
+        min_relevance: f64,
+    ) -> bool {
+        state.meets_constraints(max_latency, max_memory, min_relevance)
+    }
+
+    /// Calculate distance between two code states
+    #[inline]
+    pub fn calculate_state_distance(state1: &CodeState, state2: &CodeState) -> f64 {
+        let latency_diff = (state1.latency - state2.latency).abs();
+        let memory_diff = (state1.memory - state2.memory).abs();
+        let relevance_diff = (state1.relevance - state2.relevance).abs();
+        
+        (latency_diff + memory_diff + relevance_diff) / 3.0
+    }
+
+    /// Find optimal exploration constant for given dataset
+    #[inline]
+    pub fn find_optimal_exploration_constant(
+        node_count: usize,
+        depth: usize,
+        diversity_requirement: f64,
+    ) -> f64 {
+        let base_constant = 1.414; // sqrt(2)
+        let size_factor = (node_count as f64).ln() / 10.0;
+        let depth_factor = (depth as f64).sqrt() / 10.0;
+        let diversity_factor = diversity_requirement * 2.0;
+        
+        (base_constant + size_factor + depth_factor + diversity_factor).clamp(0.5, 5.0)
+    }
+
+    /// Estimate memory usage for tree configuration
+    #[inline]
+    pub fn estimate_memory_usage(config: &TreeConfig) -> usize {
+        let node_size = std::mem::size_of::<MCTSNode>();
+        let tree_overhead = std::mem::size_of::<MCTSTree>();
+        let map_overhead = config.max_nodes * (64 + std::mem::size_of::<usize>()); // Estimated string + index
+        
+        config.max_nodes * node_size + tree_overhead + map_overhead
+    }
+
+    /// Calculate optimal batch size for tree operations
+    #[inline]
+    pub fn calculate_optimal_batch_size(
+        total_nodes: usize,
+        available_memory_mb: usize,
+        target_latency_ms: f64,
+    ) -> usize {
+        let memory_constraint = (available_memory_mb * 1024 * 1024) / std::mem::size_of::<MCTSNode>();
+        let latency_constraint = (target_latency_ms * 1000.0) as usize; // Rough estimate
+        let size_constraint = total_nodes / 10; // Process in chunks
+        
+        memory_constraint.min(latency_constraint).min(size_constraint).max(1)
+    }
+}
+
+/// Re-export coordination module for internal usage
+mod types {
+    pub use super::node_types::*;
+    pub use super::tree_types::*;
+    pub use super::action_types::*;
+    
+    // Include coordination types from the mod.rs file
+    use std::collections::HashMap;
+    use std::time::Instant;
+    
+    /// High-level coordinator for MCTS type operations
+    pub struct MCTSTypeCoordinator {
+        /// Tree instance for coordinated operations
+        tree: super::MCTSTree,
+        /// Action space for available actions
+        action_space: super::ActionSpace,
+        /// Coordination metrics
+        metrics: CoordinationMetrics,
+        /// Configuration
+        config: CoordinatorConfig,
+    }
+
+    impl MCTSTypeCoordinator {
+        /// Create new MCTS type coordinator
+        #[inline]
+        pub fn new(root_state: super::CodeState, actions: Vec<String>) -> Self {
+            let root_node = super::MCTSNode::create_root(root_state);
+            let tree_config = super::TreeConfig::new();
+            let tree = super::MCTSTree::new(root_node, tree_config);
+            let action_space = super::ActionSpace::new(actions);
+            
+            Self {
+                tree,
+                action_space,
+                metrics: CoordinationMetrics::new(),
+                config: CoordinatorConfig::default(),
+            }
+        }
+
+        /// Create coordinator with custom configuration
+        #[inline]
+        pub fn with_config(
+            root_state: super::CodeState,
+            actions: Vec<String>,
+            config: CoordinatorConfig,
+        ) -> Self {
+            let mut coordinator = Self::new(root_state, actions);
+            coordinator.config = config;
+            coordinator
+        }
+
+        /// Get tree reference for read operations
+        #[inline]
+        pub fn tree(&self) -> &super::MCTSTree {
+            &self.tree
+        }
+
+        /// Get action space reference for read operations
+        #[inline]
+        pub fn action_space(&self) -> &super::ActionSpace {
+            &self.action_space
+        }
+
+        /// Update coordinator configuration
+        #[inline]
+        pub fn update_config(&mut self, config: CoordinatorConfig) {
+            self.config = config;
+        }
+
+        /// Get current configuration
+        #[inline]
+        pub fn config(&self) -> &CoordinatorConfig {
+            &self.config
+        }
+    }
+
+    /// Coordination metrics for performance tracking
+    #[derive(Debug, Clone)]
+    pub struct CoordinationMetrics {
+        pub total_expansions: u32,
+        pub total_backpropagations: u32,
+        pub total_optimizations: u32,
+        pub creation_time: Instant,
+    }
+
+    impl CoordinationMetrics {
+        #[inline]
+        pub fn new() -> Self {
+            Self {
+                total_expansions: 0,
+                total_backpropagations: 0,
+                total_optimizations: 0,
+                creation_time: Instant::now(),
+            }
+        }
+    }
+
+    impl Default for CoordinationMetrics {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+
+    /// Coordinator configuration
+    #[derive(Debug, Clone)]
+    pub struct CoordinatorConfig {
+        pub min_action_success_rate: f64,
+        pub min_action_usage_count: usize,
+        pub min_node_visits: u32,
+        pub min_node_reward: f64,
+        pub optimization_frequency: u32,
+        pub enable_action_weight_updates: bool,
+        pub enable_tree_pruning: bool,
+        pub max_memory_usage_mb: usize,
+    }
+
+    impl CoordinatorConfig {
+        #[inline]
+        pub fn new() -> Self {
+            Self {
+                min_action_success_rate: 0.3,
+                min_action_usage_count: 10,
+                min_node_visits: 5,
+                min_node_reward: 0.1,
+                optimization_frequency: 100,
+                enable_action_weight_updates: true,
+                enable_tree_pruning: true,
+                max_memory_usage_mb: 100,
+            }
+        }
+
+        #[inline]
+        pub fn performance_optimized() -> Self {
+            Self {
+                min_action_success_rate: 0.5,
+                min_action_usage_count: 5,
+                min_node_visits: 3,
+                min_node_reward: 0.2,
+                optimization_frequency: 50,
+                enable_action_weight_updates: true,
+                enable_tree_pruning: true,
+                max_memory_usage_mb: 50,
+            }
+        }
+
+        #[inline]
+        pub fn exploration_optimized() -> Self {
+            Self {
+                min_action_success_rate: 0.1,
+                min_action_usage_count: 20,
+                min_node_visits: 10,
+                min_node_reward: 0.05,
+                optimization_frequency: 200,
+                enable_action_weight_updates: false,
+                enable_tree_pruning: false,
+                max_memory_usage_mb: 200,
+            }
+        }
+
+        #[inline]
+        pub fn validate(&self) -> Result<(), String> {
+            if self.min_action_success_rate < 0.0 || self.min_action_success_rate > 1.0 {
+                return Err("min_action_success_rate must be between 0.0 and 1.0".to_string());
+            }
+            Ok(())
+        }
+    }
+
+    impl Default for CoordinatorConfig {
+        fn default() -> Self {
+            Self::new()
+        }
+    }
+
+    /// Optimization result summary
+    #[derive(Debug, Clone)]
+    pub struct OptimizationResult {
+        pub pruned_nodes: usize,
+        pub pruned_actions: usize,
+        pub execution_time: std::time::Duration,
+        pub memory_saved: usize,
+    }
+
+    /// Comprehensive performance statistics
+    #[derive(Debug, Clone)]
+    pub struct PerformanceStatistics {
+        pub tree_metrics: super::TreeMetrics,
+        pub action_metrics: super::ActionSpaceStatistics,
+        pub coordination_metrics: CoordinationMetrics,
+        pub overall_efficiency: f64,
+    }
+}

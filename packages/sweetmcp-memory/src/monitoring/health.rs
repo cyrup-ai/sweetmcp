@@ -1,8 +1,8 @@
 //! Health check functionality for the memory system
 
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use chrono::{DateTime, Utc};
 use std::future::Future;
 use std::pin::Pin;
 use std::task::{Context, Poll};
@@ -25,13 +25,13 @@ pub enum HealthStatus {
 pub struct HealthCheck {
     /// Overall status
     pub status: HealthStatus,
-    
+
     /// Component statuses
     pub components: HashMap<String, ComponentHealth>,
-    
+
     /// Timestamp of the check
     pub timestamp: DateTime<Utc>,
-    
+
     /// System version
     pub version: String,
 }
@@ -41,13 +41,13 @@ pub struct HealthCheck {
 pub struct ComponentHealth {
     /// Component name
     pub name: String,
-    
+
     /// Component status
     pub status: HealthStatus,
-    
+
     /// Optional message
     pub message: Option<String>,
-    
+
     /// Additional details
     pub details: HashMap<String, serde_json::Value>,
 }
@@ -93,20 +93,20 @@ impl HealthChecker {
             checkers: Vec::new(),
         }
     }
-    
+
     /// Add a component checker
     pub fn add_checker(&mut self, checker: Box<dyn ComponentChecker>) {
         self.checkers.push(checker);
     }
-    
+
     /// Run health check
     pub async fn check(&self) -> HealthCheck {
         let mut components = HashMap::new();
         let mut overall_status = HealthStatus::Healthy;
-        
+
         for checker in &self.checkers {
             let component_health = checker.check().await;
-            
+
             // Update overall status
             match component_health.status {
                 HealthStatus::Unhealthy => overall_status = HealthStatus::Unhealthy,
@@ -115,10 +115,10 @@ impl HealthChecker {
                 }
                 _ => {}
             }
-            
+
             components.insert(checker.name().to_string(), component_health);
         }
-        
+
         HealthCheck {
             status: overall_status,
             components,
@@ -138,7 +138,7 @@ impl Default for HealthChecker {
 pub trait ComponentChecker: Send + Sync {
     /// Get component name
     fn name(&self) -> &str;
-    
+
     /// Check component health
     fn check(&self) -> PendingComponentHealth;
 }
@@ -150,11 +150,11 @@ impl ComponentChecker for DatabaseHealthChecker {
     fn name(&self) -> &str {
         "database"
     }
-    
+
     fn check(&self) -> PendingComponentHealth {
         let (tx, rx) = oneshot::channel();
         let name = self.name().to_string();
-        
+
         tokio::spawn(async move {
             // TODO: Implement actual database health check
             let health = ComponentHealth {
@@ -165,7 +165,7 @@ impl ComponentChecker for DatabaseHealthChecker {
             };
             let _ = tx.send(health);
         });
-        
+
         PendingComponentHealth::new(rx)
     }
 }
@@ -177,11 +177,11 @@ impl ComponentChecker for VectorStoreHealthChecker {
     fn name(&self) -> &str {
         "vector_store"
     }
-    
+
     fn check(&self) -> PendingComponentHealth {
         let (tx, rx) = oneshot::channel();
         let name = self.name().to_string();
-        
+
         tokio::spawn(async move {
             // TODO: Implement actual vector store health check
             let health = ComponentHealth {
@@ -192,7 +192,7 @@ impl ComponentChecker for VectorStoreHealthChecker {
             };
             let _ = tx.send(health);
         });
-        
+
         PendingComponentHealth::new(rx)
     }
 }

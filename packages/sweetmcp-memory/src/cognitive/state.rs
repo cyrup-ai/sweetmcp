@@ -16,16 +16,16 @@ pub struct CognitiveState {
     pub emotional_valence: EmotionalValence,
     pub processing_depth: f32,
     pub activation_level: f32,
-    pub associations: ArrayVec<Association, 16>,        // Max 16 associations per state
+    pub associations: ArrayVec<Association, 16>, // Max 16 associations per state
     pub timestamp: Instant,
 }
 
 /// Semantic context information with zero-allocation patterns
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SemanticContext {
-    pub primary_concepts: ArrayVec<ArrayString<32>, 8>,     // Max 8 concepts, 32 chars each
-    pub secondary_concepts: ArrayVec<ArrayString<32>, 16>,  // Max 16 concepts, 32 chars each
-    pub domain_tags: ArrayVec<ArrayString<24>, 4>,          // Max 4 domains, 24 chars each
+    pub primary_concepts: ArrayVec<ArrayString<32>, 8>, // Max 8 concepts, 32 chars each
+    pub secondary_concepts: ArrayVec<ArrayString<32>, 16>, // Max 16 concepts, 32 chars each
+    pub domain_tags: ArrayVec<ArrayString<24>, 4>,      // Max 4 domains, 24 chars each
     pub abstraction_level: AbstractionLevel,
 }
 
@@ -68,9 +68,9 @@ pub enum AssociationType {
 #[repr(align(64))]
 pub struct CognitiveStateManager {
     states: DashMap<Uuid, CognitiveState>,
-    by_concept: DashMap<ArrayString<32>, ArrayVec<Uuid, 64>>,  // Max 64 states per concept
-    by_domain: DashMap<ArrayString<24>, ArrayVec<Uuid, 64>>,   // Max 64 states per domain
-    by_time: DashMap<u64, ArrayVec<Uuid, 16>>,                 // Time bucketed by minute, max 16 per minute
+    by_concept: DashMap<ArrayString<32>, ArrayVec<Uuid, 64>>, // Max 64 states per concept
+    by_domain: DashMap<ArrayString<24>, ArrayVec<Uuid, 64>>,  // Max 64 states per domain
+    by_time: DashMap<u64, ArrayVec<Uuid, 16>>, // Time bucketed by minute, max 16 per minute
 }
 
 impl CognitiveState {
@@ -106,7 +106,7 @@ impl CognitiveState {
             strength: strength.clamp(0.0, 1.0),
             association_type,
         };
-        
+
         // Use try_push to handle capacity limit gracefully
         self.associations.try_push(association).map_err(|_| ())
     }
@@ -167,8 +167,11 @@ impl CognitiveStateManager {
                 // Truncate if too long
                 ArrayString::from(&concept.as_str()[..32]).expect("Truncated string should fit")
             });
-            
-            self.by_concept.entry(concept_key).or_insert_with(ArrayVec::new).push(id);
+
+            self.by_concept
+                .entry(concept_key)
+                .or_insert_with(ArrayVec::new)
+                .push(id);
         }
 
         // Index by domain tags (lock-free)
@@ -177,13 +180,19 @@ impl CognitiveStateManager {
                 // Truncate if too long
                 ArrayString::from(&domain.as_str()[..24]).expect("Truncated string should fit")
             });
-            
-            self.by_domain.entry(domain_key).or_insert_with(ArrayVec::new).push(id);
+
+            self.by_domain
+                .entry(domain_key)
+                .or_insert_with(ArrayVec::new)
+                .push(id);
         }
 
         // Index by time (bucketed by minute for efficiency)
         let time_bucket = state.timestamp.elapsed().as_secs() / 60;
-        self.by_time.entry(time_bucket).or_insert_with(ArrayVec::new).push(id);
+        self.by_time
+            .entry(time_bucket)
+            .or_insert_with(ArrayVec::new)
+            .push(id);
 
         // Store state (lock-free)
         self.states.insert(id, state);
@@ -202,9 +211,10 @@ impl CognitiveStateManager {
             // Truncate if too long
             ArrayString::from(&concept[..32]).expect("Truncated string should fit")
         });
-        
+
         if let Some(ids_entry) = self.by_concept.get(&concept_key) {
-            ids_entry.iter()
+            ids_entry
+                .iter()
                 .filter_map(|id| self.states.get(id).map(|entry| entry.value().clone()))
                 .collect()
         } else {
@@ -218,9 +228,10 @@ impl CognitiveStateManager {
             // Truncate if too long
             ArrayString::from(&domain[..24]).expect("Truncated string should fit")
         });
-        
+
         if let Some(ids_entry) = self.by_domain.get(&domain_key) {
-            ids_entry.iter()
+            ids_entry
+                .iter()
                 .filter_map(|id| self.states.get(id).map(|entry| entry.value().clone()))
                 .collect()
         } else {
@@ -232,7 +243,7 @@ impl CognitiveStateManager {
     pub async fn cleanup_inactive(&self, decay_time: Duration) {
         // Collect inactive state IDs
         let mut inactive_ids = Vec::new();
-        
+
         for entry in self.states.iter() {
             if !entry.value().is_active(decay_time) {
                 inactive_ids.push(*entry.key());
@@ -246,17 +257,23 @@ impl CognitiveStateManager {
 
         // Update concept indices (lock-free)
         for mut concept_entry in self.by_concept.iter_mut() {
-            concept_entry.value_mut().retain(|id| !inactive_ids.contains(id));
+            concept_entry
+                .value_mut()
+                .retain(|id| !inactive_ids.contains(id));
         }
 
         // Update domain indices (lock-free)
         for mut domain_entry in self.by_domain.iter_mut() {
-            domain_entry.value_mut().retain(|id| !inactive_ids.contains(id));
+            domain_entry
+                .value_mut()
+                .retain(|id| !inactive_ids.contains(id));
         }
 
         // Update time indices (lock-free)
         for mut time_entry in self.by_time.iter_mut() {
-            time_entry.value_mut().retain(|id| !inactive_ids.contains(id));
+            time_entry
+                .value_mut()
+                .retain(|id| !inactive_ids.contains(id));
         }
     }
 
@@ -281,7 +298,6 @@ impl CognitiveStateManager {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -295,8 +311,12 @@ mod tests {
             abstraction_level: AbstractionLevel::Concrete,
         };
 
-        context.primary_concepts.push(ArrayString::from("test").expect("Should fit"));
-        context.domain_tags.push(ArrayString::from("testing").expect("Should fit"));
+        context
+            .primary_concepts
+            .push(ArrayString::from("test").expect("Should fit"));
+        context
+            .domain_tags
+            .push(ArrayString::from("testing").expect("Should fit"));
 
         let state = CognitiveState::new(context);
 
@@ -325,9 +345,15 @@ mod tests {
             abstraction_level: AbstractionLevel::Abstract,
         };
 
-        context.primary_concepts.push(ArrayString::from("rust").expect("Should fit"));
-        context.primary_concepts.push(ArrayString::from("memory").expect("Should fit"));
-        context.domain_tags.push(ArrayString::from("programming").expect("Should fit"));
+        context
+            .primary_concepts
+            .push(ArrayString::from("rust").expect("Should fit"));
+        context
+            .primary_concepts
+            .push(ArrayString::from("memory").expect("Should fit"));
+        context
+            .domain_tags
+            .push(ArrayString::from("programming").expect("Should fit"));
 
         let state = CognitiveState::new(context);
         let id = manager.add_state(state).await;

@@ -1,17 +1,34 @@
 //! Vector operations and storage for memory embeddings
 
+pub mod batch_operations;
+pub mod collection_metadata;
+pub mod collection_operations;
 pub mod embedding_model;
 pub mod in_memory;
-pub mod in_memory_async;
 pub mod vector_index;
+pub mod vector_operations;
 pub mod vector_repository;
 pub mod vector_search;
 pub mod vector_store;
 
+// Decomposed async vector store modules
+pub mod async_vector_core;
+pub mod async_vector_operations;
+pub mod async_vector_optimization;
+
 // Re-export main types
+pub use batch_operations::*;
+pub use collection_metadata::*;
+pub use collection_operations::*;
 pub use embedding_model::*;
-pub use in_memory_async::InMemoryVectorStore;
+pub use async_vector_core::InMemoryVectorStore;
+pub use async_vector_core::{VectorStoreMetrics, VectorStorageStats};
+pub use async_vector_operations::DistanceMetric as AsyncDistanceMetric;
+pub use async_vector_optimization::SearchStrategy;
+// Note: async_vector_mod was decomposed into async_vector_optimization
+// pub use async_vector_mod::{AggregationMethod, VectorCluster};
 pub use vector_index::*;
+pub use vector_operations::*;
 pub use vector_repository::*;
 pub use vector_search::*;
 

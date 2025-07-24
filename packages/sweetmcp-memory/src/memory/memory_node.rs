@@ -60,7 +60,7 @@ pub struct MemoryNode {
     pub memory_type: MemoryType,
     /// Content of the memory - accessed during retrieval
     pub content: String,
-    
+
     // Cold fields (less frequently accessed) placed last
     /// Creation timestamp
     pub created_at: DateTime<Utc>,
@@ -77,14 +77,15 @@ const _: () = {
     // This is a soft check - the struct can be larger than one cache line,
     // but we want to be aware of its size
     const MEMORY_NODE_SIZE: usize = std::mem::size_of::<MemoryNode>();
-    
+
     // Log the size at compile time for optimization awareness
     // If this becomes too large, consider using Box<str> for content
     // or other size optimizations
     const _SIZE_CHECK: () = {
         // For now, just validate it's not excessively large (8 cache lines)
         // In practice, large structs are acceptable if they're accessed infrequently
-        if MEMORY_NODE_SIZE > CACHE_LINE_SIZE * 8 { // Allow up to 8 cache lines
+        if MEMORY_NODE_SIZE > CACHE_LINE_SIZE * 8 {
+            // Allow up to 8 cache lines
             panic!("MemoryNode size is excessively large for any reasonable use");
         }
         // Generate a compile-time size report

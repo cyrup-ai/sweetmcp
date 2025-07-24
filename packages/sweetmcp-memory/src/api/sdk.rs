@@ -251,17 +251,17 @@ impl MemorySDKBuilder {
     /// Build the MemorySDK
     pub fn build(self) -> Result<MemorySDK> {
         let memory_manager = self.memory_manager
-            .ok_or_else(|| crate::utils::error::MemoryError::InvalidArgument(
+            .ok_or_else(|| crate::utils::error::Error::InvalidInput(
                 "Memory manager is required".to_string()
             ))?;
         
         let vector_search = self.vector_search
-            .ok_or_else(|| crate::utils::error::MemoryError::InvalidArgument(
+            .ok_or_else(|| crate::utils::error::Error::InvalidInput(
                 "Vector search is required".to_string()
             ))?;
         
         let completion_service = self.completion_service
-            .ok_or_else(|| crate::utils::error::MemoryError::InvalidArgument(
+            .ok_or_else(|| crate::utils::error::Error::InvalidInput(
                 "Completion service is required".to_string()
             ))?;
         

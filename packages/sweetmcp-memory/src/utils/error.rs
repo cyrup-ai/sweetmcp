@@ -6,6 +6,9 @@ use thiserror::Error;
 /// Result type alias using our Error type
 pub type Result<T> = std::result::Result<T, Error>;
 
+/// Memory-specific result type alias for consistency
+pub type MemoryResult<T> = std::result::Result<T, Error>;
+
 /// Custom error type for the application
 #[derive(Error, Debug)]
 pub enum Error {
@@ -65,6 +68,15 @@ pub enum Error {
 
     #[error("Other error: {0}")]
     Other(String),
+
+    #[error("Cognitive error: {0}")]
+    Cognitive(String),
+
+    #[error("Attention error: {0}")]
+    Attention(String),
+
+    #[error("Invalid query: {0}")]
+    InvalidQuery(String),
 }
 
 // Implement axum::response::IntoResponse for AppError to use it in handlers
@@ -121,9 +133,12 @@ impl axum::response::IntoResponse for Error {
             Error::Internal(e) => (StatusCode::INTERNAL_SERVER_ERROR, e),
             Error::QueryTimeout { timeout_ms } => (
                 StatusCode::REQUEST_TIMEOUT,
-                format!("Query timeout after {}ms", timeout_ms)
+                format!("Query timeout after {}ms", timeout_ms),
             ),
             Error::Other(e) => (StatusCode::INTERNAL_SERVER_ERROR, e),
+            Error::Cognitive(e) => (StatusCode::INTERNAL_SERVER_ERROR, e),
+            Error::Attention(e) => (StatusCode::INTERNAL_SERVER_ERROR, e),
+            Error::InvalidQuery(e) => (StatusCode::BAD_REQUEST, e),
         };
 
         (status, Json(serde_json::json!({ "error": error_message }))).into_response()

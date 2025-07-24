@@ -1,5 +1,5 @@
 //! Query optimization and building module for mem0-rs
-//! 
+//!
 //! This module provides advanced query capabilities including
 //! query building, optimization, monitoring, and index-aware querying.
 
@@ -24,16 +24,16 @@ pub type Result<T> = std::result::Result<T, QueryError>;
 pub enum QueryError {
     #[error("Invalid query: {0}")]
     InvalidQuery(String),
-    
+
     #[error("Execution error: {0}")]
     ExecutionError(String),
-    
+
     #[error("Timeout: query exceeded {0:?}")]
     Timeout(std::time::Duration),
-    
+
     #[error("Resource limit exceeded: {0}")]
     ResourceLimitExceeded(String),
-    
+
     #[error("Index not found: {0}")]
     IndexNotFound(String),
 }

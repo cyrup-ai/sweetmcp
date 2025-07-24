@@ -400,7 +400,8 @@ impl<V: VectorStore + Clone + Send + Sync + 'static> RetrievalManager<V> {
         }
 
         // Use SmallVec for zero-allocation for small sorted results
-        let mut sorted_results: SmallVec<[RetrievalResult; 32]> = unique_results.into_values().collect();
+        let mut sorted_results: SmallVec<[RetrievalResult; 32]> =
+            unique_results.into_values().collect();
         sorted_results.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap());
         sorted_results.truncate(limit);
 

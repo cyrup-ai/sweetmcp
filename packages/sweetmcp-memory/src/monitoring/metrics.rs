@@ -32,19 +32,19 @@ impl MetricsCollector {
             metrics: HashMap::new(),
         }
     }
-    
+
     /// Register a metric
     pub fn register(&mut self, name: String, metric: Box<dyn Metric>) {
         self.metrics.insert(name, metric);
     }
-    
+
     /// Record a value
     pub fn record(&self, name: &str, value: f64) {
         if let Some(metric) = self.metrics.get(name) {
             metric.record(value);
         }
     }
-    
+
     /// Get all metrics
     pub fn collect(&self) -> HashMap<String, MetricValue> {
         self.metrics
@@ -64,10 +64,10 @@ impl Default for MetricsCollector {
 pub trait Metric: Send + Sync {
     /// Record a value
     fn record(&self, value: f64);
-    
+
     /// Get current value
     fn value(&self) -> MetricValue;
-    
+
     /// Get metric type
     fn metric_type(&self) -> MetricType;
 }
@@ -89,11 +89,11 @@ impl Metric for CounterMetric {
     fn record(&self, value: f64) {
         self.counter.inc_by(value);
     }
-    
+
     fn value(&self) -> MetricValue {
         MetricValue::Counter(self.counter.get())
     }
-    
+
     fn metric_type(&self) -> MetricType {
         MetricType::Counter
     }
@@ -116,11 +116,11 @@ impl Metric for GaugeMetric {
     fn record(&self, value: f64) {
         self.gauge.set(value);
     }
-    
+
     fn value(&self) -> MetricValue {
         MetricValue::Gauge(self.gauge.get())
     }
-    
+
     fn metric_type(&self) -> MetricType {
         MetricType::Gauge
     }
@@ -143,12 +143,12 @@ impl Metric for HistogramMetric {
     fn record(&self, value: f64) {
         self.histogram.observe(value);
     }
-    
+
     fn value(&self) -> MetricValue {
         // Return the sum for simplicity
         MetricValue::Histogram(self.histogram.get_sample_sum())
     }
-    
+
     fn metric_type(&self) -> MetricType {
         MetricType::Histogram
     }

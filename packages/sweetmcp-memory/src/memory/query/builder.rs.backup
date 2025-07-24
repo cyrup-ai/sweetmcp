@@ -1,0 +1,11 @@
+//! Complex query builder coordination module
+//!
+//! This module coordinates all query builder functionality with blazing-fast
+//! zero-allocation patterns and comprehensive query construction capabilities.
+
+// Include the builder submodule
+#[path = "builder/mod.rs"]
+mod builder;
+
+// Re-export everything from the builder submodule for backward compatibility
+pub use builder::*;

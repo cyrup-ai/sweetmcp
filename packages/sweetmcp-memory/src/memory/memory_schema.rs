@@ -1,9 +1,9 @@
 // src/schema/memory_schema.rs
 //! Defines the schema for memory nodes.
 
-use serde::{Deserialize, Serialize};
 use crate::schema::MemoryType; // Correctly refers to MemoryType from src/schema/mod.rs
-use crate::utils; // For utility functions like generate_id and current_timestamp_ms
+use crate::utils;
+use serde::{Deserialize, Serialize}; // For utility functions like generate_id and current_timestamp_ms
 
 /// Represents a memory node in the system.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -13,14 +13,14 @@ pub struct Memory {
     pub content: String,
     pub embedding: Option<Vec<f32>>,
     pub metadata: serde_json::Value,
-    pub created_at: u64, // Timestamp in milliseconds
-    pub updated_at: u64, // Timestamp in milliseconds
+    pub created_at: u64,       // Timestamp in milliseconds
+    pub updated_at: u64,       // Timestamp in milliseconds
     pub last_accessed_at: u64, // Timestamp in milliseconds
-    pub score: Option<f32>,      // Optional score, e.g., from search results
-    // Relationships are typically handled by a separate edge collection in SurrealDB
-    // or by direct links. For simplicity here, we might not store them directly in the node,
-    // or if we do, it would be a list of relationship IDs.
-    // pub relationships: Vec<String>, // IDs of related MemoryRelationship objects
+    pub score: Option<f32>,    // Optional score, e.g., from search results
+                               // Relationships are typically handled by a separate edge collection in SurrealDB
+                               // or by direct links. For simplicity here, we might not store them directly in the node,
+                               // or if we do, it would be a list of relationship IDs.
+                               // pub relationships: Vec<String>, // IDs of related MemoryRelationship objects
 }
 
 impl Memory {
@@ -72,5 +72,3 @@ impl Memory {
         self.updated_at = utils::current_timestamp_ms();
     }
 }
-
-

@@ -3,16 +3,16 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-use crate::query::{QueryPlan, QueryType, QueryStep, Result};
+use crate::query::{QueryPlan, QueryStep, QueryType, Result};
 
 /// Query optimizer
 pub struct QueryOptimizer {
     /// Cost model
     cost_model: CostModel,
-    
+
     /// Optimization rules
     rules: Vec<Box<dyn OptimizationRule>>,
-    
+
     /// Statistics
     stats: QueryStatistics,
 }
@@ -27,7 +27,7 @@ pub struct CostModel {
 impl Default for CostModel {
     fn default() -> Self {
         let mut factors = HashMap::new();
-        
+
         // Basic operation costs
         factors.insert("full_scan".to_string(), 100.0);
         factors.insert("index_scan".to_string(), 10.0);
@@ -35,12 +35,12 @@ impl Default for CostModel {
         factors.insert("filter".to_string(), 5.0);
         factors.insert("sort".to_string(), 15.0);
         factors.insert("join".to_string(), 50.0);
-        
+
         // Per-record costs
         factors.insert("record_fetch".to_string(), 0.1);
         factors.insert("record_filter".to_string(), 0.01);
         factors.insert("record_sort".to_string(), 0.05);
-        
+
         Self { factors }
     }
 }
@@ -50,10 +50,10 @@ impl Default for CostModel {
 pub struct QueryStatistics {
     /// Table sizes
     pub table_sizes: HashMap<String, u64>,
-    
+
     /// Index cardinalities
     pub index_cardinalities: HashMap<String, u64>,
-    
+
     /// Selectivity estimates
     pub selectivities: HashMap<String, f64>,
 }
@@ -67,7 +67,7 @@ impl QueryOptimizer {
             stats: QueryStatistics::default(),
         }
     }
-    
+
     /// Get default optimization rules
     fn default_rules() -> Vec<Box<dyn OptimizationRule>> {
         vec![
@@ -77,12 +77,12 @@ impl QueryOptimizer {
             Box::new(CacheRule),
         ]
     }
-    
+
     /// Update statistics
     pub fn update_statistics(&mut self, stats: QueryStatistics) {
         self.stats = stats;
     }
-    
+
     /// Optimize a query plan
     pub fn optimize(&self, mut plan: QueryPlan) -> Result<QueryPlan> {
         // Apply optimization rules
@@ -91,13 +91,13 @@ impl QueryOptimizer {
                 plan = rule.apply(plan)?;
             }
         }
-        
+
         // Recalculate cost
         plan.cost = self.calculate_cost(&plan);
-        
+
         Ok(plan)
     }
-    
+
     /// Calculate the cost of a query plan
     pub fn calculate_cost(&self, plan: &QueryPlan) -> f64 {
         plan.steps
@@ -105,15 +105,17 @@ impl QueryOptimizer {
             .map(|step| self.calculate_step_cost(step))
             .sum()
     }
-    
+
     /// Calculate the cost of a single step
     fn calculate_step_cost(&self, step: &QueryStep) -> f64 {
         // Look up base cost
-        let base_cost = self.cost_model.factors
+        let base_cost = self
+            .cost_model
+            .factors
             .get(&step.name.to_lowercase().replace(" ", "_"))
             .copied()
             .unwrap_or(10.0);
-        
+
         // Adjust for parallelization
         if step.parallel {
             base_cost * 0.6 // 40% reduction for parallel execution
@@ -121,15 +123,15 @@ impl QueryOptimizer {
             base_cost
         }
     }
-    
+
     /// Estimate query selectivity
     pub fn estimate_selectivity(&self, query_type: &QueryType) -> f64 {
         match query_type {
-            QueryType::Exact => 0.01, // 1% selectivity
-            QueryType::Similarity => 0.1, // 10% selectivity
-            QueryType::FullText => 0.05, // 5% selectivity
+            QueryType::Exact => 0.01,         // 1% selectivity
+            QueryType::Similarity => 0.1,     // 10% selectivity
+            QueryType::FullText => 0.05,      // 5% selectivity
             QueryType::GraphTraversal => 0.2, // 20% selectivity
-            QueryType::Hybrid => 0.15, // 15% selectivity
+            QueryType::Hybrid => 0.15,        // 15% selectivity
         }
     }
 }
@@ -144,10 +146,10 @@ impl Default for QueryOptimizer {
 pub trait OptimizationRule: Send + Sync {
     /// Check if the rule is applicable
     fn applicable(&self, plan: &QueryPlan) -> bool;
-    
+
     /// Apply the optimization rule
     fn apply(&self, plan: QueryPlan) -> Result<QueryPlan>;
-    
+
     /// Get rule name
     fn name(&self) -> &str;
 }
@@ -160,7 +162,7 @@ impl OptimizationRule for PushDownFilterRule {
         // Check if there are filters that can be pushed down
         plan.steps.iter().any(|step| step.name == "Filter Results")
     }
-    
+
     fn apply(&self, mut plan: QueryPlan) -> Result<QueryPlan> {
         // Find filter step
         if let Some(filter_pos) = plan.steps.iter().position(|s| s.name == "Filter Results") {
@@ -170,10 +172,10 @@ impl OptimizationRule for PushDownFilterRule {
                 plan.steps.insert(1, filter); // After initial scan
             }
         }
-        
+
         Ok(plan)
     }
-    
+
     fn name(&self) -> &str {
         "push_down_filter"
     }
@@ -186,13 +188,13 @@ impl OptimizationRule for UseIndexRule {
     fn applicable(&self, plan: &QueryPlan) -> bool {
         plan.steps.iter().any(|step| step.name == "Full Scan") && !plan.use_index
     }
-    
+
     fn apply(&self, plan: QueryPlan) -> Result<QueryPlan> {
         // This would check available indexes and replace full scan with index scan
         // For now, just mark that we checked
         Ok(plan)
     }
-    
+
     fn name(&self) -> &str {
         "use_index"
     }
@@ -203,9 +205,11 @@ struct ParallelizationRule;
 
 impl OptimizationRule for ParallelizationRule {
     fn applicable(&self, plan: &QueryPlan) -> bool {
-        plan.steps.iter().any(|step| !step.parallel && self.can_parallelize(step))
+        plan.steps
+            .iter()
+            .any(|step| !step.parallel && self.can_parallelize(step))
     }
-    
+
     fn apply(&self, mut plan: QueryPlan) -> Result<QueryPlan> {
         for step in &mut plan.steps {
             if !step.parallel && self.can_parallelize(step) {
@@ -213,10 +217,10 @@ impl OptimizationRule for ParallelizationRule {
                 step.cost *= 0.6; // Reduce cost for parallel execution
             }
         }
-        
+
         Ok(plan)
     }
-    
+
     fn name(&self) -> &str {
         "parallelization"
     }
@@ -238,16 +242,19 @@ impl OptimizationRule for CacheRule {
     fn applicable(&self, plan: &QueryPlan) -> bool {
         plan.cost > 50.0 // Only cache expensive queries
     }
-    
+
     fn apply(&self, mut plan: QueryPlan) -> Result<QueryPlan> {
         // Add cache check step at the beginning
-        plan.steps.insert(0, QueryStep {
-            name: "Cache Lookup".to_string(),
-            description: "Check if results are cached".to_string(),
-            cost: 1.0,
-            parallel: false,
-        });
-        
+        plan.steps.insert(
+            0,
+            QueryStep {
+                name: "Cache Lookup".to_string(),
+                description: "Check if results are cached".to_string(),
+                cost: 1.0,
+                parallel: false,
+            },
+        );
+
         // Add cache write step at the end
         plan.steps.push(QueryStep {
             name: "Cache Write".to_string(),
@@ -255,10 +262,10 @@ impl OptimizationRule for CacheRule {
             cost: 2.0,
             parallel: false,
         });
-        
+
         Ok(plan)
     }
-    
+
     fn name(&self) -> &str {
         "cache"
     }
@@ -269,13 +276,13 @@ impl OptimizationRule for CacheRule {
 pub struct OptimizationHints {
     /// Force use of specific index
     pub use_index: Option<String>,
-    
+
     /// Disable parallelization
     pub no_parallel: bool,
-    
+
     /// Disable caching
     pub no_cache: bool,
-    
+
     /// Custom cost factors
     pub cost_overrides: HashMap<String, f64>,
 }

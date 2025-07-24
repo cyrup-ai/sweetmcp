@@ -1,7 +1,7 @@
 //! Unit tests for memory schema
 
-use sweetmcp_memory::memory::memory_schema::*;
 use sweetmcp_memory::MemoryType;
+use sweetmcp_memory::memory::memory_schema::*;
 
 #[test]
 fn test_new_memory() {
@@ -44,7 +44,7 @@ fn test_metadata_operations() {
     let value = serde_json::json!("web");
 
     memory.add_metadata(key.clone(), value.clone());
-    
+
     if let serde_json::Value::Object(map) = &memory.metadata {
         assert_eq!(map.get(&key), Some(&value));
     } else {
@@ -52,7 +52,7 @@ fn test_metadata_operations() {
     }
 
     memory.remove_metadata(&key);
-    
+
     if let serde_json::Value::Object(map) = &memory.metadata {
         assert!(map.get(&key).is_none());
     } else {

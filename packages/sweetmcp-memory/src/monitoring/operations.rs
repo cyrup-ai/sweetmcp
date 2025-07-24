@@ -4,7 +4,6 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
 
-
 /// Operation types
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -48,28 +47,28 @@ pub enum OperationStatus {
 pub struct Operation {
     /// Operation ID
     pub id: String,
-    
+
     /// Operation type
     pub operation_type: OperationType,
-    
+
     /// Operation status
     pub status: OperationStatus,
-    
+
     /// Start time
     pub started_at: DateTime<Utc>,
-    
+
     /// End time
     pub ended_at: Option<DateTime<Utc>>,
-    
+
     /// Duration
     pub duration: Option<Duration>,
-    
+
     /// User ID
     pub user_id: Option<String>,
-    
+
     /// Error message if failed
     pub error: Option<String>,
-    
+
     /// Additional metadata
     pub metadata: serde_json::Value,
 }
@@ -89,13 +88,13 @@ impl Operation {
             metadata: serde_json::Value::Object(serde_json::Map::new()),
         }
     }
-    
+
     /// Start the operation
     pub fn start(&mut self) {
         self.status = OperationStatus::InProgress;
         self.started_at = Utc::now();
     }
-    
+
     /// Complete the operation successfully
     pub fn complete(&mut self) {
         let now = Utc::now();
@@ -104,10 +103,10 @@ impl Operation {
         self.duration = Some(
             now.signed_duration_since(self.started_at)
                 .to_std()
-                .unwrap_or(Duration::from_secs(0))
+                .unwrap_or(Duration::from_secs(0)),
         );
     }
-    
+
     /// Fail the operation
     pub fn fail(&mut self, error: String) {
         let now = Utc::now();
@@ -116,7 +115,7 @@ impl Operation {
         self.duration = Some(
             now.signed_duration_since(self.started_at)
                 .to_std()
-                .unwrap_or(Duration::from_secs(0))
+                .unwrap_or(Duration::from_secs(0)),
         );
         self.error = Some(error);
     }
@@ -126,10 +125,10 @@ impl Operation {
 pub struct OperationTracker {
     /// Active operations
     active: std::sync::RwLock<HashMap<String, Operation>>,
-    
+
     /// Completed operations (limited history)
     completed: std::sync::RwLock<Vec<Operation>>,
-    
+
     /// Maximum completed operations to keep
     max_history: usize,
 }
@@ -143,7 +142,7 @@ impl OperationTracker {
             max_history,
         }
     }
-    
+
     /// Start tracking an operation
     pub fn start_operation(
         &self,
@@ -153,11 +152,11 @@ impl OperationTracker {
         let mut operation = Operation::new(operation_type, user_id);
         operation.start();
         let id = operation.id.clone();
-        
+
         self.active.write().unwrap().insert(id.clone(), operation);
         id
     }
-    
+
     /// Complete an operation
     pub fn complete_operation(&self, id: String) {
         if let Some(mut operation) = self.active.write().unwrap().remove(&id) {
@@ -165,7 +164,7 @@ impl OperationTracker {
             self.add_to_history(operation);
         }
     }
-    
+
     /// Fail an operation
     pub fn fail_operation(&self, id: String, error: String) {
         if let Some(mut operation) = self.active.write().unwrap().remove(&id) {
@@ -173,24 +172,24 @@ impl OperationTracker {
             self.add_to_history(operation);
         }
     }
-    
+
     /// Add operation to history
     fn add_to_history(&self, operation: Operation) {
         let mut completed = self.completed.write().unwrap();
         completed.push(operation);
-        
+
         // Keep only the most recent operations
         if completed.len() > self.max_history {
             let target_len = completed.len() - self.max_history;
             completed.drain(0..target_len);
         }
     }
-    
+
     /// Get active operations
     pub fn active_operations(&self) -> Vec<Operation> {
         self.active.read().unwrap().values().cloned().collect()
     }
-    
+
     /// Get operation history
     pub fn operation_history(&self) -> Vec<Operation> {
         self.completed.read().unwrap().clone()

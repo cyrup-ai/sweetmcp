@@ -6,11 +6,11 @@ use crate::cognitive::compiler::{CompiledCode, RuntimeCompiler};
 use crate::cognitive::mcts::{CodeState, MCTS};
 use crate::cognitive::performance::PerformanceAnalyzer;
 use crate::cognitive::types::{
-    CognitiveError, OptimizationOutcome, OptimizationSpec, OptimizationType, 
-    PendingOptimizationResult, EvolutionMetadata,
+    CognitiveError, EvolutionMetadata, OptimizationOutcome, OptimizationSpec, OptimizationType,
+    PendingOptimizationResult,
 };
 use std::sync::Arc;
-use tokio::sync::{mpsc, oneshot, RwLock};
+use tokio::sync::{RwLock, mpsc, oneshot};
 use tracing::{error, info};
 
 pub trait CodeEvolution {
@@ -155,7 +155,10 @@ impl CodeEvolution for CognitiveCodeEvolution {
                             format!("Memory improved by {:.1}%", memory_improvement),
                             format!("Relevance improved by {:.1}%", relevance_improvement),
                         ],
-                        performance_gain: (latency_improvement + memory_improvement + relevance_improvement) / 3.0,
+                        performance_gain: (latency_improvement
+                            + memory_improvement
+                            + relevance_improvement)
+                            / 3.0,
                         quality_score: 0.8,
                         metadata: std::collections::HashMap::new(),
                     };
@@ -239,17 +242,17 @@ impl EvolutionEngine {
             }),
         }
     }
-    
+
     pub async fn evolve(&mut self) -> Result<bool, CognitiveError> {
         self.generation_count += 1;
         // Basic evolution logic - would be expanded with actual MCTS
         Ok(true)
     }
-    
+
     pub fn get_generation_count(&self) -> u64 {
         self.generation_count
     }
-    
+
     pub async fn get_current_state(&self) -> CodeState {
         self.state_manager.read().await.clone()
     }

@@ -2,8 +2,8 @@
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use uuid::Uuid;
 use std::fmt;
+use uuid::Uuid;
 
 /// Cognitive state representing the current understanding and context
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -262,6 +262,12 @@ pub enum CognitiveError {
 
     #[error("Invalid state: {0}")]
     InvalidState(String),
+
+    #[error("Resource exhaustion: {0}")]
+    ResourceExhaustion(String),
+
+    #[error("Evaluation failed: {0}")]
+    EvaluationFailed(String),
 }
 
 pub type CognitiveResult<T> = Result<T, CognitiveError>;
@@ -464,27 +470,44 @@ pub enum ModelClient {
 }
 
 impl Model {
-    pub async fn create(model_type: ModelType) -> Result<Self, Box<dyn std::error::Error + Send + Sync>> {
+    pub async fn create(
+        model_type: ModelType,
+    ) -> Result<Self, Box<dyn std::error::Error + Send + Sync>> {
         let client = match &model_type {
             ModelType::OpenAI { model } => ModelClient::OpenAI(model.clone()),
             ModelType::Anthropic { model } => ModelClient::Anthropic(model.clone()),
             ModelType::Local { model } => ModelClient::Local(model.clone()),
         };
-        
+
         Ok(Self { model_type, client })
     }
-    
-    pub async fn generate_response(&self, prompt: &str) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
+
+    pub async fn generate_response(
+        &self,
+        prompt: &str,
+    ) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
         // Mock implementation for now
-        Ok(format!("Response from {} for prompt: {}", self.model_type.display_name(), prompt))
+        Ok(format!(
+            "Response from {} for prompt: {}",
+            self.model_type.display_name(),
+            prompt
+        ))
     }
-    
+
     pub fn available_types() -> Vec<ModelType> {
         vec![
-            ModelType::OpenAI { model: "gpt-4".to_string() },
-            ModelType::OpenAI { model: "gpt-3.5-turbo".to_string() },
-            ModelType::Anthropic { model: "claude-3-sonnet".to_string() },
-            ModelType::Local { model: "llama-2-7b".to_string() },
+            ModelType::OpenAI {
+                model: "gpt-4".to_string(),
+            },
+            ModelType::OpenAI {
+                model: "gpt-3.5-turbo".to_string(),
+            },
+            ModelType::Anthropic {
+                model: "claude-3-sonnet".to_string(),
+            },
+            ModelType::Local {
+                model: "llama-2-7b".to_string(),
+            },
         ]
     }
 }
@@ -492,12 +515,12 @@ impl Model {
 impl CognitiveMemoryNode {
     /// Check if this memory node has been enhanced with cognitive features
     pub fn is_enhanced(&self) -> bool {
-        self.cognitive_state.activation_pattern.len() > 0 ||
-        self.quantum_signature.is_some() ||
-        self.evolution_metadata.is_some() ||
-        !self.attention_weights.is_empty()
+        self.cognitive_state.activation_pattern.len() > 0
+            || self.quantum_signature.is_some()
+            || self.evolution_metadata.is_some()
+            || !self.attention_weights.is_empty()
     }
-    
+
     /// Get the base memory node
     pub fn base(&self) -> &crate::memory::MemoryNode {
         &self.base_memory

@@ -1,0 +1,400 @@
+//! Quantum backpropagation with vectorized reward calculations
+//!
+//! This module provides blazing-fast quantum reward backpropagation with entanglement
+//! effects, vectorized calculations, and zero-allocation path traversal optimization.
+//!
+//! ## Architecture
+//!
+//! The backpropagation system is decomposed into focused submodules:
+//! - `core`: Core QuantumBackpropagator with vectorized calculations
+//! - `adaptive`: Adaptive backpropagation with dynamic learning rates
+//! - `metrics`: Performance metrics and result analysis
+//! - `engine`: High-level strategy dispatch and orchestration
+//!
+//! ## Usage
+//!
+//! ```rust
+//! use sweetmcp_memory::cognitive::quantum_mcts::backpropagation::*;
+//!
+//! // Create backpropagation coordinator
+//! let config = QuantumMCTSConfig::default();
+//! let entanglement_graph = Arc::new(RwLock::new(EntanglementGraph::new()));
+//! let mut coordinator = BackpropagationCoordinator::new(
+//!     config, entanglement_graph, BackpropagationStrategy::Standard
+//! );
+//!
+//! // Perform backpropagation
+//! let result = coordinator.backpropagate(&tree, node_id, reward).await?;
+//!
+//! // Analyze performance
+//! let analysis = coordinator.get_performance_analysis();
+//! ```
+
+use std::collections::HashMap;
+use std::sync::Arc;
+use tokio::sync::RwLock;
+use tracing::{debug, trace, warn};
+
+use crate::cognitive::{
+    quantum::{Complex64, EntanglementGraph},
+    types::CognitiveError,
+};
+use super::{
+    node_state::{QuantumMCTSNode, QuantumNodeState},
+    config::QuantumMCTSConfig,
+};
+
+// Import backpropagation submodules
+pub mod core;
+pub mod adaptive;
+pub mod metrics;
+pub mod engine;
+
+// Re-export all types and functionality from submodules for backward compatibility
+pub use core::{QuantumBackpropagator, CacheStats};
+pub use metrics::{
+    BackpropagationMetrics, BackpropagationResult, NormalizationResult,
+    BatchAnalysis, PerformanceTrend, StrategyComparison,
+};
+pub use engine::{
+    QuantumBackpropagationEngine, BackpropagationStrategy, StrategyProfile,
+};
+
+// Convenience functions for direct backpropagation operations
+impl QuantumBackpropagator {
+    /// Quick health check of backpropagation system
+    pub async fn quick_health_check(
+        &self,
+        tree: &RwLock<HashMap<String, QuantumMCTSNode>>,
+    ) -> Result<BackpropagationHealth, CognitiveError> {
+        let cache_stats = self.cache_stats();
+        let metrics = self.get_metrics();
+        
+        let health = if metrics.throughput() > 10.0 && cache_stats.path_cache_utilization() < 90.0 {
+            BackpropagationHealth::Healthy
+        } else if metrics.throughput() > 5.0 {
+            BackpropagationHealth::Acceptable
+        } else if metrics.backpropagations_performed > 0 {
+            BackpropagationHealth::Slow
+        } else {
+            BackpropagationHealth::Uninitialized
+        };
+        
+        debug!("Backpropagation health check: {:?}", health);
+        Ok(health)
+    }
+    
+    /// Get basic performance summary
+    pub fn get_basic_summary(&self) -> BasicSummary {
+        let metrics = self.get_metrics();
+        let cache_stats = self.cache_stats();
+        
+        BasicSummary {
+            total_backpropagations: metrics.backpropagations_performed,
+            total_nodes_updated: metrics.total_nodes_updated,
+            average_throughput: metrics.throughput(),
+            cache_hit_rate: metrics.cache_hit_rate(),
+            performance_grade: metrics.performance_grade(),
+        }
+    }
+}
+
+/// Health status for quick assessment
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BackpropagationHealth {
+    Healthy,
+    Acceptable,
+    Slow,
+    Uninitialized,
+    Problematic,
+}
+
+impl BackpropagationHealth {
+    /// Check if health status is acceptable
+    pub fn is_acceptable(&self) -> bool {
+        matches!(self, 
+            BackpropagationHealth::Healthy | 
+            BackpropagationHealth::Acceptable |
+            BackpropagationHealth::Uninitialized
+        )
+    }
+    
+    /// Get human-readable description
+    pub fn description(&self) -> &'static str {
+        match self {
+            BackpropagationHealth::Healthy => "Backpropagation system operating optimally",
+            BackpropagationHealth::Acceptable => "Backpropagation system operating acceptably",
+            BackpropagationHealth::Slow => "Backpropagation system running slowly",
+            BackpropagationHealth::Uninitialized => "Backpropagation system starting up",
+            BackpropagationHealth::Problematic => "Backpropagation system has issues",
+        }
+    }
+}
+
+/// Basic performance summary for lightweight monitoring
+#[derive(Debug, Clone)]
+pub struct BasicSummary {
+    /// Total backpropagations performed
+    pub total_backpropagations: u64,
+    /// Total nodes updated
+    pub total_nodes_updated: usize,
+    /// Average throughput (ops per second)
+    pub average_throughput: f64,
+    /// Cache hit rate percentage
+    pub cache_hit_rate: f64,
+    /// Performance grade (A-F)
+    pub performance_grade: char,
+}
+
+impl BasicSummary {
+    /// Get efficiency score (0.0 to 1.0)
+    pub fn efficiency_score(&self) -> f64 {
+        let throughput_score = (self.average_throughput / 50.0).min(1.0); // Good at 50+ ops/sec
+        let cache_score = self.cache_hit_rate / 100.0; // Convert percentage to 0-1
+        let grade_score = match self.performance_grade {
+            'A' => 1.0,
+            'B' => 0.8,
+            'C' => 0.6,
+            'D' => 0.4,
+            _ => 0.2,
+        };
+        
+        (throughput_score + cache_score + grade_score) / 3.0
+    }
+    
+    /// Check if summary indicates good performance
+    pub fn indicates_good_performance(&self) -> bool {
+        self.efficiency_score() > 0.7 && self.performance_grade >= 'B'
+    }
+    
+    /// Get performance summary string
+    pub fn summary_string(&self) -> String {
+        format!(
+            "Backprop: {} ops, {:.1}/sec, {:.1}% cache, grade {}",
+            self.total_backpropagations,
+            self.average_throughput,
+            self.cache_hit_rate,
+            self.performance_grade
+        )
+    }
+}
+
+/// Extended backpropagation operations for specialized use cases
+pub struct ExtendedBackpropagationOps;
+
+impl ExtendedBackpropagationOps {
+    /// Create a pre-configured coordinator for high-performance scenarios
+    pub fn create_high_performance_coordinator(
+        config: QuantumMCTSConfig,
+        entanglement_graph: Arc<RwLock<EntanglementGraph>>,
+    ) -> BackpropagationCoordinator {
+        let mut coordinator = BackpropagationFactory::create_high_throughput_coordinator(
+            config, entanglement_graph
+        );
+        coordinator.enable_adaptive_strategy_selection();
+        coordinator
+    }
+    
+    /// Create a coordinator optimized for research scenarios requiring high accuracy
+    pub fn create_research_coordinator(
+        config: QuantumMCTSConfig,
+        entanglement_graph: Arc<RwLock<EntanglementGraph>>,
+    ) -> BackpropagationCoordinator {
+        BackpropagationFactory::create_high_accuracy_coordinator(config, entanglement_graph)
+    }
+    
+    /// Perform comprehensive backpropagation analysis
+    pub async fn comprehensive_analysis(
+        coordinator: &BackpropagationCoordinator,
+    ) -> Result<ComprehensiveAnalysis, CognitiveError> {
+        let performance_analysis = coordinator.get_performance_analysis();
+        let health_status = coordinator.engine.backpropagator()
+            .quick_health_check(&RwLock::new(HashMap::new())).await?;
+        let basic_summary = coordinator.engine.backpropagator().get_basic_summary();
+        
+        Ok(ComprehensiveAnalysis {
+            performance_analysis,
+            health_status,
+            basic_summary,
+            analysis_timestamp: std::time::Instant::now(),
+        })
+    }
+    
+    /// Get strategy recommendations based on current performance
+    pub fn get_strategy_recommendations(
+        analysis: &PerformanceAnalysis,
+    ) -> Vec<StrategyRecommendation> {
+        let mut recommendations = Vec::new();
+        
+        let combined_throughput = analysis.combined_metrics.throughput();
+        let cache_hit_rate = analysis.combined_metrics.cache_hit_rate();
+        
+        if combined_throughput < 10.0 {
+            recommendations.push(StrategyRecommendation::OptimizeThroughput);
+        }
+        
+        if cache_hit_rate < 70.0 {
+            recommendations.push(StrategyRecommendation::ImproveCaching);
+        }
+        
+        if !analysis.adaptive_selection_enabled && analysis.performance_history_length > 50 {
+            recommendations.push(StrategyRecommendation::EnableAdaptiveSelection);
+        }
+        
+        if analysis.cache_stats.needs_pruning() {
+            recommendations.push(StrategyRecommendation::MaintainCaches);
+        }
+        
+        if recommendations.is_empty() {
+            recommendations.push(StrategyRecommendation::MaintainCurrentStrategy);
+        }
+        
+        recommendations
+    }
+}
+
+/// Comprehensive analysis combining all performance aspects
+#[derive(Debug, Clone)]
+pub struct ComprehensiveAnalysis {
+    /// Detailed performance analysis
+    pub performance_analysis: PerformanceAnalysis,
+    /// Health status assessment
+    pub health_status: BackpropagationHealth,
+    /// Basic performance summary
+    pub basic_summary: BasicSummary,
+    /// When analysis was performed
+    pub analysis_timestamp: std::time::Instant,
+}
+
+impl ComprehensiveAnalysis {
+    /// Get overall system grade combining all factors
+    pub fn overall_grade(&self) -> char {
+        let performance_score = self.performance_analysis.combined_metrics.performance_grade();
+        let summary_score = self.basic_summary.performance_grade;
+        let health_penalty = if self.health_status.is_acceptable() { 0 } else { 1 };
+        
+        // Take the lower of the two grades and apply health penalty
+        let combined_grade = if performance_score <= summary_score {
+            performance_score
+        } else {
+            summary_score
+        };
+        
+        // Apply health penalty
+        match (combined_grade, health_penalty) {
+            ('A', 0) => 'A',
+            ('A', _) | ('B', 0) => 'B',
+            ('B', _) | ('C', 0) => 'C',
+            ('C', _) | ('D', 0) => 'D',
+            _ => 'F',
+        }
+    }
+    
+    /// Check if system is operating well
+    pub fn is_operating_well(&self) -> bool {
+        self.performance_analysis.is_healthy() &&
+        self.health_status.is_acceptable() &&
+        self.basic_summary.indicates_good_performance()
+    }
+    
+    /// Get prioritized action items
+    pub fn action_items(&self) -> Vec<String> {
+        let mut items = Vec::new();
+        
+        if !self.health_status.is_acceptable() {
+            items.push(format!("Address health issue: {}", self.health_status.description()));
+        }
+        
+        items.extend(self.performance_analysis.recommendations());
+        
+        if self.basic_summary.efficiency_score() < 0.5 {
+            items.push("Consider system optimization or configuration review".to_string());
+        }
+        
+        if items.is_empty() {
+            items.push("System operating well, continue monitoring".to_string());
+        }
+        
+        items
+    }
+    
+    /// Get executive summary string
+    pub fn executive_summary(&self) -> String {
+        format!(
+            "BACKPROPAGATION ANALYSIS REPORT\n\
+             ==============================\n\
+             Overall Grade: {} | Health: {:?} | Efficiency: {:.1}%\n\
+             {}\n\
+             {}\n\
+             Analysis performed: {:.3}s ago",
+            self.overall_grade(),
+            self.health_status,
+            self.basic_summary.efficiency_score() * 100.0,
+            self.basic_summary.summary_string(),
+            self.performance_analysis.health_assessment(),
+            self.analysis_timestamp.elapsed().as_secs_f64()
+        )
+    }
+}
+
+/// Strategy recommendations for optimization
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum StrategyRecommendation {
+    OptimizeThroughput,
+    ImproveCaching,
+    EnableAdaptiveSelection,
+    MaintainCaches,
+    MaintainCurrentStrategy,
+}
+
+impl StrategyRecommendation {
+    /// Get detailed description of the recommendation
+    pub fn description(&self) -> &'static str {
+        match self {
+            StrategyRecommendation::OptimizeThroughput => 
+                "Optimize throughput by using batch processing or faster strategies",
+            StrategyRecommendation::ImproveCaching => 
+                "Improve cache hit rates through better data locality",
+            StrategyRecommendation::EnableAdaptiveSelection => 
+                "Enable adaptive strategy selection for automatic optimization",
+            StrategyRecommendation::MaintainCaches => 
+                "Perform cache maintenance to free memory and improve performance",
+            StrategyRecommendation::MaintainCurrentStrategy => 
+                "Current strategy is working well, maintain current approach",
+        }
+    }
+    
+    /// Get priority level for the recommendation
+    pub fn priority(&self) -> Priority {
+        match self {
+            StrategyRecommendation::OptimizeThroughput => Priority::High,
+            StrategyRecommendation::ImproveCaching => Priority::Medium,
+            StrategyRecommendation::EnableAdaptiveSelection => Priority::Low,
+            StrategyRecommendation::MaintainCaches => Priority::Low,
+            StrategyRecommendation::MaintainCurrentStrategy => Priority::None,
+        }
+    }
+}
+
+/// Priority levels for recommendations
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum Priority {
+    None,
+    Low,
+    Medium,
+    High,
+}
+
+impl Priority {
+    /// Get human-readable description
+    pub fn description(&self) -> &'static str {
+        match self {
+            Priority::None => "No action needed",
+            Priority::Low => "Consider when convenient",
+            Priority::Medium => "Should address when possible",
+            Priority::High => "Should address promptly",
+        }
+    }
+}
+
+// Tests are kept separate in the tests/ directory as per project requirements

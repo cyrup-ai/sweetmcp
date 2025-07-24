@@ -1,0 +1,283 @@
+//! Recursive improvement engine with parallel evaluation and memory bounds
+//!
+//! This module provides blazing-fast recursive quantum optimization with amplitude
+//! amplification, convergence detection, and memory-bounded parallel evaluation.
+//!
+//! The improvement system has been decomposed into focused submodules for optimal
+//! performance and maintainability while preserving zero-allocation patterns.
+
+// Re-export all improvement functionality from submodules
+pub use self::{
+    engine::RecursiveImprovementEngine,
+    memory_tracking::MemoryTracker,
+    memory_health::{
+        AllocationStats, MemoryTrend, CleanupRecommendation, 
+        MemoryHealth, MemoryHealthStatus
+    },
+    metrics::{
+        ImprovementMetrics, MetricsSummary, PerformanceTrend
+    },
+    simulation::{
+        SimulationResult, IterationResult, DepthResult
+    },
+    amplitude_amplifier::{
+        QuantumAmplitudeAmplifier, AmplificationResult, AmplifierConfig
+    },
+    result_types::{
+        ImprovementResult, TerminationReason, ConvergenceTrend
+    },
+};
+
+// Improvement submodules
+mod engine;
+mod memory_tracking;
+mod memory_health;
+mod metrics;
+mod simulation;
+mod amplitude_amplifier;
+mod result_types;
+
+use std::collections::HashMap;
+use std::sync::Arc;
+use tokio::sync::RwLock;
+use tracing::{debug, info};
+
+use crate::cognitive::{
+    performance::PerformanceAnalyzer,
+    quantum::{QuantumErrorCorrection, QuantumMetrics},
+    types::CognitiveError,
+};
+use super::{
+    node_state::QuantumMCTSNode,
+    config::QuantumMCTSConfig,
+    selection::QuantumSelector,
+    expansion::QuantumExpander,
+    backpropagation::QuantumBackpropagator,
+};
+
+/// High-level improvement coordinator that orchestrates all improvement components
+pub struct ImprovementCoordinator {
+    /// Core recursive improvement engine
+    engine: RecursiveImprovementEngine,
+    /// Quantum amplitude amplifier
+    amplifier: QuantumAmplitudeAmplifier,
+    /// Configuration for improvement parameters
+    config: QuantumMCTSConfig,
+}
+
+impl ImprovementCoordinator {
+    /// Create new improvement coordinator with all components
+    pub fn new(
+        config: QuantumMCTSConfig,
+        performance_analyzer: Arc<PerformanceAnalyzer>,
+        error_correction: Arc<QuantumErrorCorrection>,
+        metrics: Arc<RwLock<QuantumMetrics>>,
+        selector: QuantumSelector,
+        expander: QuantumExpander,
+        backpropagator: QuantumBackpropagator,
+    ) -> Result<Self, CognitiveError> {
+        let engine = RecursiveImprovementEngine::new(
+            config.clone(),
+            performance_analyzer,
+            error_correction,
+            metrics,
+            selector,
+            expander,
+            backpropagator,
+        )?;
+        
+        let amplifier = QuantumAmplitudeAmplifier::new();
+        
+        Ok(Self {
+            engine,
+            amplifier,
+            config,
+        })
+    }
+
+    /// Execute coordinated improvement with all components
+    pub async fn execute_improvement(
+        &mut self,
+        tree: &RwLock<HashMap<String, QuantumMCTSNode>>,
+        root_id: &str,
+        max_depths: u32,
+    ) -> Result<ImprovementResult, CognitiveError> {
+        info!("Starting coordinated improvement with {} max depths", max_depths);
+        
+        // Execute recursive improvement
+        let mut result = self.engine.recursive_improve(tree, root_id, max_depths).await?;
+        
+        // Apply final amplitude amplification if successful
+        if result.success && result.final_convergence_score > 0.6 {
+            debug!("Applying final amplitude amplification");
+            let amplification_result = self.amplifier.amplify_promising_nodes(
+                tree,
+                result.final_convergence_score,
+                None,
+            ).await?;
+            
+            // Adapt amplifier parameters based on results
+            self.amplifier.adapt_parameters(&amplification_result);
+            
+            info!("Final amplification: {} nodes processed, {} amplified",
+                  amplification_result.nodes_processed,
+                  amplification_result.nodes_amplified);
+        }
+        
+        Ok(result)
+    }
+
+    /// Get comprehensive improvement statistics
+    pub fn get_statistics(&self) -> &ImprovementMetrics {
+        self.engine.get_metrics()
+    }
+
+    /// Get amplifier configuration
+    pub fn get_amplifier_config(&self) -> AmplifierConfig {
+        self.amplifier.get_config()
+    }
+
+    /// Reset all components to initial state
+    pub async fn reset(&mut self) {
+        self.amplifier.reset_parameters();
+        debug!("Reset improvement coordinator components");
+    }
+}
+
+/// Factory function to create improvement coordinator with optimal configuration
+pub fn create_improvement_coordinator(
+    config: QuantumMCTSConfig,
+    performance_analyzer: Arc<PerformanceAnalyzer>,
+    error_correction: Arc<QuantumErrorCorrection>,
+    metrics: Arc<RwLock<QuantumMetrics>>,
+    selector: QuantumSelector,
+    expander: QuantumExpander,
+    backpropagator: QuantumBackpropagator,
+) -> Result<ImprovementCoordinator, CognitiveError> {
+    ImprovementCoordinator::new(
+        config,
+        performance_analyzer,
+        error_correction,
+        metrics,
+        selector,
+        expander,
+        backpropagator,
+    )
+}
+
+/// Convenience function to create a simple improvement engine
+pub fn create_improvement_engine(
+    config: QuantumMCTSConfig,
+    performance_analyzer: Arc<PerformanceAnalyzer>,
+    error_correction: Arc<QuantumErrorCorrection>,
+    metrics: Arc<RwLock<QuantumMetrics>>,
+    selector: QuantumSelector,
+    expander: QuantumExpander,
+    backpropagator: QuantumBackpropagator,
+) -> Result<RecursiveImprovementEngine, CognitiveError> {
+    RecursiveImprovementEngine::new(
+        config,
+        performance_analyzer,
+        error_correction,
+        metrics,
+        selector,
+        expander,
+        backpropagator,
+    )
+}
+
+/// Quick improvement function for simple use cases
+pub async fn improve_tree_simple(
+    tree: &RwLock<HashMap<String, QuantumMCTSNode>>,
+    root_id: &str,
+    config: QuantumMCTSConfig,
+) -> Result<ImprovementResult, CognitiveError> {
+    // Create minimal dependencies for simple usage
+    let performance_analyzer = Arc::new(PerformanceAnalyzer::new());
+    let error_correction = Arc::new(QuantumErrorCorrection::new());
+    let metrics = Arc::new(RwLock::new(QuantumMetrics::new()));
+    
+    // Create basic components (would need proper initialization in real usage)
+    let selector = QuantumSelector::new(config.clone())?;
+    let expander = QuantumExpander::new(config.clone())?;
+    let backpropagator = QuantumBackpropagator::new(config.clone())?;
+    
+    // Create and execute improvement
+    let mut coordinator = ImprovementCoordinator::new(
+        config.clone(),
+        performance_analyzer,
+        error_correction,
+        metrics,
+        selector,
+        expander,
+        backpropagator,
+    )?;
+    
+    coordinator.execute_improvement(tree, root_id, config.recursive_iterations).await
+}
+
+/// Performance analysis for improvement results
+pub fn analyze_improvement_performance(result: &ImprovementResult) -> String {
+    format!(
+        "Improvement Performance Analysis:\n\
+        - Final Convergence: {:.3} (trend: {:?})\n\
+        - Success: {} (reason: {:?})\n\
+        - Depths: {} completed in {:.3}s\n\
+        - Memory Peak: {} bytes\n\
+        - Quality Score: {:.3}\n\
+        - Velocity: {:.4} convergence/depth",
+        result.final_convergence_score,
+        result.convergence_trend(),
+        result.success,
+        result.termination_reason,
+        result.total_depths,
+        result.total_time.as_secs_f64(),
+        result.memory_peak,
+        result.quality_score(),
+        result.improvement_velocity()
+    )
+}
+
+/// Validation function for improvement configuration
+pub fn validate_improvement_config(config: &QuantumMCTSConfig) -> Result<(), String> {
+    if config.recursive_iterations == 0 {
+        return Err("Recursive iterations must be greater than 0".to_string());
+    }
+    
+    if config.max_tree_size == 0 {
+        return Err("Max tree size must be greater than 0".to_string());
+    }
+    
+    if config.max_quantum_parallel == 0 {
+        return Err("Max quantum parallel must be greater than 0".to_string());
+    }
+    
+    if config.decoherence_threshold <= 0.0 || config.decoherence_threshold >= 1.0 {
+        return Err("Decoherence threshold must be between 0.0 and 1.0".to_string());
+    }
+    
+    Ok(())
+}
+
+/// Default improvement configuration for optimal performance
+pub fn default_improvement_config() -> QuantumMCTSConfig {
+    QuantumMCTSConfig::performance_optimized()
+}
+
+/// Memory-constrained improvement configuration
+pub fn memory_constrained_config() -> QuantumMCTSConfig {
+    let mut config = QuantumMCTSConfig::default();
+    config.max_tree_size = 10_000; // Reduced tree size
+    config.max_quantum_parallel = 2; // Reduced parallelism
+    config.recursive_iterations = 2; // Fewer iterations
+    config
+}
+
+/// High-performance improvement configuration
+pub fn high_performance_config() -> QuantumMCTSConfig {
+    let mut config = QuantumMCTSConfig::performance_optimized();
+    config.max_quantum_parallel = num_cpus::get(); // Use all cores
+    config.recursive_iterations = 5; // More iterations
+    config.max_tree_size = 500_000; // Larger tree
+    config
+}
