@@ -4,7 +4,8 @@
 //! initialization logic with zero allocation patterns and blazing-fast
 //! performance.
 
-use crate::cognitive::types::{CognitiveError, OptimizationSpec};
+use crate::cognitive::types::CognitiveError;
+use crate::vector::async_vector_optimization::OptimizationSpec;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;

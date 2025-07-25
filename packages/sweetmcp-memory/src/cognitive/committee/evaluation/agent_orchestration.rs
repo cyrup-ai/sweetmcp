@@ -3,14 +3,14 @@
 //! This module provides blazing-fast concurrent agent evaluation orchestration with
 //! zero allocation optimizations and elegant semaphore-based rate limiting.
 
-use crate::cognitive::mcts::CodeState;
+use crate::cognitive::mcts::types::node_types::CodeState;
 use crate::cognitive::types::CognitiveError;
 use super::super::core::{AgentEvaluation, EvaluationRubric, CommitteeAgent};
 use super::super::consensus::{
     evaluation_phases::EvaluationPhase,
     events::CommitteeEvent,
 };
-use super::agent_simulation_mod::AgentSimulator;
+use super::AgentSimulator;
 use futures::stream::{FuturesUnordered, StreamExt};
 use std::sync::Arc;
 use tokio::sync::{Semaphore, mpsc};

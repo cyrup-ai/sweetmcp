@@ -13,19 +13,19 @@ use super::engine_issue_collection::IssueCollection;
 
 /// Convenience constructor for quantum entanglement engine
 pub fn create_quantum_entanglement_engine(
-    manager: std::sync::Arc<super::manager::QuantumEntanglementManager>,
+    manager: std::sync::Arc<super::core::QuantumEntanglementManager>,
     analyzer: std::sync::Arc<super::analysis::NetworkTopologyAnalyzer>,
-    config: super::config::QuantumEntanglementConfig,
+    config: crate::cognitive::quantum_mcts::config::QuantumMCTSConfig,
 ) -> QuantumEntanglementEngine {
     QuantumEntanglementEngine::new(manager, analyzer, config)
 }
 
 /// Create engine with default configuration
 pub fn create_default_quantum_entanglement_engine(
-    manager: std::sync::Arc<super::manager::QuantumEntanglementManager>,
+    manager: std::sync::Arc<super::core::QuantumEntanglementManager>,
     analyzer: std::sync::Arc<super::analysis::NetworkTopologyAnalyzer>,
 ) -> QuantumEntanglementEngine {
-    let config = super::config::QuantumEntanglementConfig::default();
+    let config = crate::cognitive::quantum_mcts::config::QuantumMCTSConfig::default();
     QuantumEntanglementEngine::new(manager, analyzer, config)
 }
 

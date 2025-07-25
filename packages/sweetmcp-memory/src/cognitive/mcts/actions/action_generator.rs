@@ -4,7 +4,8 @@
 //! optimizations for MCTS action creation and management.
 
 use super::super::types::{CodeState, ActionMetadata};
-use crate::cognitive::types::{CognitiveError, OptimizationSpec, ImpactFactors};
+use crate::cognitive::types::{CognitiveError, ImpactFactors};
+use crate::vector::async_vector_optimization::OptimizationSpec;
 use crate::cognitive::committee::EvaluationCommittee;
 use std::sync::Arc;
 

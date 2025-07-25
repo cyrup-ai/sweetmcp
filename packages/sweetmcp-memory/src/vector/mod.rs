@@ -155,6 +155,18 @@ pub trait VectorStore: Send + Sync {
 
     /// Generate embedding for text
     fn embed(&self, text: String) -> PendingEmbedding;
+
+    /// Get a vector by ID
+    fn get(&self, id: String) -> PendingVectorOp;
+
+    /// Remove a vector by ID
+    fn remove(&self, id: String) -> PendingVectorOp;
+
+    /// Batch add multiple vectors
+    fn batch_add(&self, items: Vec<(String, Vec<f32>, Option<serde_json::Value>)>) -> PendingVectorOp;
+
+    /// Update metadata for a vector
+    fn update_metadata(&self, id: String, metadata: serde_json::Value) -> PendingVectorOp;
 }
 
 /// Vector search result

@@ -47,7 +47,7 @@ impl BuilderFactory {
     }
     
     /// Create a query builder with executor
-    pub fn create_with_executor(executor: crate::memory::query::executor::MemoryQueryExecutor) -> ComplexQueryBuilder {
+    pub fn create_with_executor(executor: crate::memory::query::executor_core::MemoryQueryExecutor) -> ComplexQueryBuilder {
         let wrapper = QueryExecutorWrapper::new(executor);
         ComplexQueryBuilder::with_executor(wrapper)
     }

@@ -62,13 +62,14 @@ sweetmcp-workspace-hack = { version = "0.1", path = "../sweetmcp-workspace-hack"
 async-stream = "0.3.6"
 crossbeam-channel.workspace = true
 parking_lot.workspace = true
+async-trait = "0.1"
 
 [dev-dependencies]
 # Testing
 mockall = { version = "0.13" }
 mockito = { version = "1.7" }
 assert_approx_eq = { version = "1.1" }
-criterion = { version = "0.6" }
+criterion = "0.6"
 tempfile = { version = "3.20" }
 rand = { version = "0.9" }
 gix = { version = "0.72" }

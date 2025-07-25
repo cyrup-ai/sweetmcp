@@ -82,8 +82,8 @@ impl RelationshipPattern {
             return false;
         }
 
-        // Check confidence level
-        if confidence < &self.min_confidence {
+        // Check confidence level using float comparison
+        if confidence.to_float() < self.min_confidence.to_float() {
             return false;
         }
 
@@ -123,9 +123,11 @@ impl RelationshipPattern {
         
         // Confidence filtering complexity
         match self.min_confidence {
+            super::super::confidence::ConfidenceLevel::VeryHigh => score += 0.3,
             super::super::confidence::ConfidenceLevel::High => score += 0.2,
             super::super::confidence::ConfidenceLevel::Medium => score += 0.1,
             super::super::confidence::ConfidenceLevel::Low => {},
+            super::super::confidence::ConfidenceLevel::VeryLow => {},
         }
         
         score
@@ -287,9 +289,11 @@ impl RelationshipPattern {
 
         // Lower confidence requirements increase results
         match self.min_confidence {
+            super::super::confidence::ConfidenceLevel::VeryLow => multiplier *= 3.0,
             super::super::confidence::ConfidenceLevel::Low => multiplier *= 2.0,
             super::super::confidence::ConfidenceLevel::Medium => multiplier *= 1.5,
             super::super::confidence::ConfidenceLevel::High => {},
+            super::super::confidence::ConfidenceLevel::VeryHigh => {},
         }
 
         multiplier

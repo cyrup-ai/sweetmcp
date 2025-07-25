@@ -3,20 +3,20 @@
 //! This module provides error syndrome structures with correction
 //! operations and error type classifications.
 
-use super::{ErrorType, QuantumGate};
+use super::gate_impl::QuantumGate;
 
 /// Error syndrome information with correction operations
 #[derive(Debug, Clone)]
 pub struct ErrorSyndrome {
     pub syndrome_bits: Vec<bool>,
     pub error_location: Vec<usize>,
-    pub error_type: ErrorType,
+    pub error_type: QecErrorType,
     pub correction_operation: Vec<QuantumGate>,
 }
 
 impl ErrorSyndrome {
     /// Create a new error syndrome
-    pub fn new(syndrome_bits: Vec<bool>, error_type: ErrorType) -> Self {
+    pub fn new(syndrome_bits: Vec<bool>, error_type: QecErrorType) -> Self {
         Self {
             syndrome_bits,
             error_location: Vec::new(),
@@ -48,7 +48,7 @@ impl ErrorSyndrome {
 
 /// Types of quantum errors with associated probabilities
 #[derive(Debug, Clone, PartialEq)]
-pub enum ErrorType {
+pub enum QecErrorType {
     /// Bit flip error (X error)
     BitFlip,
     /// Phase flip error (Z error)  
@@ -65,13 +65,13 @@ pub enum ErrorType {
     NoError,
 }
 
-impl ErrorType {
+impl QecErrorType {
     /// Get correction gate for single-qubit error
     pub fn correction_gate(&self, qubit: usize) -> Option<QuantumGate> {
         match self {
-            ErrorType::BitFlip => Some(QuantumGate::PauliX { target: qubit }),
-            ErrorType::PhaseFlip => Some(QuantumGate::PauliZ { target: qubit }),
-            ErrorType::BitPhaseFlip => Some(QuantumGate::PauliY { target: qubit }),
+            QecErrorType::BitFlip => Some(QuantumGate::PauliX { target: qubit }),
+            QecErrorType::PhaseFlip => Some(QuantumGate::PauliZ { target: qubit }),
+            QecErrorType::BitPhaseFlip => Some(QuantumGate::PauliY { target: qubit }),
             _ => None, // Complex errors need multiple gates
         }
     }
@@ -79,18 +79,18 @@ impl ErrorType {
     /// Get error name as string
     pub fn name(&self) -> &'static str {
         match self {
-            ErrorType::BitFlip => "bit_flip",
-            ErrorType::PhaseFlip => "phase_flip",
-            ErrorType::BitPhaseFlip => "bit_phase_flip",
-            ErrorType::Depolarizing => "depolarizing",
-            ErrorType::AmplitudeDamping => "amplitude_damping",
-            ErrorType::PhaseDamping => "phase_damping",
-            ErrorType::NoError => "no_error",
+            QecErrorType::BitFlip => "bit_flip",
+            QecErrorType::PhaseFlip => "phase_flip",
+            QecErrorType::BitPhaseFlip => "bit_phase_flip",
+            QecErrorType::Depolarizing => "depolarizing",
+            QecErrorType::AmplitudeDamping => "amplitude_damping",
+            QecErrorType::PhaseDamping => "phase_damping",
+            QecErrorType::NoError => "no_error",
         }
     }
 
     /// Check if error is correctable by single Pauli
     pub fn is_pauli_correctable(&self) -> bool {
-        matches!(self, ErrorType::BitFlip | ErrorType::PhaseFlip | ErrorType::BitPhaseFlip)
+        matches!(self, QecErrorType::BitFlip | QecErrorType::PhaseFlip | QecErrorType::BitPhaseFlip)
     }
 }

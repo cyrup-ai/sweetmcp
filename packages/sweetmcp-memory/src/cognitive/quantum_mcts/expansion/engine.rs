@@ -15,6 +15,8 @@ use crate::cognitive::{
 use super::{
     core::QuantumExpander,
     metadata::{ExpansionResult, ExpansionStats},
+};
+use super::super::{
     node_state::QuantumMCTSNode,
     config::QuantumMCTSConfig,
 };

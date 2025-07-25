@@ -4,7 +4,113 @@
 //! initialization, quantum layer application, and quantum circuit simulation
 //! with zero allocation fast paths and blazing-fast performance.
 
-use super::core::{MLDecoder, QuantumLayer, ParameterizedGate};
+/// Machine learning model types for quantum ML decoder
+#[derive(Debug, Clone)]
+pub enum MLModelType {
+    NeuralNetwork { layers: Vec<usize> },
+    QuantumNeuralNetwork { quantum_layers: Vec<QuantumLayer> },
+    SupportVectorMachine { kernel: String },
+    RandomForest { trees: usize },
+}
+
+/// Quantum layer containing parameterized gates
+#[derive(Debug, Clone)]
+pub struct QuantumLayer {
+    pub gates: Vec<ParameterizedGate>,
+}
+
+/// Parameterized quantum gate
+#[derive(Debug, Clone)]
+pub struct ParameterizedGate {
+    pub gate_type: ParameterizedGateType,
+    pub parameters: Vec<f64>,
+    pub qubits: Vec<usize>,
+}
+
+/// Types of parameterized quantum gates
+#[derive(Debug, Clone)]
+pub enum ParameterizedGateType {
+    RX,
+    RY,
+    RZ,
+    CNOT,
+    CZ,
+    Hadamard,
+    CustomUnitary,
+}
+
+/// Entangling structure for quantum circuits
+#[derive(Debug, Clone)]
+pub struct EntanglingStructure {
+    pub layers: Vec<EntanglingLayer>,
+    pub connectivity: ConnectivityPattern,
+}
+
+/// Layer of entangling gates
+#[derive(Debug, Clone)]
+pub struct EntanglingLayer {
+    pub gate_pairs: Vec<(usize, usize)>,
+    pub gate_type: EntanglingGateType,
+}
+
+/// Types of entangling gates
+#[derive(Debug, Clone)]
+pub enum EntanglingGateType {
+    CNOT,
+    CZ,
+    CPHASE,
+    ISWAP,
+}
+
+/// Connectivity patterns for quantum circuits
+#[derive(Debug, Clone)]
+pub enum ConnectivityPattern {
+    Linear,
+    Circular,
+    AllToAll,
+    Custom(Vec<(usize, usize)>),
+}
+
+/// Training data type for ML decoder
+pub type TrainingData = Vec<(Vec<bool>, Vec<bool>)>;
+
+/// ML decoder with quantum capabilities
+#[derive(Debug, Clone)]
+pub struct MLDecoder {
+    pub model_type: MLModelType,
+    pub trained_parameters: Vec<f64>,
+    pub inference_engine: InferenceEngine,
+}
+
+impl Default for MLDecoder {
+    fn default() -> Self {
+        Self {
+            model_type: MLModelType::NeuralNetwork { layers: vec![4, 8, 4] },
+            trained_parameters: vec![0.0; 32],
+            inference_engine: InferenceEngine::default(),
+        }
+    }
+}
+
+/// Inference engine for ML decoder
+#[derive(Debug, Clone)]
+pub struct InferenceEngine {
+    pub gradient_method: super::gradients::GradientMethod,
+    pub optimization_backend: super::optimizers::OptimizationBackend,
+}
+
+impl Default for InferenceEngine {
+    fn default() -> Self {
+        Self {
+            gradient_method: super::gradients::GradientMethod::Backpropagation,
+            optimization_backend: super::optimizers::OptimizationBackend::Adam {
+                learning_rate: 0.001,
+                beta1: 0.9,
+                beta2: 0.999,
+            },
+        }
+    }
+}
 
 impl MLDecoder {
     /// Initialize quantum state from classical syndrome with optimized initialization

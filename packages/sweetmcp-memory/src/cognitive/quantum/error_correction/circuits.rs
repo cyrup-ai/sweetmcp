@@ -3,10 +3,6 @@
 //! This module coordinates circuit-related functionality with
 //! clear separation between implementation, gates, and builders.
 
-mod circuit_impl;
-mod gate_impl;
-mod circuit_builder;
-
-pub use circuit_impl::QuantumCircuit;
-pub use gate_impl::QuantumGate;
-pub use circuit_builder::CircuitBuilder;
+pub use crate::cognitive::quantum::error_correction::circuit_impl::QuantumCircuit;
+pub use crate::cognitive::quantum::error_correction::gate_impl::QuantumGate;
+pub use crate::cognitive::quantum::error_correction::circuit_builder::CircuitBuilder;

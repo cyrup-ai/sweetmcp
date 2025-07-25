@@ -34,7 +34,7 @@ impl OptimizationMetrics {
     #[inline]
     pub fn record_optimization(
         &self,
-        algorithm: OptimizationAlgorithm,
+        _algorithm: OptimizationAlgorithm,
         execution_time: Duration,
         improvement: f64,
     ) {

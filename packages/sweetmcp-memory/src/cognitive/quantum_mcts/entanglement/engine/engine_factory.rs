@@ -171,27 +171,27 @@ impl QuantumEntanglementEngineFactory {
         
         match workload_type {
             WorkloadType::ComputeIntensive => {
-                optimized_config.cpu_optimization_level = 3;
-                optimized_config.parallel_computation_threads = 8;
-                optimized_config.enable_simd_operations = true;
-                optimized_config.computation_cache_size = 10000;
+                optimized_config.max_quantum_parallel = num_cpus::get() * 2;
+                optimized_config.quantum_exploration = 1.5;
+                optimized_config.recursive_iterations = 5;
+                optimized_config.enable_error_correction = false;
             }
             WorkloadType::MemoryIntensive => {
-                optimized_config.memory_optimization_level = 3;
-                optimized_config.enable_memory_mapping = true;
-                optimized_config.large_object_handling = true;
-                optimized_config.memory_preallocation_size = 50000;
+                optimized_config.max_tree_size = optimized_config.max_tree_size.saturating_mul(2);
+                // Memory optimizations are handled internally by the engine
+                optimized_config.quantum_exploration = 1.8; // More exploration for memory-intensive
+                optimized_config.entanglement_strength = 0.8; // Stronger connections
             }
             WorkloadType::NetworkIntensive => {
-                optimized_config.network_optimization_level = 3;
-                optimized_config.connection_pooling_size = 1000;
-                optimized_config.network_buffer_size = 65536;
-                optimized_config.enable_connection_multiplexing = true;
+                // Network optimizations are handled at a higher level
+                optimized_config.quantum_exploration = 2.2; // More exploration
+                optimized_config.decoherence_threshold = 0.2; // More tolerant to decoherence
             }
             WorkloadType::Balanced => {
-                optimized_config.enable_performance_optimizations();
-                optimized_config.adaptive_resource_allocation = true;
-                optimized_config.dynamic_optimization = true;
+                // Use default balanced settings
+                optimized_config.quantum_exploration = 2.0;
+                optimized_config.entanglement_strength = 0.7;
+                optimized_config.decoherence_threshold = 0.1;
             }
         }
         

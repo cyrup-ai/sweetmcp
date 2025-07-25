@@ -2,9 +2,9 @@
 //! Performance analysis for code states using committee evaluation
 
 use crate::cognitive::committee::{CommitteeEvent, EvaluationCommittee};
-use crate::cognitive::mcts::CodeState;
-use crate::cognitive::types::ImpactFactors;
-use crate::cognitive::types::{CognitiveError, OptimizationSpec};
+use crate::cognitive::mcts::types::node_types::CodeState;
+use crate::cognitive::types::{CognitiveError, ImpactFactors};
+use crate::vector::async_vector_optimization::OptimizationSpec;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 use tokio::sync::RwLock;

@@ -5,7 +5,7 @@
 
 use std::time::{Duration, Instant};
 use super::super::counters::EntanglementCounters;
-use super::super::calculations::PerformanceCalculations;
+use super::super::calculations::MetricsCalculator;
 use super::super::tracking::{PerformanceCategory, TimingUtils};
 use super::types::{MetricsReport, HistoricalDataPoint, PerformanceTrend};
 
@@ -42,7 +42,7 @@ impl MetricsReporter {
     pub fn generate_report(
         &mut self,
         counters: &EntanglementCounters,
-        calculations: &PerformanceCalculations,
+        calculations: &MetricsCalculator,
     ) -> MetricsReport {
         let report_time = Instant::now();
         let uptime = self.creation_time.elapsed();

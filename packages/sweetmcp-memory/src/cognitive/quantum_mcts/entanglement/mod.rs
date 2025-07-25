@@ -70,34 +70,34 @@ pub use entanglement_health_utils::{
     AnomalyType, AnomalySeverity,
 };
 
-// Re-export analysis types from parent module
-pub use super::analysis::{NetworkTopology, EntanglementDistribution};
-pub use super::metrics::EntanglementMetrics;
+// Re-export analysis types from local modules
+pub use self::analysis::NetworkTopology;
+pub use self::metrics::EntanglementMetrics;
 
 /// Convenience constructor for quantum entanglement engine
 pub fn create_quantum_entanglement_engine(
-    manager: std::sync::Arc<super::manager::QuantumEntanglementManager>,
-    analyzer: std::sync::Arc<super::analysis::NetworkTopologyAnalyzer>,
-    config: super::config::QuantumEntanglementConfig,
+    manager: std::sync::Arc<self::core::QuantumEntanglementManager>,
+    analyzer: std::sync::Arc<self::analysis::NetworkTopologyAnalyzer>,
+    config: crate::cognitive::quantum_mcts::config::QuantumMCTSConfig,
 ) -> QuantumEntanglementEngine {
     QuantumEntanglementEngine::new(manager, analyzer, config)
 }
 
 /// Create engine with default configuration
 pub fn create_default_quantum_entanglement_engine(
-    manager: std::sync::Arc<super::manager::QuantumEntanglementManager>,
-    analyzer: std::sync::Arc<super::analysis::NetworkTopologyAnalyzer>,
+    manager: std::sync::Arc<self::core::QuantumEntanglementManager>,
+    analyzer: std::sync::Arc<self::analysis::NetworkTopologyAnalyzer>,
 ) -> QuantumEntanglementEngine {
-    let config = super::config::QuantumEntanglementConfig::default();
+    let config = crate::cognitive::quantum_mcts::config::QuantumMCTSConfig::default();
     QuantumEntanglementEngine::new(manager, analyzer, config)
 }
 
 /// Create optimized engine configuration for high-performance scenarios
 pub fn create_high_performance_engine(
-    manager: std::sync::Arc<super::manager::QuantumEntanglementManager>,
-    analyzer: std::sync::Arc<super::analysis::NetworkTopologyAnalyzer>,
+    manager: std::sync::Arc<self::core::QuantumEntanglementManager>,
+    analyzer: std::sync::Arc<self::analysis::NetworkTopologyAnalyzer>,
 ) -> QuantumEntanglementEngine {
-    let mut config = super::config::QuantumEntanglementConfig::default();
+    let mut config = crate::cognitive::quantum_mcts::config::QuantumMCTSConfig::default();
     
     // Optimize for performance
     config.optimization_frequency = std::time::Duration::from_secs(300); // 5 minutes
@@ -110,10 +110,10 @@ pub fn create_high_performance_engine(
 
 /// Create memory-optimized engine configuration for resource-constrained scenarios
 pub fn create_memory_optimized_engine(
-    manager: std::sync::Arc<super::manager::QuantumEntanglementManager>,
-    analyzer: std::sync::Arc<super::analysis::NetworkTopologyAnalyzer>,
+    manager: std::sync::Arc<self::core::QuantumEntanglementManager>,
+    analyzer: std::sync::Arc<self::analysis::NetworkTopologyAnalyzer>,
 ) -> QuantumEntanglementEngine {
-    let mut config = super::config::QuantumEntanglementConfig::default();
+    let mut config = crate::cognitive::quantum_mcts::config::QuantumMCTSConfig::default();
     
     // Optimize for memory usage
     config.max_cached_reports = 10;
@@ -130,10 +130,10 @@ pub struct EngineFactory;
 impl EngineFactory {
     /// Create engine optimized for real-time applications
     pub fn real_time_engine(
-        manager: std::sync::Arc<super::manager::QuantumEntanglementManager>,
-        analyzer: std::sync::Arc<super::analysis::NetworkTopologyAnalyzer>,
+        manager: std::sync::Arc<self::core::QuantumEntanglementManager>,
+        analyzer: std::sync::Arc<self::analysis::NetworkTopologyAnalyzer>,
     ) -> QuantumEntanglementEngine {
-        let mut config = super::config::QuantumEntanglementConfig::default();
+        let mut config = crate::cognitive::quantum_mcts::config::QuantumMCTSConfig::default();
         
         config.optimization_frequency = std::time::Duration::from_millis(100);
         config.max_optimization_time = std::time::Duration::from_millis(50);
@@ -145,10 +145,10 @@ impl EngineFactory {
 
     /// Create engine optimized for batch processing
     pub fn batch_processing_engine(
-        manager: std::sync::Arc<super::manager::QuantumEntanglementManager>,
-        analyzer: std::sync::Arc<super::analysis::NetworkTopologyAnalyzer>,
+        manager: std::sync::Arc<self::core::QuantumEntanglementManager>,
+        analyzer: std::sync::Arc<self::analysis::NetworkTopologyAnalyzer>,
     ) -> QuantumEntanglementEngine {
-        let mut config = super::config::QuantumEntanglementConfig::default();
+        let mut config = crate::cognitive::quantum_mcts::config::QuantumMCTSConfig::default();
         
         config.optimization_frequency = std::time::Duration::from_secs(3600); // 1 hour
         config.max_optimization_iterations = 10000;
@@ -160,10 +160,10 @@ impl EngineFactory {
 
     /// Create engine optimized for research and analysis
     pub fn research_engine(
-        manager: std::sync::Arc<super::manager::QuantumEntanglementManager>,
-        analyzer: std::sync::Arc<super::analysis::NetworkTopologyAnalyzer>,
+        manager: std::sync::Arc<self::core::QuantumEntanglementManager>,
+        analyzer: std::sync::Arc<self::analysis::NetworkTopologyAnalyzer>,
     ) -> QuantumEntanglementEngine {
-        let mut config = super::config::QuantumEntanglementConfig::default();
+        let mut config = crate::cognitive::quantum_mcts::config::QuantumMCTSConfig::default();
         
         config.enable_detailed_logging = true;
         config.collect_performance_metrics = true;

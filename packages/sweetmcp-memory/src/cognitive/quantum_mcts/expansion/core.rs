@@ -8,6 +8,7 @@ use std::sync::Arc;
 use tokio::sync::{RwLock, Semaphore};
 use tokio::task::JoinSet;
 use tracing::{debug, warn};
+use crate::cognitive::quantum_mcts::expansion::metadata::ExpansionStats;
 
 use crate::cognitive::{
     committee::EvaluationCommittee,
@@ -17,6 +18,8 @@ use crate::cognitive::{
 };
 use super::{
     action_manager::ActionManager,
+};
+use super::super::{
     node_state::{QuantumMCTSNode, QuantumNodeState, QuantumNodeFactory},
     config::QuantumMCTSConfig,
 };
@@ -246,8 +249,8 @@ impl QuantumExpander {
     }
     
     /// Get expansion statistics for performance monitoring
-    pub fn expansion_stats(&self) -> super::ExpansionStats {
-        super::ExpansionStats {
+    pub fn expansion_stats(&self) -> ExpansionStats {
+        ExpansionStats {
             action_pool_size: self.action_manager.pool_size(),
             action_pool_capacity: self.action_manager.pool_capacity(),
             max_parallel: self.config.max_quantum_parallel,

@@ -3,9 +3,9 @@
 //! This module provides consensus decisions, agent evaluations, and evaluation
 //! rubrics with optimized performance and zero-allocation patterns.
 
-use crate::cognitive::types::OptimizationSpec;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use crate::vector::async_vector_optimization::OptimizationSpec;
 
 /// Consensus decision from committee
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -3,8 +3,18 @@
 //! This module provides training algorithms including Adam, SGD, and other
 //! optimization methods with zero allocation fast paths and blazing-fast performance.
 
-use super::core::{MLDecoder, TrainingData, OptimizationBackend, GradientMethod};
+use super::{MLDecoder, TrainingData};
+use super::gradients::GradientMethod;
 use smallvec::SmallVec;
+
+/// Optimization backend algorithms for ML training
+#[derive(Debug, Clone)]
+pub enum OptimizationBackend {
+    Adam { learning_rate: f64, beta1: f64, beta2: f64 },
+    SGD { learning_rate: f64, momentum: f64 },
+    LBFGS { max_iterations: usize },
+    RMSprop { learning_rate: f64, decay_rate: f64 },
+}
 
 impl MLDecoder {
     /// Train the model using the specified training data and optimizer

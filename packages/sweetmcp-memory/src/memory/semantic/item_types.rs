@@ -414,7 +414,7 @@ impl SemanticItemTypeStatistics {
         let max_index = distribution
             .iter()
             .enumerate()
-            .max_by_key(|(_, &count)| count)
+            .max_by_key(|&(_, count)| *count)
             .map(|(index, _)| index)?;
 
         match max_index {

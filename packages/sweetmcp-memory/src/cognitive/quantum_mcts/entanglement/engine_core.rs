@@ -16,6 +16,8 @@ use super::{
     analysis::NetworkTopology,
     metrics::EntanglementMetrics,
 };
+
+
 use super::super::{
     node_state::QuantumMCTSNode,
     config::QuantumMCTSConfig,
@@ -31,6 +33,8 @@ pub struct QuantumEntanglementEngine {
     pub(super) config: QuantumMCTSConfig,
     /// Reference to the entanglement graph
     pub(super) entanglement_graph: Arc<RwLock<EntanglementGraph>>,
+    /// Network topology analyzer for entanglement analysis
+    pub analyzer: Arc<super::analysis::NetworkTopologyAnalyzer>,
 }
 
 impl QuantumEntanglementEngine {

@@ -263,22 +263,22 @@ impl FluentConfigBuilder {
     }
 
     /// Configure parallelism with intelligent defaults
-    pub fn parallelism(mut self) -> ParallelismConfig {
+    pub fn parallelism(&mut self) -> ParallelismConfig<'_> {
         ParallelismConfig::new(&mut self.builder)
     }
 
     /// Configure thresholds with quantum-aware defaults
-    pub fn thresholds(mut self) -> ThresholdConfig {
+    pub fn thresholds(&mut self) -> ThresholdConfig<'_> {
         ThresholdConfig::new(&mut self.builder)
     }
 
     /// Configure performance parameters
-    pub fn performance(mut self) -> PerformanceConfig {
+    pub fn performance(&mut self) -> PerformanceConfig<'_> {
         PerformanceConfig::new(&mut self.builder)
     }
 
     /// Configure accuracy parameters
-    pub fn accuracy(mut self) -> AccuracyConfig {
+    pub fn accuracy(&mut self) -> AccuracyConfig<'_> {
         AccuracyConfig::new(&mut self.builder)
     }
 

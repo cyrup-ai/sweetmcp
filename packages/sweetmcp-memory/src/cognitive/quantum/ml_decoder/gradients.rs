@@ -4,7 +4,16 @@
 //! backpropagation, parameter shift rule, finite differences, and automatic
 //! differentiation with zero allocation fast paths and blazing-fast performance.
 
-use super::core::{MLDecoder, GradientMethod, InferenceEngine};
+use super::{MLDecoder, InferenceEngine};
+
+/// Gradient computation methods for ML decoder training
+#[derive(Debug, Clone)]
+pub enum GradientMethod {
+    Backpropagation,
+    ParameterShift,
+    FiniteDifference { epsilon: f64 },
+    AutomaticDifferentiation,
+}
 
 impl MLDecoder {
     /// Compute gradients using the specified method with optimized gradient computation

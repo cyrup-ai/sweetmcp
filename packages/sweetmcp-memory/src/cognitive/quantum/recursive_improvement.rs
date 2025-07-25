@@ -10,8 +10,9 @@ use crate::cognitive::{
     mcts::CodeState,
     quantum::{QuantumRouter},
     quantum_mcts::{QuantumMCTSConfig, QuantumNodeState, QuantumTreeStatistics},
-    types::{CognitiveError, OptimizationOutcome, OptimizationSpec},
+    types::{CognitiveError, OptimizationOutcome},
 };
+use crate::vector::async_vector_optimization::OptimizationSpec;
 
 use super::config::{QuantumOrchestrationConfig, RecursiveState};
 

@@ -98,9 +98,9 @@ impl StabilizerCodeBuilder {
 
     /// Build the stabilizer code
     pub fn build(self) -> CognitiveResult<StabilizerCode> {
-        let n = self.n.ok_or_else(|| CognitiveError::InvalidParameter("Missing n parameter".to_string()))?;
-        let k = self.k.ok_or_else(|| CognitiveError::InvalidParameter("Missing k parameter".to_string()))?;
-        let d = self.d.ok_or_else(|| CognitiveError::InvalidParameter("Missing d parameter".to_string()))?;
+        let n = self.n.ok_or_else(|| CognitiveError::InvalidQuantumState("Missing n parameter".to_string()))?;
+        let k = self.k.ok_or_else(|| CognitiveError::InvalidQuantumState("Missing k parameter".to_string()))?;
+        let d = self.d.ok_or_else(|| CognitiveError::InvalidQuantumState("Missing d parameter".to_string()))?;
 
         StabilizerCode::new(n, k, d, self.stabilizers, self.logical_x, self.logical_z)
     }
@@ -144,11 +144,11 @@ impl CSSCodeBuilder {
     /// Build the CSS code
     pub fn build(self) -> CognitiveResult<CSSCode> {
         let base_code = self.base_code.ok_or_else(|| {
-            CognitiveError::InvalidParameter("Missing base code".to_string())
+            CognitiveError::InvalidQuantumState("Missing base code".to_string())
         })?;
 
         let css_parameters = self.css_parameters.ok_or_else(|| {
-            CognitiveError::InvalidParameter("Missing CSS parameters".to_string())
+            CognitiveError::InvalidQuantumState("Missing CSS parameters".to_string())
         })?;
 
         CSSCode::new(base_code, self.x_stabilizers, self.z_stabilizers, css_parameters)

@@ -3,10 +3,15 @@
 //! This module provides comprehensive entity management functionality
 //! decomposed into focused submodules for maintainability.
 
-pub mod core;
+pub mod base_entity;
 pub mod builder;
 pub mod comparison;
+pub mod conversion;
+pub mod core;
 pub mod extended;
+pub mod queries;
+pub mod relationships;
+pub mod types;
 pub mod validation;
 pub mod validation_rules;
 

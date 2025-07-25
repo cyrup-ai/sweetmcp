@@ -224,13 +224,13 @@ impl StabilizerCode {
     ) -> CognitiveResult<Self> {
         // Validate code parameters
         if stabilizers.len() != n - k {
-            return Err(CognitiveError::InvalidParameter(
+            return Err(CognitiveError::InvalidQuantumState(
                 format!("Expected {} stabilizers for [[{}, {}, {}]] code", n - k, n, k, d)
             ));
         }
 
         if logical_x.len() != k || logical_z.len() != k {
-            return Err(CognitiveError::InvalidParameter(
+            return Err(CognitiveError::InvalidQuantumState(
                 format!("Expected {} logical X and Z operators", k)
             ));
         }
@@ -308,7 +308,7 @@ impl CSSCode {
     ) -> CognitiveResult<Self> {
         // Validate CSS structure
         if x_stabilizers.len() + z_stabilizers.len() != base_code.n - base_code.k {
-            return Err(CognitiveError::InvalidParameter(
+            return Err(CognitiveError::InvalidQuantumState(
                 "X and Z stabilizers must sum to n-k".to_string()
             ));
         }

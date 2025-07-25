@@ -11,9 +11,13 @@ use tokio::sync::oneshot;
 // Re-export types
 pub use self::anthropic::AnthropicProvider;
 pub use self::openai::OpenAIProvider;
+pub use self::completion::CompletionService;
+pub use self::content_analyzer::{LLMContentAnalyzer, ContentAnalysis, RelationshipAnalysis};
 
 pub mod anthropic;
 pub mod openai;
+pub mod completion;
+pub mod content_analyzer;
 pub mod prompt_templates;
 
 /// Result type for LLM operations
@@ -77,8 +81,33 @@ impl Future for PendingEmbedding {
 
 /// LLM provider trait
 pub trait LLMProvider: Send + Sync {
-    /// Generate a completion for the given prompt
+    /// Generate a completion for the given prompt (simple version)
     fn complete(&self, prompt: &str) -> PendingCompletion;
+
+    /// Generate a completion for the given prompt with advanced options
+    fn complete_with_options(
+        &self,
+        prompt: &str,
+        max_tokens: Option<usize>,
+        temperature: Option<f32>,
+    ) -> impl std::future::Future<Output = Result<String>> + Send;
+
+    /// Generate a completion with messages
+    fn complete_with_messages(
+        &self,
+        messages: Vec<std::collections::HashMap<String, String>>,
+        max_tokens: Option<usize>,
+        temperature: Option<f32>,
+    ) -> impl std::future::Future<Output = Result<String>> + Send;
+
+    /// Generate a completion with tools
+    fn complete_with_tools(
+        &self,
+        messages: Vec<std::collections::HashMap<String, String>>,
+        tools: Vec<std::collections::HashMap<String, String>>,
+        max_tokens: Option<usize>,
+        temperature: Option<f32>,
+    ) -> impl std::future::Future<Output = Result<std::collections::HashMap<String, String>>> + Send;
 
     /// Generate embeddings for the given text
     fn embed(&self, text: &str) -> PendingEmbedding;
@@ -107,6 +136,9 @@ pub enum LLMError {
 
     #[error("Serialization error: {0}")]
     SerializationError(#[from] serde_json::Error),
+
+    #[error("Deserialization error: {0}")]
+    DeserializationError(String),
 }
 
 /// LLM completion request

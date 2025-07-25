@@ -147,7 +147,6 @@ pub struct EngineHealthReport {
     pub clustering_health: f64,
     pub balance_health: f64,
     pub topology: NetworkTopology,
-    pub distribution: crate::cognitive::quantum_mcts::entanglement::analysis::EntanglementDistribution,
     pub metrics: crate::cognitive::quantum_mcts::entanglement::metrics::EntanglementMetrics,
     pub issues: Vec<String>,
     pub recommendations: Vec<String>,
@@ -194,7 +193,6 @@ impl EngineHealthReport {
 pub struct NetworkAnalysisReport {
     pub topology: NetworkTopology,
     pub health: EngineHealthReport,
-    pub distribution: crate::cognitive::quantum_mcts::entanglement::analysis::EntanglementDistribution,
     pub metrics: crate::cognitive::quantum_mcts::entanglement::metrics::EntanglementMetrics,
     pub performance_metrics: NetworkPerformanceMetrics,
     pub critical_nodes: Vec<CriticalNode>,

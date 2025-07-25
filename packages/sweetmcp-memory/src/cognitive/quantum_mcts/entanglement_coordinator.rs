@@ -11,6 +11,8 @@ use crate::cognitive::{
     quantum::EntanglementGraph,
     types::CognitiveError,
 };
+use crate::monitoring::metrics::MetricsCollector;
+use super::entanglement::metrics::EntanglementMetricsSummary;
 use super::{
     node_state::QuantumMCTSNode,
     config::QuantumMCTSConfig,

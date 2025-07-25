@@ -9,6 +9,9 @@ pub type Result<T> = std::result::Result<T, Error>;
 /// Memory-specific result type alias for consistency
 pub type MemoryResult<T> = std::result::Result<T, Error>;
 
+/// Alias for the main Error type for backward compatibility
+pub type MemoryError = Error;
+
 /// Custom error type for the application
 #[derive(Error, Debug)]
 pub enum Error {
@@ -26,6 +29,9 @@ pub enum Error {
 
     #[error("Configuration error: {0}")]
     Config(String),
+
+    #[error("Connection failed: {0}")]
+    ConnectionFailed(String),
 
     #[error("API error: {0}")]
     Api(String),

@@ -4,7 +4,7 @@
 //! with minimal memory allocation and optimal performance.
 
 use std::sync::atomic::{AtomicU64, Ordering};
-use crate::cognitive::mcts::CodeState;
+use crate::cognitive::mcts::types::node_types::CodeState;
 use super::{core::QuantumNodeState, node::QuantumMCTSNode};
 
 /// Node creation factory for optimized node allocation

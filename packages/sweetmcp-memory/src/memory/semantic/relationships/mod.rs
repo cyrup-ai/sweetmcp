@@ -107,13 +107,13 @@ impl RelationshipManager {
 
     /// Find relationships matching a pattern
     #[inline]
-    pub fn find_matching_relationships(
-        &self,
-        relationships: &[ValidatedRelationship],
-        pattern: &RelationshipPattern,
-        source_filter: Option<&str>,
-        target_filter: Option<&str>,
-    ) -> Vec<&ValidatedRelationship> {
+    pub fn find_matching_relationships<'a>(
+        &'a self,
+        relationships: &'a [ValidatedRelationship],
+        pattern: &'a RelationshipPattern,
+        source_filter: Option<&'a str>,
+        target_filter: Option<&'a str>,
+    ) -> Vec<&'a ValidatedRelationship> {
         relationships
             .iter()
             .filter(|rel| {

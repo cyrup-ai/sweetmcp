@@ -3,7 +3,7 @@
 //! This module provides parallel agent coordination with blazing-fast async patterns,
 //! FuturesUnordered execution, and zero-allocation evaluation orchestration.
 
-use crate::cognitive::mcts::CodeState;
+use crate::cognitive::mcts::types::node_types::CodeState;
 use crate::cognitive::types::CognitiveError;
 use futures::stream::{FuturesUnordered, StreamExt};
 use tokio::sync::{mpsc, Semaphore};

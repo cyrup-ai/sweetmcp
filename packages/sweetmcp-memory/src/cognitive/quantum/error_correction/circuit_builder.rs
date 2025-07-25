@@ -3,7 +3,8 @@
 //! This module provides a fluent builder pattern for constructing
 //! quantum circuits with common error correction operations.
 
-use super::{QuantumCircuit, QuantumGate};
+use super::quantum_circuits::QuantumCircuit;
+use super::gate_impl::QuantumGate;
 
 /// Circuit builder for creating common error correction circuits
 pub struct CircuitBuilder {

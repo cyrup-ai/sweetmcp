@@ -3,7 +3,7 @@
 //! This module provides quantum circuit structures with optimized
 //! gate storage and manipulation operations.
 
-use super::QuantumGate;
+use super::gate_impl::QuantumGate;
 use std::collections::HashSet;
 
 /// Quantum circuit representation with optimized gate storage

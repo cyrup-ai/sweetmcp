@@ -3,14 +3,24 @@
 //! This module coordinates all metric collection, calculation, tracking, benchmarking,
 //! and reporting capabilities with blazing-fast zero-allocation patterns.
 
-pub mod counters;
-pub mod calculations;
-pub mod tracking;
+pub mod benchmark_core;
+pub mod benchmark_results;
+pub mod benchmark_suite;
+pub mod benchmarking;
+pub mod benchmarking_comparison;
+pub mod benchmarking_core;
 pub mod benchmarking_mod;
+pub mod benchmarking_monitor;
+pub mod benchmarking_results;
+pub mod calculations;
+pub mod counters;
+pub mod performance_trends;
 pub mod reporting;
+pub mod rolling_monitor;
+pub mod tracking;
 
-// Alias for ergonomic access
-pub use benchmarking_mod as benchmarking;
+// Re-export the benchmarking module for ergonomic access
+// Note: Removed duplicate pub use benchmarking_mod since it's already included via mod benchmarking_mod
 
 use std::time::{Duration, Instant};
 use std::sync::Arc;
@@ -18,26 +28,30 @@ use crate::monitoring::metrics::MetricsCollector;
 
 // Re-export key types for ergonomic access
 pub use counters::{EntanglementCounters, CounterSnapshot};
-pub use calculations::{PerformanceCalculations, PerformanceSnapshot, TrendAnalysis};
+pub use calculations::{MetricsCalculator, ComprehensiveMetrics, PerformanceCalculations, PerformanceSnapshot, TrendAnalysis};
+pub use crate::cognitive::quantum_mcts::statistics::TrendAnalysis;
 pub use tracking::{
     PerformanceTracker, BatchPerformanceTracker, BatchStatistics, 
     InfluenceTracker, InfluenceStatistics, PerformanceCategory, TimingUtils
 };
 pub use benchmarking::{
-    EntanglementBenchmark, BenchmarkResults, BenchmarkComparison,
-    RollingPerformanceMonitor, RollingStatistics, PerformanceTrend as BenchmarkTrend,
-    BenchmarkingSuite, ComparisonMetrics, RegressionAnalysis, ImprovementAnalysis
+    EntanglementBenchmark, BenchmarkResults,
+    RollingPerformanceMonitor, RollingStatistics, PerformanceTrend as BenchmarkTrend
 };
+pub use benchmarking_comparison::{
+    BenchmarkComparison, ComparisonMetrics, RegressionAnalysis, ImprovementAnalysis
+};
+pub use crate::cognitive::quantum_mcts::entanglement::benchmarking_mod::BenchmarkingSuite;
 pub use reporting::{
     MetricsReporter, MetricsReport, SummaryReport, HistoricalDataPoint,
     PerformanceDashboard, DashboardHealthStatus, KeyMetrics, ReportFormatter,
-    DashboardVisualizer, MetricsReporting, PerformanceGrade, AggregatedMetrics,
+    DashboardVisualizer, MetricsReporting, PerformanceGrades, AggregatedMetrics,
     PerformanceTrend
 };
 
 // Type aliases for ergonomic access
 pub type EntanglementMetricsSummary = AggregatedMetrics;
-pub type MetricsCollector = MetricsReporter;
+pub type EntanglementMetricsCollector = MetricsReporter;
 
 /// Comprehensive metrics collection and analysis system
 #[derive(Debug)]
@@ -297,9 +311,94 @@ impl EntanglementMetrics {
     }
     
     /// Get overall health status
-    pub fn health_status(&self) -> HealthStatus {
+    pub fn health_status(&self) -> DashboardHealthStatus {
         let dashboard = self.generate_dashboard();
         dashboard.health_status()
+    }
+    
+    /// Record error
+    pub fn record_error(&self) {
+        self.counters.record_entanglement_failure();
+        self.calculations.record_error();
+    }
+    
+    /// Record engine operation with performance metrics
+    /// 
+    /// Tracks detailed metrics for all operation types including timing, success/failure,
+    /// and type-specific performance characteristics.
+    pub fn record_engine_operation(
+        &self,
+        op_type: &crate::cognitive::quantum_mcts::entanglement::engine::operation_types::EngineOperationType,
+        duration_ms: u64,
+        success: bool,
+        performance_improvement: Option<f64>,
+    ) {
+        use crate::cognitive::quantum_mcts::entanglement::engine::operation_types::EngineOperationType;
+        
+        // Record the operation timing with high precision
+        let duration = Duration::from_millis(duration_ms);
+        self.counters.record_entanglement_operation(duration);
+        
+        // Record success/failure state
+        if !success {
+            self.counters.record_entanglement_failure();
+        }
+        
+        // Record performance improvement if provided
+        if let Some(improvement) = performance_improvement {
+            self.calculations.record_performance_improvement(improvement);
+        }
+        
+        // Record operation type specific metrics
+        match op_type {
+            EngineOperationType::FullOptimization => {
+                self.counters.record_entanglements_created(1);
+                self.calculations.record_optimization_metrics(
+                    performance_improvement.unwrap_or(0.0),
+                    1, // Single operation
+                    duration_ms,
+                );
+            }
+            EngineOperationType::StrategyCreation => {
+                self.counters.record_entanglements_created(1);
+                self.calculations.record_creation_metrics(
+                    1, // entanglements_created
+                    performance_improvement.unwrap_or(0.0),
+                    duration_ms,
+                );
+            }
+            EngineOperationType::IntelligentPruning => {
+                self.counters.record_entanglements_pruned(1);
+                self.calculations.record_pruning_metrics(
+                    1, // entanglements_removed
+                    performance_improvement.unwrap_or(0.0),
+                    duration_ms,
+                );
+            }
+            EngineOperationType::LoadBalancing => {
+                self.calculations.record_balancing_metrics(
+                    performance_improvement.unwrap_or(0.0),
+                    duration_ms,
+                );
+            }
+            EngineOperationType::HealthCheck => {
+                // Health checks might not have performance improvement metrics
+                let health_score = if success { 1.0 } else { 0.0 };
+                self.calculations.record_health_metrics(
+                    health_score,
+                    0, // No issues by default, actual issues come from HealthCheck details
+                    duration_ms,
+                );
+            }
+            EngineOperationType::CombinedOptimization => {
+                // Combined operations will be broken down by their components
+                // We still record the overall operation timing
+                self.calculations.record_combined_operation_metrics(
+                    performance_improvement.unwrap_or(0.0),
+                    duration_ms,
+                );
+            }
+        }
     }
     
     /// Reset all metrics

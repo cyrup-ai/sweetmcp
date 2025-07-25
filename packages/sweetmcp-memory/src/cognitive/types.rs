@@ -13,7 +13,10 @@ pub use super::evolution::EvolutionRules;
 pub use super::evolution::EvolutionRules as EvolutionRule;
 
 // Re-export vector optimization types for cognitive usage
-pub use crate::vector::async_vector_optimization::coordinator_types::OptimizationSpec;
+pub use crate::vector::async_vector_optimization::coordinator_types::OptimizationSpec as VectorOptimizationSpec;
+
+// Alias for backward compatibility
+pub type OptimizationSpec = VectorOptimizationSpec;
 
 /// Cognitive state representing the current understanding and context
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -285,18 +288,15 @@ pub enum CognitiveError {
     #[error("Invalid configuration: {0}")]
     InvalidConfiguration(String),
 
-    #[error("Invalid parameter: {0}")]
-    InvalidParameter(String),
-
     #[error("Invalid operation: {0}")]
     InvalidOperation(String),
 }
 
 pub type CognitiveResult<T> = Result<T, CognitiveError>;
 
-/// Specification for optimization operations
+/// Specification for cognitive optimization operations
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct OptimizationSpec {
+pub struct CognitiveOptimizationSpec {
     pub objective: String,
     pub constraints: Vec<String>,
     pub success_criteria: Vec<String>,
@@ -424,6 +424,16 @@ pub enum OptimizationOutcome {
     },
 }
 
+/// Detailed optimization result for iteration management
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct OptimizationResult {
+    pub optimized_code: String,
+    pub final_latency: f64,
+    pub final_memory: f64,
+    pub final_relevance: f64,
+    pub outcome: OptimizationOutcome,
+}
+
 /// Async optimization result wrapper
 pub struct PendingOptimizationResult {
     rx: tokio::sync::oneshot::Receiver<CognitiveResult<OptimizationOutcome>>,
@@ -432,6 +442,13 @@ pub struct PendingOptimizationResult {
 impl PendingOptimizationResult {
     pub fn new(rx: tokio::sync::oneshot::Receiver<CognitiveResult<OptimizationOutcome>>) -> Self {
         Self { rx }
+    }
+
+    pub async fn wait_for_result(self) -> CognitiveResult<OptimizationOutcome> {
+        match self.rx.await {
+            Ok(result) => result,
+            Err(_) => Err(CognitiveError::OrchestrationError("Optimization task was cancelled".to_string())),
+        }
     }
 }
 

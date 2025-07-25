@@ -13,6 +13,29 @@ pub struct CodeState {
     pub latency: f64,
     pub memory: f64,
     pub relevance: f64,
+    pub memory_usage: f64,
+    pub complexity_score: f64,
+    pub metadata: CodeMetadata,
+}
+
+/// Metadata for code state tracking
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct CodeMetadata {
+    pub applied_actions: Vec<String>,
+    pub optimization_level: f64,
+    pub parallelization_level: f64,
+    pub risk_level: f64,
+}
+
+impl Default for CodeMetadata {
+    fn default() -> Self {
+        Self {
+            applied_actions: Vec::new(),
+            optimization_level: 0.0,
+            parallelization_level: 0.0,
+            risk_level: 0.0,
+        }
+    }
 }
 
 impl CodeState {
@@ -24,6 +47,31 @@ impl CodeState {
             latency,
             memory,
             relevance,
+            memory_usage: memory / 1000.0, // Convert to usage ratio
+            complexity_score: 5.0, // Default complexity
+            metadata: CodeMetadata::default(),
+        }
+    }
+
+    /// Create new code state with all fields
+    #[inline]
+    pub fn with_full_metrics(
+        code: String, 
+        latency: f64, 
+        memory: f64, 
+        relevance: f64,
+        memory_usage: f64,
+        complexity_score: f64,
+        metadata: CodeMetadata,
+    ) -> Self {
+        Self {
+            code,
+            latency,
+            memory,
+            relevance,
+            memory_usage,
+            complexity_score,
+            metadata,
         }
     }
 

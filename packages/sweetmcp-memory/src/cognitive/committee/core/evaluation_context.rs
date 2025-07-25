@@ -3,7 +3,7 @@
 //! This module provides the EvaluationContext structure for managing
 //! committee evaluation state across multiple rounds.
 
-use crate::cognitive::mcts::CodeState;
+use crate::cognitive::mcts::types::node_types::CodeState;
 use super::{AgentEvaluation, EvaluationRubric};
 use std::collections::HashSet;
 

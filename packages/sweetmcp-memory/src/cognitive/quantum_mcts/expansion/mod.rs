@@ -4,11 +4,15 @@
 //! tree expansion algorithms, node creation, evaluation, and pruning with
 //! optimized resource management and blazing-fast performance.
 
-pub mod tree_expansion;
-pub mod node_creation;
+pub mod action_manager;
+pub mod core;
+pub mod engine;
 pub mod evaluation;
+pub mod metadata;
+pub mod node_creation;
 pub mod pruning;
 pub mod quantum_expander;
+pub mod tree_expansion;
 
 // Re-export key types and functionality
 pub use tree_expansion::{TreeExpansionEngine, QuantumTransformation};

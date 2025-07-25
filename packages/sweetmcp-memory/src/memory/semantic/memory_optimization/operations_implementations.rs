@@ -155,6 +155,7 @@ impl OptimizationExecutor {
         relationships: &mut HashMap<String, SemanticRelationship>,
     ) -> Result<SingleOptimizationResult> {
         debug!("Executing memory defragmentation");
+        let start_time = Instant::now();
 
         let initial_fragmentation = self.calculate_fragmentation_level(items, relationships);
         
@@ -184,6 +185,7 @@ impl OptimizationExecutor {
 
         let final_fragmentation = self.calculate_fragmentation_level(items, relationships);
         let improvement = ((initial_fragmentation - final_fragmentation) / initial_fragmentation * 100.0).max(0.0);
+        let execution_time = start_time.elapsed();
 
         Ok(SingleOptimizationResult::success(
             RecommendationType::Defragmentation,
@@ -201,6 +203,7 @@ impl OptimizationExecutor {
         _relationships: &mut HashMap<String, SemanticRelationship>,
     ) -> Result<SingleOptimizationResult> {
         debug!("Executing data compression optimization");
+        let start_time = Instant::now();
 
         let mut compressed_count = 0;
         let initial_size = self.calculate_total_memory_usage(items);
@@ -215,6 +218,7 @@ impl OptimizationExecutor {
 
         let final_size = self.calculate_total_memory_usage(items);
         let improvement = ((initial_size - final_size) / initial_size * 100.0).max(0.0);
+        let execution_time = start_time.elapsed();
 
         Ok(SingleOptimizationResult::success(
             RecommendationType::Compression,
@@ -233,6 +237,7 @@ impl OptimizationExecutor {
         relationships: &mut HashMap<String, SemanticRelationship>,
     ) -> Result<SingleOptimizationResult> {
         debug!("Executing cache optimization");
+        let start_time = Instant::now();
 
         let initial_cache_efficiency = self.calculate_cache_efficiency(items, relationships);
         
@@ -247,6 +252,7 @@ impl OptimizationExecutor {
 
         let final_cache_efficiency = self.calculate_cache_efficiency(items, relationships);
         let improvement = ((final_cache_efficiency - initial_cache_efficiency) / initial_cache_efficiency * 100.0).max(0.0);
+        let execution_time = start_time.elapsed();
 
         Ok(SingleOptimizationResult::success(
             RecommendationType::CacheOptimization,
@@ -265,6 +271,7 @@ impl OptimizationExecutor {
         relationships: &mut HashMap<String, SemanticRelationship>,
     ) -> Result<SingleOptimizationResult> {
         debug!("Executing index optimization");
+        let start_time = Instant::now();
 
         let initial_index_efficiency = self.calculate_index_efficiency(items, relationships);
         
@@ -284,6 +291,7 @@ impl OptimizationExecutor {
 
         let final_index_efficiency = self.calculate_index_efficiency(items, relationships);
         let improvement = ((final_index_efficiency - initial_index_efficiency) / initial_index_efficiency * 100.0).max(0.0);
+        let execution_time = start_time.elapsed();
 
         Ok(SingleOptimizationResult::success(
             RecommendationType::IndexOptimization,
@@ -302,6 +310,7 @@ impl OptimizationExecutor {
         relationships: &mut HashMap<String, SemanticRelationship>,
     ) -> Result<SingleOptimizationResult> {
         debug!("Executing memory reallocation optimization");
+        let start_time = Instant::now();
 
         let initial_memory_efficiency = self.calculate_memory_efficiency(items, relationships);
         
@@ -321,6 +330,7 @@ impl OptimizationExecutor {
 
         let final_memory_efficiency = self.calculate_memory_efficiency(items, relationships);
         let improvement = ((final_memory_efficiency - initial_memory_efficiency) / initial_memory_efficiency * 100.0).max(0.0);
+        let execution_time = start_time.elapsed();
 
         Ok(SingleOptimizationResult::success(
             RecommendationType::MemoryReallocation,
@@ -339,6 +349,7 @@ impl OptimizationExecutor {
         relationships: &mut HashMap<String, SemanticRelationship>,
     ) -> Result<SingleOptimizationResult> {
         debug!("Executing access pattern optimization");
+        let start_time = Instant::now();
 
         let initial_access_efficiency = self.calculate_access_pattern_efficiency(items, relationships);
         
@@ -357,6 +368,7 @@ impl OptimizationExecutor {
 
         let final_access_efficiency = self.calculate_access_pattern_efficiency(items, relationships);
         let improvement = ((final_access_efficiency - initial_access_efficiency) / initial_access_efficiency * 100.0).max(0.0);
+        let execution_time = start_time.elapsed();
 
         Ok(SingleOptimizationResult::success(
             RecommendationType::AccessPatternOptimization,
@@ -375,6 +387,7 @@ impl OptimizationExecutor {
         relationships: &mut HashMap<String, SemanticRelationship>,
     ) -> Result<SingleOptimizationResult> {
         debug!("Executing relationship pruning optimization");
+        let start_time = Instant::now();
 
         let initial_relationship_count = relationships.len();
         
@@ -398,6 +411,7 @@ impl OptimizationExecutor {
         } else {
             0.0
         };
+        let execution_time = start_time.elapsed();
 
         Ok(SingleOptimizationResult::success(
             RecommendationType::RelationshipPruning,

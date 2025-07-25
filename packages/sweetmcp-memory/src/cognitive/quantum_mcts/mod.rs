@@ -16,13 +16,17 @@ pub mod entanglement;
 pub mod expansion;
 pub mod improvement;
 pub mod node_state;
+pub mod quantum_state;
 pub mod selection;
 pub mod statistics;
+pub mod tree_operations;
 
 // Zero-cost re-exports for backward compatibility
 pub use backpropagation::QuantumBackpropagator;
 pub use config::{QuantumMCTSConfig, QuantumMCTSConfigBuilder};
-pub use entanglement::{QuantumEntanglementManager, EntanglementCoordinator, ComprehensiveAnalysisReport};
+pub use entanglement::QuantumEntanglementManager;
+pub use entanglement_coordinator::EntanglementCoordinator;
+pub use entanglement_analysis::ComprehensiveAnalysisReport;
 pub use expansion::QuantumExpander;
 pub use improvement::RecursiveImprovementEngine;
 pub use node_state::{QuantumMCTSNode, QuantumNodeState};

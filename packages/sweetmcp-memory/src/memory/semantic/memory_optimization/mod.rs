@@ -27,25 +27,10 @@ pub use {
         CacheStatistics, ExecutionMetrics, OperationCache, OptimizationExecutor, OptimizationResult,
         OptimizationStrategy, PerformanceTrend, SafetyConstraints, SingleOptimizationResult,
     },
-    // From operations_implementations - re-export all public items
-    operations_implementations::{
-        execute_access_pattern_optimization, execute_cache_optimization, execute_compression,
-        execute_data_structure_optimization, execute_defragmentation, execute_gc_optimization,
-        execute_index_optimization, execute_memory_pool_optimization, execute_memory_reallocation,
-        execute_relationship_pruning,
-    },
-    // From operations_utilities - re-export all public utility functions
-    operations_utilities::{
-        calculate_access_pattern_efficiency, calculate_cache_efficiency, calculate_fragmentation_level,
-        calculate_hashmap_efficiency, calculate_index_efficiency, calculate_memory_efficiency,
-        calculate_optimization_impact, calculate_pool_efficiency, calculate_pool_utilization,
-        calculate_relationship_locality, calculate_sequential_access_score,
-        calculate_spatial_locality_score, calculate_structure_efficiency,
-        calculate_temporal_locality_score, can_optimize_item_structure,
-        can_optimize_relationship_structure, get_optimization_priority_score,
-        get_recommendations_priority, is_orphaned_item, should_prune_relationship,
-        validate_optimization_safety,
-    },
+    // From operations_implementations - re-export the OptimizationExecutor
+    operations_implementations::OptimizationExecutor,
+    // From operations_utilities - re-export the utility methods
+    operations_utilities::OptimizationExecutor as OptimizationUtils,
 };
 
 use std::collections::HashMap;

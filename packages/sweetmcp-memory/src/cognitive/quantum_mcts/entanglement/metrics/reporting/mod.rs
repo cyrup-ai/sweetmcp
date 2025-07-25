@@ -13,8 +13,9 @@ pub mod visualization;
 // Re-export core types for ergonomic access
 pub use types::{
     MetricsReport, SummaryReport, PerformanceDashboard, HistoricalDataPoint,
-    PerformanceTrend, AggregatedMetrics, PerformanceGrade, EntanglementMetricsSummary
+    PerformanceTrend, AggregatedMetrics, EntanglementMetricsSummary
 };
+pub use super::super::engine::PerformanceGrades;
 
 // Re-export generation functionality
 pub use generation::MetricsReporter;

@@ -17,11 +17,9 @@ pub struct StatisticsUtils;
         // Filter paired valid data points
         let valid_pairs: Vec<(f64, f64)> = x_data.iter()
             .zip(y_data.iter())
-            .filter_map(|(x, y)| {
-                let x_val = *x;
-                let y_val = *y;
-                if !x_val.is_nan() && !y_val.is_nan() {
-                    Some((x_val, y_val))
+            .filter_map(|(&x, &y)| {
+                if !x.is_nan() && !y.is_nan() {
+                    Some((x, y))
                 } else {
                     None
                 }

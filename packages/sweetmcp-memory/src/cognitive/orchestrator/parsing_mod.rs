@@ -22,7 +22,8 @@ pub use super::parsing_validation::{
     analyze_spec_completeness, SpecCompletenessAnalysis,
 };
 
-use crate::cognitive::types::{CognitiveError, OptimizationSpec, OptimizationType};
+use crate::cognitive::types::{CognitiveError, OptimizationType};
+use crate::vector::async_vector_optimization::OptimizationSpec;
 use std::path::Path;
 
 /// Create a default optimization specification

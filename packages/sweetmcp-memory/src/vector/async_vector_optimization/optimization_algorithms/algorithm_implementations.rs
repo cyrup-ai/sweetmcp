@@ -282,11 +282,11 @@ impl super::optimization_executor::OptimizationExecutor {
         let mut clusters = Vec::new();
         let mut assigned = vec![false; vectors.len()];
 
-        for cluster_id in 0..max_clusters {
+        for _cluster_id in 0..max_clusters {
             let mut cluster = Vec::new();
             
             // Simple clustering: assign unassigned vectors to clusters
-            for (idx, (_, vector)) in vectors.iter().enumerate() {
+            for (idx, (_, _vector)) in vectors.iter().enumerate() {
                 if !assigned[idx] && cluster.len() < vectors.len() / max_clusters + 1 {
                     cluster.push(idx);
                     assigned[idx] = true;

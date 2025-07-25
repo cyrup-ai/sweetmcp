@@ -17,6 +17,8 @@ pub struct QuantumMCTSConfig {
     pub decoherence_threshold: f64,
     /// Entanglement strength - connection strength between nodes
     pub entanglement_strength: f64,
+    /// Entanglement strength threshold - minimum entanglement to maintain
+    pub entanglement_strength_threshold: f64,
     /// Recursive improvement iterations - maximum recursion depth
     pub recursive_iterations: u32,
     /// Quantum amplitude threshold - minimum amplitude for consideration

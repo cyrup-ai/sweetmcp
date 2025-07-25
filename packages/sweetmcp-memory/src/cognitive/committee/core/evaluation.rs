@@ -7,7 +7,7 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-use crate::cognitive::types::OptimizationSpec;
+use crate::vector::async_vector_optimization::OptimizationSpec;
 
 /// Evaluation rubric provided to agents for consistent assessment
 #[derive(Debug, Clone, Serialize, Deserialize)]

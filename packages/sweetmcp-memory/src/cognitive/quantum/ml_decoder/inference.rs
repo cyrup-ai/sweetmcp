@@ -4,7 +4,7 @@
 //! functionality for quantum machine learning decoders with zero allocation
 //! fast paths and blazing-fast performance.
 
-use super::core::{MLDecoder, QuantumLayer, ParameterizedGate, ParameterizedGateType, EntanglingStructure, MLModelType};
+use super::{MLDecoder, QuantumLayer, ParameterizedGate, ParameterizedGateType, EntanglingStructure};
 
 impl MLDecoder {
     /// Decode syndrome using the trained model with optimized inference

@@ -10,11 +10,9 @@ use crate::cognitive::types::CognitiveError;
 use super::{
     balance_analysis::{NetworkBalanceAnalysis, NodeBalance, BalanceAnalyzer},
     balancing_strategy::{BalancingStrategy, NodeRebalancingPriority, RebalancingAction, OperationResult},
-    super::super::super::super::{
-        analysis::NetworkTopology,
-        node_state::QuantumMCTSNode,
-    },
 };
+use super::super::super::analysis::NetworkTopology;
+use crate::cognitive::quantum_mcts::node_state::QuantumMCTSNode;
 
 /// Balancing operation executor
 pub struct BalancingOperations {

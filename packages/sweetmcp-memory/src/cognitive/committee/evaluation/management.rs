@@ -3,8 +3,9 @@
 //! This module provides committee lifecycle management, timeout-based evaluation,
 //! cache operations, and evaluation statistics with blazing-fast performance.
 
-use crate::cognitive::mcts::CodeState;
-use crate::cognitive::types::{CognitiveError, OptimizationSpec};
+use crate::cognitive::mcts::types::node_types::CodeState;
+use crate::cognitive::types::CognitiveError;
+use crate::vector::async_vector_optimization::OptimizationSpec;
 use tokio::time;
 use tracing::warn;
 

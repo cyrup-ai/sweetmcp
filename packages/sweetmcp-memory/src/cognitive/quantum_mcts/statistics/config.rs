@@ -187,19 +187,19 @@ impl QuantumMCTSConfig {
     /// Validate configuration parameters
     pub fn validate(&self) -> Result<(), ConfigValidationError> {
         if self.mcts.max_iterations == 0 {
-            return Err(ConfigValidationError::InvalidParameter("max_iterations must be > 0".to_string()));
+            return Err(ConfigValidationError::InvalidConfig("max_iterations must be > 0".to_string()));
         }
 
         if self.mcts.exploration_constant < 0.0 {
-            return Err(ConfigValidationError::InvalidParameter("exploration_constant must be >= 0".to_string()));
+            return Err(ConfigValidationError::InvalidConfig("exploration_constant must be >= 0".to_string()));
         }
 
         if self.quantum.coherence_threshold < 0.0 || self.quantum.coherence_threshold > 1.0 {
-            return Err(ConfigValidationError::InvalidParameter("coherence_threshold must be between 0 and 1".to_string()));
+            return Err(ConfigValidationError::InvalidConfig("coherence_threshold must be between 0 and 1".to_string()));
         }
 
         if self.performance.worker_threads == 0 {
-            return Err(ConfigValidationError::InvalidParameter("worker_threads must be > 0".to_string()));
+            return Err(ConfigValidationError::InvalidConfig("worker_threads must be > 0".to_string()));
         }
 
         Ok(())
@@ -220,8 +220,8 @@ impl QuantumMCTSConfig {
 /// Configuration validation errors
 #[derive(Debug, thiserror::Error)]
 pub enum ConfigValidationError {
-    #[error("Invalid parameter: {0}")]
-    InvalidParameter(String),
+    #[error("Invalid configuration: {0}")]
+    InvalidConfig(String),
     #[error("Configuration conflict: {0}")]
     ConfigurationConflict(String),
     #[error("Resource limit exceeded: {0}")]

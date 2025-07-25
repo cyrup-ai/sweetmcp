@@ -3,7 +3,8 @@
 //! This module provides the main parsing logic for optimization specifications
 //! with zero allocation patterns and blazing-fast performance.
 
-use crate::cognitive::types::{CognitiveError, OptimizationSpec, OptimizationType};
+use crate::cognitive::types::{CognitiveError, OptimizationType};
+use crate::vector::async_vector_optimization::OptimizationSpec;
 use super::parsing_extraction::{extract_number, extract_percentage};
 use super::parsing_validation::validate_spec;
 use serde_json;

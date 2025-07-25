@@ -3,7 +3,8 @@
 //! This module provides validation logic and analysis functions for optimization specifications
 //! with zero allocation patterns and blazing-fast performance.
 
-use crate::cognitive::types::{CognitiveError, OptimizationSpec, OptimizationType};
+use crate::cognitive::types::{CognitiveError, OptimizationType};
+use crate::vector::async_vector_optimization::OptimizationSpec;
 use super::parsing_extraction::{extract_optimization_indicators, extract_constraint_patterns, extract_success_patterns};
 use tracing::{debug, warn};
 

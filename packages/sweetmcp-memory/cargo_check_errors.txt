@@ -1,0 +1,100 @@
+    Blocking waiting for file lock on build directory
+    Checking sweetmcp_memory v0.1.0 (/Volumes/samsung_t9/sweetmcp/packages/sweetmcp-memory)
+error[E0428]: the name `QecErrorType` is defined multiple times
+  --> packages/sweetmcp-memory/src/cognitive/quantum/error_correction/syndromes.rs:69:1
+   |
+9  | pub enum QecErrorType {
+   | --------------------- previous definition of the type `QecErrorType` here
+...
+69 | pub enum QecErrorType {
+   | ^^^^^^^^^^^^^^^^^^^^^ `QecErrorType` redefined here
+   |
+   = note: `QecErrorType` must be defined only once in the type namespace of this module
+
+error[E0432]: unresolved import `crate::llm::completion`
+ --> packages/sweetmcp-memory/src/api/sdk.rs:9:17
+  |
+9 | use crate::llm::completion::CompletionService;
+  |                 ^^^^^^^^^^ could not find `completion` in `llm`
+
+error[E0432]: unresolved import `crate::llm::content_analyzer`
+  --> packages/sweetmcp-memory/src/api/sdk.rs:10:17
+   |
+10 | use crate::llm::content_analyzer::LLMContentAnalyzer;
+   |                 ^^^^^^^^^^^^^^^^ could not find `content_analyzer` in `llm`
+
+error[E0432]: unresolved import `super::topological_types::BoundaryConditions`
+  --> packages/sweetmcp-memory/src/cognitive/quantum/error_correction/topological_lattice.rs:10:79
+   |
+10 |     TopologicalCodeType, VertexType, EdgeOrientation, FaceType, BoundaryType, BoundaryConditions
+   |                                                                               ^^^^^^^^^^^^^^^^^^ no `BoundaryConditions` in `cognitive::quantum::error_correction::topological_types`
+   |
+   = help: consider importing this struct through its public re-export instead:
+           crate::cognitive::quantum::error_correction::BoundaryConditions
+
+error[E0432]: unresolved import `crate::cognitive::quantum::error_correction::syndromes::ErrorType`
+ --> packages/sweetmcp-memory/src/cognitive/quantum/error_correction/types.rs:9:81
+  |
+9 | pub use crate::cognitive::quantum::error_correction::syndromes::{ErrorSyndrome, ErrorType};
+  |                                                                                 ^^^^^^^^^
+  |                                                                                 |
+  |                                                                                 no `ErrorType` in `cognitive::quantum::error_correction::syndromes`
+  |                                                                                 help: a similar name exists in the module: `QecErrorType`
+
+error[E0432]: unresolved import `topological_stabilizers`
+  --> packages/sweetmcp-memory/src/cognitive/quantum/error_correction/mod.rs:64:9
+   |
+64 | pub use topological_stabilizers::{
+   |         ^^^^^^^^^^^^^^^^^^^^^^^ use of unresolved module or unlinked crate `topological_stabilizers`
+   |
+help: there is a crate or module with a similar name
+   |
+64 - pub use topological_stabilizers::{
+64 + pub use TopologicalStabilizerType::{
+   |
+
+error[E0432]: unresolved import `crate::cognitive::types::OptimizationSpec`
+  --> packages/sweetmcp-memory/src/cognitive/quantum/recursive_improvement.rs:13:50
+   |
+13 |     types::{CognitiveError, OptimizationOutcome, OptimizationSpec},
+   |                                                  ^^^^^^^^^^^^^^^^
+   |                                                  |
+   |                                                  no `OptimizationSpec` in `cognitive::types`
+   |                                                  help: a similar name exists in the module: `OptimizationType`
+   |
+   = help: consider importing this struct through its public re-export instead:
+           crate::vector::async_vector_optimization::OptimizationSpec
+
+error[E0432]: unresolved import `crate::cognitive::types::OptimizationSpec`
+  --> packages/sweetmcp-memory/src/cognitive/quantum_mcts/core.rs:22:29
+   |
+22 |     types::{CognitiveError, OptimizationSpec},
+   |                             ^^^^^^^^^^^^^^^^
+   |                             |
+   |                             no `OptimizationSpec` in `cognitive::types`
+   |                             help: a similar name exists in the module: `OptimizationType`
+   |
+   = help: consider importing this struct through its public re-export instead:
+           crate::vector::async_vector_optimization::OptimizationSpec
+
+error[E0432]: unresolved import `super::super::config`
+  --> packages/sweetmcp-memory/src/cognitive/quantum_mcts/entanglement/engine/factory.rs:15:5
+   |
+15 |     config::QuantumMCTSConfig,
+   |     ^^^^^^ could not find `config` in `super`
+
+error[E0432]: unresolved import `super::balancing`
+  --> packages/sweetmcp-memory/src/cognitive/quantum_mcts/entanglement/engine/operation_types.rs:12:5
+   |
+12 |     balancing::BalancingResult,
+   |     ^^^^^^^^^ could not find `balancing` in `super`
+
+error[E0432]: unresolved import `self::balancing`
+  --> packages/sweetmcp-memory/src/cognitive/quantum_mcts/entanglement/engine/mod.rs:50:5
+   |
+50 |     balancing::{BalancingResult, NodeBalance, BalancingStrategy, NetworkBalanceAnalysis, DistributionStatistics},
+   |     ^^^^^^^^^ could not find `balancing` in `self`
+
+error[E0432]: unresolved import `benchmarking_core`
+  --> packages/sweetmcp-memory/src/cognitive/quantum_mcts/entanglement/metrics/benchmarking_mod.rs:13:9
+   |

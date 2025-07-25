@@ -7,8 +7,9 @@ use crate::cognitive::types::{CognitiveError, CognitiveResult};
 use smallvec::SmallVec;
 use std::collections::HashMap;
 use super::topological_types::{
-    TopologicalCodeType, VertexType, EdgeOrientation, FaceType, BoundaryType, BoundaryConditions
+    TopologicalCodeType, VertexType, EdgeOrientation, FaceType, BoundaryType
 };
+use super::topological_lattice_types::BoundaryConditions as LatticeBoundaryConditions;
 
 /// Topological lattice structure
 #[derive(Debug, Clone)]
@@ -26,7 +27,7 @@ pub struct TopologicalLattice {
     pub faces: Vec<LatticeFace>,
     
     /// Boundary conditions
-    pub boundary: BoundaryConditions,
+    pub boundary: LatticeBoundaryConditions,
 }
 
 /// Vertex in topological lattice
@@ -80,25 +81,12 @@ pub struct LatticeFace {
     pub syndrome_qubit: Option<usize>,
 }
 
-/// Boundary conditions for lattice
-#[derive(Debug, Clone)]
-pub struct BoundaryConditions {
-    /// Periodic in x-direction
-    pub periodic_x: bool,
-    
-    /// Periodic in y-direction
-    pub periodic_y: bool,
-    
-    /// Boundary type
-    pub boundary_type: BoundaryType,
-}
-
 impl TopologicalLattice {
     /// Generate lattice structure based on code type
     pub fn generate(
         code_type: TopologicalCodeType,
         dimensions: (usize, usize),
-        boundary: BoundaryConditions,
+        boundary: LatticeBoundaryConditions,
     ) -> CognitiveResult<Self> {
         match code_type {
             TopologicalCodeType::ToricCode | TopologicalCodeType::PlanarCode => {
@@ -116,7 +104,7 @@ impl TopologicalLattice {
     /// Generate square lattice for toric/planar codes
     fn generate_square_lattice(
         dimensions: (usize, usize),
-        boundary: BoundaryConditions,
+        boundary: LatticeBoundaryConditions,
     ) -> CognitiveResult<Self> {
         let (rows, cols) = dimensions;
         let mut vertices = Vec::new();
@@ -226,7 +214,7 @@ impl TopologicalLattice {
     /// Generate triangular lattice for color codes
     fn generate_triangular_lattice(
         dimensions: (usize, usize),
-        boundary: BoundaryConditions,
+        boundary: LatticeBoundaryConditions,
     ) -> CognitiveResult<Self> {
         let (rows, cols) = dimensions;
         let mut vertices = Vec::new();
@@ -321,7 +309,7 @@ impl TopologicalLattice {
     /// Generate hyperbolic lattice (simplified implementation)
     fn generate_hyperbolic_lattice(
         dimensions: (usize, usize),
-        boundary: BoundaryConditions,
+        boundary: LatticeBoundaryConditions,
     ) -> CognitiveResult<Self> {
         // For now, use a modified square lattice as placeholder
         // Full hyperbolic lattice implementation would be much more complex
@@ -448,7 +436,7 @@ pub struct LatticeStatistics {
     pub boundary_vertices: usize,
 }
 
-impl BoundaryConditions {
+impl LatticeBoundaryConditions {
     /// Create open boundary conditions
     pub fn open() -> Self {
         Self {

@@ -1,0 +1,2297 @@
+error[E0255]: the name `BoundaryConditions` is defined multiple times
+error[E0432]: unresolved import `crate:
+error[E0432]: unresolved import `crate:
+error[E0432]: unresolved import `crate:
+error[E0432]: unresolved import `topological_stabilizers`
+error[E0432]: unresolved import `crate:
+error[E0432]: unresolved import `crate:
+error[E0432]: unresolved import `super:
+error[E0432]: unresolved import `super:
+error[E0432]: unresolved import `self:
+error[E0432]: unresolved import `benchmarking_core`
+error[E0432]: unresolved import `benchmarking_results`
+error[E0432]: unresolved import `benchmarking_comparison`
+error[E0432]: unresolved import `benchmarking_monitor`
+error[E0432]: unresolved import `super:
+error[E0432]: unresolved import `types:
+error[E0432]: unresolved imports `calculations:
+error[E0432]: unresolved import `benchmarking_comparison:
+error[E0432]: unresolved import `super:
+error[E0432]: unresolved import `super:
+error[E0432]: unresolved import `crate:
+error[E0432]: unresolved imports `super:
+error[E0432]: unresolved import `crate:
+error[E0432]: unresolved imports `super:
+error[E0432]: unresolved import `crate:
+error[E0432]: unresolved import `crate:
+error[E0432]: unresolved import `crate:
+error[E0432]: unresolved import `crate:
+error[E0432]: unresolved imports `entanglement:
+error[E0432]: unresolved import `crate:
+error[E0432]: unresolved import `types:
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `criterion`
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `sweetmcp_memory`
+error[E0432]: unresolved import `criterion`
+error[E0433]: failed to resolve: could not find `content_analyzer` in `llm`
+error[E0433]: failed to resolve: could not find `content_analyzer` in `llm`
+error[E0433]: failed to resolve: could not find `MemoryError` in `error`
+error[E0433]: failed to resolve: could not find `MemoryError` in `error`
+error[E0433]: failed to resolve: could not find `MemoryError` in `error`
+error[E0433]: failed to resolve: could not find `MemoryError` in `error`
+error[E0407]: method `query_by_type` is not a member of trait `MemoryManager`
+error[E0106]: missing lifetime specifier
+error[E0106]: missing lifetime specifier
+error[E0106]: missing lifetime specifier
+error[E0106]: missing lifetime specifier
+error[E0433]: failed to resolve: could not find `manager` in `super`
+error[E0433]: failed to resolve: could not find `config` in `super`
+error[E0433]: failed to resolve: could not find `manager` in `super`
+error[E0433]: failed to resolve: could not find `config` in `super`
+error[E0433]: failed to resolve: could not find `manager` in `super`
+error[E0433]: failed to resolve: could not find `manager` in `super`
+error[E0433]: failed to resolve: could not find `QuantumEntanglementConfig` in `config`
+error[E0433]: failed to resolve: could not find `manager` in `super`
+error[E0433]: failed to resolve: could not find `QuantumEntanglementConfig` in `config`
+error[E0433]: failed to resolve: could not find `manager` in `super`
+error[E0433]: failed to resolve: could not find `QuantumEntanglementConfig` in `config`
+error[E0433]: failed to resolve: could not find `manager` in `super`
+error[E0433]: failed to resolve: could not find `QuantumEntanglementConfig` in `config`
+error[E0433]: failed to resolve: could not find `manager` in `super`
+error[E0433]: failed to resolve: could not find `QuantumEntanglementConfig` in `config`
+error[E0433]: failed to resolve: could not find `manager` in `super`
+error[E0433]: failed to resolve: could not find `QuantumEntanglementConfig` in `config`
+error[E0433]: failed to resolve: expected type, found function `executor` in `query`
+error[E0407]: method `get` is not a member of trait `VectorStore`
+error[E0407]: method `remove` is not a member of trait `VectorStore`
+error[E0407]: method `batch_add` is not a member of trait `VectorStore`
+error[E0407]: method `update_metadata` is not a member of trait `VectorStore`
+error[E0412]: cannot find type `OptimizationSpec` in module `crate:
+error[E0412]: cannot find type `OptimizationSpec` in module `crate:
+error[E0412]: cannot find type `OptimizationSpec` in module `crate:
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `factory`
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `factory`
+error[E0412]: cannot find type `MetricsCollector` in this scope
+error[E0433]: failed to resolve: use of undeclared type `MetricsCollector`
+error[E0433]: failed to resolve: use of undeclared type `MetricsCollector`
+error[E0412]: cannot find type `EntanglementMetricsSummary` in this scope
+error[E0412]: cannot find type `EntanglementDistribution` in module `crate:
+error[E0412]: cannot find type `EntanglementDistribution` in module `crate:
+error[E0412]: cannot find type `NetworkAnalysisReport` in this scope
+error[E0412]: cannot find type `NetworkAnalysisReport` in this scope
+error[E0412]: cannot find type `HealthStatus` in this scope
+error[E0433]: failed to resolve: could not find `analysis` in `super`
+error[E0412]: cannot find type `QuantumEntanglementConfig` in module `super:
+error[E0433]: failed to resolve: could not find `analysis` in `super`
+error[E0433]: failed to resolve: could not find `analysis` in `super`
+error[E0433]: failed to resolve: could not find `analysis` in `super`
+error[E0433]: failed to resolve: could not find `analysis` in `super`
+error[E0433]: failed to resolve: could not find `analysis` in `super`
+error[E0433]: failed to resolve: could not find `analysis` in `super`
+error[E0412]: cannot find type `ExpansionStats` in module `super`
+error[E0422]: cannot find struct, variant or union type `ExpansionStats` in module `super`
+error[E0425]: cannot find value `execution_time` in this scope
+error[E0425]: cannot find value `execution_time` in this scope
+error[E0425]: cannot find value `execution_time` in this scope
+error[E0425]: cannot find value `execution_time` in this scope
+error[E0425]: cannot find value `execution_time` in this scope
+error[E0425]: cannot find value `execution_time` in this scope
+error[E0425]: cannot find value `execution_time` in this scope
+error[E0433]: failed to resolve: could not find `RecommendationGenerator` in `coordinator_analysis`
+error[E0603]: struct import `TrainingConfig` is private
+error[E0603]: struct import `TrainingReport` is private
+error[E0603]: struct import `CrossValidationReport` is private
+error[E0603]: struct import `HyperparameterGrid` is private
+error[E0603]: struct import `HyperparameterTrial` is private
+error[E0603]: struct import `HyperparameterResult` is private
+error[E0603]: struct import `EarlyStoppingConfig` is private
+error[E0603]: enum import `LearningRateScheduler` is private
+error[E0603]: struct import `MetricsTracker` is private
+error[E0603]: struct import `CounterSnapshot` is private
+error[E0603]: struct import `CounterSnapshot` is private
+error[E0603]: struct import `AnalysisComparison` is private
+error[E0603]: struct import `TrendAnalysis` is private
+error[E0603]: enum import `TrendDirection` is private
+error[E0603]: struct import `OptimizationExecutor` is private
+error[E0603]: struct import `OptimizationExecutor` is private
+error[E0603]: struct import `EvolutionRules` is private
+error[E0603]: struct import `EvolutionRules` is private
+error[E0603]: enum import `OptimizationPriority` is private
+error[E0603]: enum import `OptimizationPriority` is private
+error[E0603]: enum import `OptimizationPriority` is private
+error[E0603]: enum `QuantumTransformation` is private
+error[E0603]: struct import `MemoryStatistics` is private
+error[E0603]: struct import `CleanupConfig` is private
+error[E0603]: struct import `VectorSearchResult` is private
+error[E0603]: trait import `VectorStore` is private
+error[E0119]: conflicting implementations of trait `MemoryManager` for type `SurrealDBMemoryManager`
+error[E0119]: conflicting implementations of trait `MemoryManager` for type `SurrealDBMemoryManager`
+error[E0061]: this method takes 1 argument but 3 arguments were supplied
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0061]: this method takes 1 argument but 4 arguments were supplied
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0599]: no method named `list_memories` found for struct `std:
+error[E0308]: mismatched types
+error[E0061]: this method takes 1 argument but 4 arguments were supplied
+error[E0308]: mismatched types
+error[E0599]: no method named `get_relationship` found for struct `std:
+error[E0308]: mismatched types
+error[E0599]: no method named `list_relationships` found for struct `std:
+error[E0599]: no method named `get_memory_relationships` found for struct `std:
+error[E0503]: cannot use `self.config.timeout_seconds` because it was mutably borrowed
+error[E0277]: `?` couldn't convert the error to `cognitive:
+error[E0615]: attempted to take value of method `performance_score` on type `&node_types:
+error[E0609]: no field `memory_usage` on type `&node_types:
+error[E0609]: no field `complexity_score` on type `&node_types:
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0599]: no method named `focus_areas` found for enum `agents:
+error[E0599]: no method named `add_suggestion` found for mutable reference `&mut agents:
+error[E0599]: no method named `add_suggestion` found for mutable reference `&mut agents:
+error[E0599]: no method named `should_continue` found for struct `std:
+error[E0308]: mismatched types
+error[E0599]: no method named `evaluate_with_phase` found for struct `agents:
+error[E0599]: no variant named `AgentStarted` found for enum `CommitteeEvent`
+error[E0277]: `std:
+error[E0063]: missing fields `execution_time_ms` and `phase` in initializer of `CommitteeEvent`
+error[E0277]: `std:
+error[E0599]: no variant named `AgentStarted` found for enum `CommitteeEvent`
+error[E0277]: `std:
+error[E0063]: missing fields `execution_time_ms` and `phase` in initializer of `CommitteeEvent`
+error[E0277]: `std:
+error[E0616]: field `cache` of struct `Committee` is private
+error[E0616]: field `cache` of struct `Committee` is private
+error[E0616]: field `cache` of struct `Committee` is private
+error[E0277]: the trait bound `&str: surrealdb
+error[E0277]: `?` couldn't convert the error to `utils:
+error[E0277]: `?` couldn't convert the error to `utils:
+error[E0599]: no function or associated item named `new_lock_free` found for struct `EvolutionEngine` in the current scope
+error[E0277]: `?` couldn't convert the error to `utils:
+error[E0277]: `?` couldn't convert the error to `utils:
+error[E0277]: `?` couldn't convert the error to `utils:
+error[E0277]: `?` couldn't convert the error to `utils:
+error[E0308]: mismatched types
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0609]: no field `metadata` on type `node_types:
+error[E0061]: this function takes 4 arguments but 2 arguments were supplied
+error[E0277]: `Committee` is not a future
+error[E0282]: type annotations needed for `std:
+error[E0061]: this function takes 1 argument but 3 arguments were supplied
+error[E0061]: this function takes 1 argument but 3 arguments were supplied
+error[E0061]: this function takes 1 argument but 2 arguments were supplied
+error[E0061]: this function takes 4 arguments but 2 arguments were supplied
+error[E0277]: `Committee` is not a future
+error[E0282]: type annotations needed for `std:
+error[E0061]: this function takes 1 argument but 3 arguments were supplied
+error[E0061]: this function takes 1 argument but 3 arguments were supplied
+error[E0061]: this function takes 1 argument but 2 arguments were supplied
+error[E0599]: no method named `create_balanced` found for struct `MCTSFactory` in the current scope
+error[E0599]: no method named `create_with_profile` found for struct `MCTSFactory` in the current scope
+error[E0616]: field `optimization_spec` of struct `MCTS` is private
+error[E0616]: field `optimization_spec` of struct `MCTS` is private
+error[E0616]: field `executor` of struct `MCTS` is private
+error[E0616]: field `tree` of struct `MCTS` is private
+error[E0616]: field `root_id` of struct `MCTS` is private
+error[E0616]: field `analyzer` of struct `MCTS` is private
+error[E0616]: field `tree` of struct `MCTS` is private
+error[E0616]: field `root_id` of struct `MCTS` is private
+error[E0616]: field `executor` of struct `MCTS` is private
+error[E0616]: field `tree` of struct `MCTS` is private
+error[E0616]: field `root_id` of struct `MCTS` is private
+error[E0616]: field `executor` of struct `MCTS` is private
+error[E0616]: field `tree` of struct `MCTS` is private
+error[E0616]: field `root_id` of struct `MCTS` is private
+error[E0616]: field `analyzer` of struct `MCTS` is private
+error[E0616]: field `tree` of struct `MCTS` is private
+error[E0616]: field `root_id` of struct `MCTS` is private
+error[E0616]: field `action_coordinator` of struct `MCTS` is private
+error[E0616]: field `executor` of struct `MCTS` is private
+error[E0616]: field `tree` of struct `MCTS` is private
+error[E0616]: field `root_id` of struct `MCTS` is private
+error[E0616]: field `analyzer` of struct `MCTS` is private
+error[E0616]: field `tree` of struct `MCTS` is private
+error[E0616]: field `root_id` of struct `MCTS` is private
+error[E0616]: field `executor` of struct `MCTS` is private
+error[E0616]: field `tree` of struct `MCTS` is private
+error[E0616]: field `root_id` of struct `MCTS` is private
+error[E0616]: field `executor` of struct `MCTS` is private
+error[E0616]: field `tree` of struct `MCTS` is private
+error[E0616]: field `root_id` of struct `MCTS` is private
+error[E0616]: field `analyzer` of struct `MCTS` is private
+error[E0616]: field `tree` of struct `MCTS` is private
+error[E0616]: field `root_id` of struct `MCTS` is private
+error[E0616]: field `action_coordinator` of struct `MCTS` is private
+error[E0616]: field `executor` of struct `MCTS` is private
+error[E0616]: field `tree` of struct `MCTS` is private
+error[E0616]: field `root_id` of struct `MCTS` is private
+error[E0616]: field `analyzer` of struct `MCTS` is private
+error[E0616]: field `tree` of struct `MCTS` is private
+error[E0616]: field `root_id` of struct `MCTS` is private
+error[E0616]: field `executor` of struct `MCTS` is private
+error[E0616]: field `tree` of struct `MCTS` is private
+error[E0616]: field `root_id` of struct `MCTS` is private
+error[E0616]: field `executor` of struct `MCTS` is private
+error[E0616]: field `tree` of struct `MCTS` is private
+error[E0616]: field `root_id` of struct `MCTS` is private
+error[E0616]: field `analyzer` of struct `MCTS` is private
+error[E0616]: field `tree` of struct `MCTS` is private
+error[E0616]: field `root_id` of struct `MCTS` is private
+error[E0616]: field `action_coordinator` of struct `MCTS` is private
+error[E0382]: borrow of moved value: `result`
+error[E0599]: no method named `calculate_attention_weights_simd` found for struct `std:
+error[E0599]: no method named `analyze_memory_context_lock_free` found for reference `&CognitiveStateManager` in the current scope
+error[E0599]: no method named `embed_into_buffer` found for reference `&std:
+error[E0609]: no field `optimized_code` on type `&OptimizationOutcome`
+error[E0061]: this function takes 6 arguments but 5 arguments were supplied
+error[E0599]: no method named `optimize` found for enum `std:
+error[E0609]: no field `final_latency` on type `&OptimizationOutcome`
+error[E0609]: no field `final_memory` on type `&OptimizationOutcome`
+error[E0609]: no field `final_relevance` on type `&OptimizationOutcome`
+error[E0609]: no field `optimized_code` on type `&OptimizationOutcome`
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0599]: no method named `search_by_content` found for struct `SurrealDBMemoryManager` in the current scope
+error[E0599]: no method named `record_fitness` found for struct `tokio:
+error[E0599]: no method named `evolve_if_needed` found for struct `tokio:
+error[E0061]: this function takes 2 arguments but 1 argument was supplied
+error[E0061]: this function takes 6 arguments but 0 arguments were supplied
+error[E0308]: arguments to this function are incorrect
+error[E0277]: the trait bound `node_types:
+error[E0061]: this function takes 2 arguments but 6 arguments were supplied
+error[E0277]: the trait bound `node_types:
+error[E0277]: `Result<QuantumMCTS<CodeState>, CognitiveError>` is not a future
+error[E0277]: the trait bound `node_types:
+error[E0308]: `?` operator has incompatible types
+error[E0599]: no method named `evolve_code` found for struct `std:
+error[E0277]: `?` couldn't convert the error to `quantum:
+error[E0277]: `?` couldn't convert the error to `quantum:
+error[E0382]: borrow of moved value: `measurement.context`
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `is_finite` found for struct `Complex64` in the current scope
+error[E0599]: no method named `get_entangled` found for struct `tokio:
+error[E0599]: no method named `is_finite` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0624]: method `get_propagation_path` is private
+error[E0624]: method `calculate_decay_factor` is private
+error[E0599]: no method named `is_finite` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no variant or associated item named `InvalidQuantumState` found for enum `cognitive:
+error[E0624]: method `get_propagation_path` is private
+error[E0624]: method `calculate_decay_factor` is private
+error[E0599]: no method named `is_finite` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0368]: binary assignment operation `*=` cannot be applied to type `Complex64`
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0624]: method `get_propagation_path` is private
+error[E0624]: method `calculate_decay_factor` is private
+error[E0599]: no method named `is_finite` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0061]: this function takes 4 arguments but 2 arguments were supplied
+error[E0277]: `Committee` is not a future
+error[E0061]: this function takes 1 argument but 0 arguments were supplied
+error[E0599]: no function or associated item named `new` found for struct `PhaseEvolution` in the current scope
+error[E0599]: no function or associated item named `new` found for struct `TimeDependentTerm` in the current scope
+error[E0599]: no function or associated item named `new` found for struct `TimeDependentTerm` in the current scope
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0596]: cannot borrow `self.engine` as mutable, as it is behind a `&` reference
+error[E0599]: no function or associated item named `calculate_network_influence` found for struct `NetworkInfluenceCalculator` in the current scope
+error[E0616]: field `entanglement_graph` of struct `QuantumEntanglementManager` is private
+error[E0599]: no function or associated item named `analyze_network_topology` found for struct `NetworkTopologyAnalyzer` in the current scope
+error[E0616]: field `entanglement_graph` of struct `QuantumEntanglementManager` is private
+error[E0599]: no method named `prune_weak_entanglements` found for mutable reference `&mut QuantumEntanglementManager` in the current scope
+error[E0599]: no method named `perform_maintenance` found for struct `quantum_mcts:
+error[E0599]: no function or associated item named `analyze_network_topology` found for struct `NetworkTopologyAnalyzer` in the current scope
+error[E0616]: field `entanglement_graph` of struct `QuantumEntanglementManager` is private
+error[E0599]: no function or associated item named `analyze_entanglement_quality` found for struct `NetworkTopologyAnalyzer` in the current scope
+error[E0616]: field `entanglement_graph` of struct `QuantumEntanglementManager` is private
+error[E0599]: no function or associated item named `find_network_bottlenecks` found for struct `NetworkTopologyAnalyzer` in the current scope
+error[E0616]: field `entanglement_graph` of struct `QuantumEntanglementManager` is private
+error[E0599]: no method named `summary` found for reference `&quantum_mcts:
+error[E0609]: no field `entanglement_strength_threshold` on type `quantum_mcts:
+error[E0599]: no method named `quantum_state` found for reference `&quantum_mcts:
+error[E0599]: no method named `prune_node_entanglements` found for struct `QuantumEntanglementManager` in the current scope
+error[E0599]: no method named `record_entanglements_pruned` found for struct `std:
+error[E0599]: no method named `get_node_entanglement_count` found for struct `QuantumEntanglementManager` in the current scope
+error[E0061]: this method takes 2 arguments but 3 arguments were supplied
+error[E0599]: no method named `analyze_entanglement_distribution` found for struct `QuantumEntanglementManager` in the current scope
+error[E0599]: no method named `get_node_entanglement_count` found for struct `QuantumEntanglementManager` in the current scope
+error[E0599]: no method named `get_node_entanglements` found for struct `QuantumEntanglementManager` in the current scope
+error[E0061]: this method takes 2 arguments but 1 argument was supplied
+error[E0599]: no method named `get_all_entanglements` found for struct `QuantumEntanglementManager` in the current scope
+error[E0609]: no field `entanglement_strength_threshold` on type `quantum_mcts:
+error[E0061]: this method takes 2 arguments but 1 argument was supplied
+error[E0599]: no method named `get_node_entanglements` found for struct `QuantumEntanglementManager` in the current scope
+error[E0599]: no method named `analyze_entanglement_distribution` found for struct `QuantumEntanglementManager` in the current scope
+error[E0609]: no field `analyzer` on type `&engine_core:
+error[E0599]: no method named `analyze_entanglement_distribution` found for struct `QuantumEntanglementManager` in the current scope
+error[E0599]: no method named `get_entanglement_metrics` found for struct `QuantumEntanglementManager` in the current scope
+error[E0609]: no field `connected_components` on type `network_topology:
+error[E0599]: no method named `analyze_entanglement_distribution` found for struct `QuantumEntanglementManager` in the current scope
+error[E0599]: no method named `get_entanglement_metrics` found for struct `QuantumEntanglementManager` in the current scope
+error[E0609]: no field `average_path_length` on type `network_topology:
+error[E0609]: no field `diameter` on type `network_topology:
+error[E0609]: no field `connected_components` on type `&network_topology:
+error[E0609]: no field `connected_components` on type `&network_topology:
+error[E0034]: multiple applicable items in scope
+error[E0599]: no method named `initialize_caches` found for mutable reference `&mut QuantumEntanglementManager` in the current scope
+error[E0599]: no method named `validate_configuration` found for mutable reference `&mut QuantumEntanglementManager` in the current scope
+error[E0599]: no method named `clear_caches` found for mutable reference `&mut QuantumEntanglementManager` in the current scope
+error[E0599]: no method named `reset_statistics` found for mutable reference `&mut QuantumEntanglementManager` in the current scope
+error[E0599]: no method named `flush_pending_operations` found for mutable reference `&mut QuantumEntanglementManager` in the current scope
+error[E0599]: no method named `save_statistics` found for mutable reference `&mut QuantumEntanglementManager` in the current scope
+error[E0599]: no function or associated item named `analyze_network_topology` found for struct `NetworkTopologyAnalyzer` in the current scope
+error[E0599]: no method named `summary` found for struct `std:
+error[E0609]: no field `average_operation_time_us` on type `&AggregatedMetrics`
+error[E0609]: no field `average_operation_time_us` on type `&AggregatedMetrics`
+error[E0609]: no field `success_rate` on type `&AggregatedMetrics`
+error[E0609]: no field `success_rate` on type `&AggregatedMetrics`
+error[E0609]: no field `cache_hit_rate` on type `&AggregatedMetrics`
+error[E0609]: no field `cache_hit_rate` on type `&AggregatedMetrics`
+error[E0609]: no field `entanglement_failures` on type `&AggregatedMetrics`
+error[E0609]: no field `entanglement_operations` on type `&AggregatedMetrics`
+error[E0609]: no field `operations_per_second` on type `&AggregatedMetrics`
+error[E0599]: no method named `summary` found for struct `std:
+error[E0689]: can't call method `min` on ambiguous numeric type `{float}`
+error[E0689]: can't call method `max` on ambiguous numeric type `{float}`
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0599]: no method named `summary` found for struct `std:
+error[E0034]: multiple applicable items in scope
+error[E0609]: no field `optimization` on type `&mut quantum_mcts:
+error[E0609]: no field `optimization` on type `&mut quantum_mcts:
+error[E0609]: no field `pruning` on type `&mut quantum_mcts:
+error[E0609]: no field `balancing` on type `&mut quantum_mcts:
+error[E0609]: no field `health` on type `&mut quantum_mcts:
+error[E0609]: no field `health` on type `&mut quantum_mcts:
+error[E0609]: no field `optimization` on type `&mut quantum_mcts:
+error[E0609]: no field `optimization` on type `&mut quantum_mcts:
+error[E0609]: no field `pruning` on type `&mut quantum_mcts:
+error[E0609]: no field `balancing` on type `&mut quantum_mcts:
+error[E0599]: no function or associated item named `analyze_network_topology` found for struct `NetworkTopologyAnalyzer` in the current scope
+error[E0599]: no method named `record_topology_analysis` found for struct `std:
+error[E0599]: no method named `prune_weak_entanglements` found for struct `QuantumEntanglementManager` in the current scope
+error[E0599]: no method named `record_entanglements_pruned` found for struct `std:
+error[E0599]: no method named `balance_entanglement_distribution` found for mutable reference `&mut quantum_mcts:
+error[E0599]: no function or associated item named `analyze_network_topology` found for struct `NetworkTopologyAnalyzer` in the current scope
+error[E0599]: no method named `record_optimization_completed` found for struct `std:
+error[E0599]: no function or associated item named `analyze_network_topology` found for struct `NetworkTopologyAnalyzer` in the current scope
+error[E0599]: no method named `create_entanglement_batch` found for struct `QuantumEntanglementManager` in the current scope
+error[E0599]: no method named `record_entanglements_created` found for struct `std:
+error[E0599]: no function or associated item named `analyze_network_topology` found for struct `NetworkTopologyAnalyzer` in the current scope
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0609]: no field `max_strategic_entanglements` on type `quantum_mcts:
+error[E0609]: no field `max_strategic_entanglements` on type `quantum_mcts:
+error[E0599]: no method named `get_node_connectivity` found for struct `QuantumEntanglementManager` in the current scope
+error[E0609]: no field `value` on type `&quantum_mcts:
+error[E0599]: no method named `check_entanglement_exists` found for struct `QuantumEntanglementManager` in the current scope
+error[E0599]: no function or associated item named `analyze_network_topology` found for struct `NetworkTopologyAnalyzer` in the current scope
+error[E0599]: no function or associated item named `analyze_network_topology` found for struct `NetworkTopologyAnalyzer` in the current scope
+error[E0599]: no method named `record_intelligent_pruning` found for struct `std:
+error[E0599]: no method named `get_node_entanglements` found for struct `QuantumEntanglementManager` in the current scope
+error[E0599]: no method named `record_entanglement_pruned` found for struct `std:
+error[E0599]: no method named `get_all_entanglements` found for struct `QuantumEntanglementManager` in the current scope
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+error[E0599]: no method named `record_entanglement_pruned` found for struct `std:
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+error[E0599]: no method named `get_all_entanglements` found for struct `QuantumEntanglementManager` in the current scope
+error[E0599]: no method named `summary` found for struct `std:
+error[E0599]: no method named `get_recent_pruning_statistics` found for struct `std:
+error[E0599]: no function or associated item named `analyze_network_topology` found for struct `NetworkTopologyAnalyzer` in the current scope
+error[E0609]: no field `max_concurrent_operations` on type `quantum_mcts:
+error[E0609]: no field `batch_operation_size` on type `quantum_mcts:
+error[E0609]: no field `enable_parallel_processing` on type `quantum_mcts:
+error[E0609]: no field `max_concurrent_operations` on type `quantum_mcts:
+error[E0609]: no field `batch_operation_size` on type `quantum_mcts:
+error[E0609]: no field `enable_preemptive_optimization` on type `quantum_mcts:
+error[E0609]: no field `max_concurrent_operations` on type `quantum_mcts:
+error[E0609]: no field `batch_operation_size` on type `quantum_mcts:
+error[E0609]: no field `enable_adaptive_batching` on type `quantum_mcts:
+error[E0609]: no field `entanglement_strength_threshold` on type `quantum_mcts:
+error[E0609]: no field `pruning_frequency_ms` on type `quantum_mcts:
+error[E0609]: no field `aggressive_pruning` on type `quantum_mcts:
+error[E0609]: no field `entanglement_strength_threshold` on type `quantum_mcts:
+error[E0609]: no field `creation_batch_size` on type `quantum_mcts:
+error[E0609]: no field `enable_creation_acceleration` on type `quantum_mcts:
+error[E0609]: no field `connectivity_repair_priority` on type `quantum_mcts:
+error[E0609]: no field `bridge_creation_enabled` on type `quantum_mcts:
+error[E0609]: no field `isolation_detection_threshold` on type `quantum_mcts:
+error[E0609]: no field `hub_node_optimization` on type `quantum_mcts:
+error[E0609]: no field `load_balancing_frequency_ms` on type `quantum_mcts:
+error[E0609]: no field `sparse_network_optimization` on type `quantum_mcts:
+error[E0609]: no field `minimum_connectivity_threshold` on type `quantum_mcts:
+error[E0599]: no method named `balance_entanglement_distribution` found for mutable reference `&mut quantum_mcts:
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0599]: no method named `balance_entanglement_distribution` found for mutable reference `&mut quantum_mcts:
+error[E0599]: no method named `balance_entanglement_distribution` found for mutable reference `&mut quantum_mcts:
+error[E0599]: no method named `summary` found for struct `std:
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0599]: no function or associated item named `analyze_network_topology` found for struct `NetworkTopologyAnalyzer` in the current scope
+error[E0599]: no method named `node_count` found for struct `tokio:
+error[E0599]: no method named `edge_count` found for struct `tokio:
+error[E0599]: no method named `health_score` found for struct `std:
+error[E0034]: multiple applicable items in scope
+error[E0382]: use of moved value: `resource_requirements`
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0034]: multiple applicable items in scope
+error[E0599]: no variant or associated item named `OperationFailed` found for enum `cognitive:
+error[E0034]: multiple applicable items in scope
+error[E0599]: no method named `entanglement_count` found for reference `&quantum:
+error[E0599]: no method named `get_entanglement_count` found for reference `&quantum:
+error[E0599]: no method named `get_entangled_nodes` found for reference `&quantum:
+error[E0599]: no method named `get_entangled_nodes` found for reference `&quantum:
+error[E0599]: no method named `has_entanglement` found for reference `&quantum:
+error[E0599]: no method named `get_entangled_nodes` found for reference `&quantum:
+error[E0599]: no method named `get_entanglements` found for reference `&quantum:
+error[E0599]: no method named `get_entanglements` found for reference `&quantum:
+error[E0599]: no method named `get_entanglements` found for reference `&quantum:
+error[E0609]: no field `state` on type `tokio:
+error[E0609]: no field `state` on type `tokio:
+error[E0599]: no method named `get_entanglement_count` found for reference `&quantum:
+error[E0599]: no method named `get_entanglement_count` found for reference `&quantum:
+error[E0599]: no method named `get_entangled_nodes` found for reference `&quantum:
+error[E0599]: no method named `get_entangled_nodes` found for reference `&quantum:
+error[E0599]: no method named `get_entanglement_count` found for reference `&quantum:
+error[E0599]: no method named `get_entanglement_count` found for reference `&quantum:
+error[E0599]: no method named `get_entanglement_count` found for reference `&quantum:
+error[E0599]: no method named `node_count` found for reference `&quantum:
+error[E0599]: no method named `node_indices` found for reference `&quantum:
+error[E0689]: can't call method `max` on ambiguous numeric type `{float}`
+error[E0599]: no method named `edges` found for reference `&quantum:
+error[E0599]: no method named `node_count` found for reference `&quantum:
+error[E0596]: cannot borrow `self.rolling_monitor` as mutable, as it is behind a `&` reference
+error[E0596]: cannot borrow `self.active_benchmark` as mutable, as it is behind a `&` reference
+error[E0277]: can't compare `str` with `std:
+error[E0599]: no method named `add_entanglement` found for struct `tokio:
+error[E0609]: no field `entanglements_created` on type `quantum_mcts:
+error[E0609]: no field `entanglement_failures` on type `quantum_mcts:
+error[E0609]: no field `entanglement_operations` on type `quantum_mcts:
+error[E0599]: no method named `remove_entanglement` found for struct `tokio:
+error[E0609]: no field `entanglements_removed` on type `quantum_mcts:
+error[E0599]: no variant or associated item named `QuantumError` found for enum `cognitive:
+error[E0599]: no method named `get_entangled` found for struct `tokio:
+error[E0599]: no variant or associated item named `QuantumError` found for enum `cognitive:
+error[E0599]: no method named `dimension` found for reference `&SuperpositionState` in the current scope
+error[E0599]: no method named `measure` found for reference `&SuperpositionState` in the current scope
+error[E0599]: no variant or associated item named `QuantumError` found for enum `cognitive:
+error[E0599]: no method named `compute` found for struct `std:
+error[E0599]: no variant or associated item named `QuantumError` found for enum `cognitive:
+error[E0599]: no method named `evaluate_state` found for struct `std:
+error[E0308]: mismatched types
+error[E0277]: cannot add-assign `usize` to `u64`
+error[E0308]: mismatched types
+error[E0609]: no field `parent_id` on type `quantum_mcts:
+error[E0599]: no variant or associated item named `ResourceError` found for enum `cognitive:
+error[E0308]: mismatched types
+error[E0599]: no method named `dimension` found for reference `&SuperpositionState` in the current scope
+error[E0599]: no method named `measure` found for reference `&SuperpositionState` in the current scope
+error[E0599]: no variant or associated item named `QuantumError` found for enum `cognitive:
+error[E0560]: struct `quantum_mcts:
+error[E0609]: no field `entanglement_map` on type `&quantum_mcts:
+error[E0609]: no field `complexity_score` on type `node_types:
+error[E0615]: attempted to take value of method `performance_score` on type `node_types:
+error[E0609]: no field `reliability_score` on type `node_types:
+error[E0599]: no method named `expand_basis` found for reference `&SuperpositionState` in the current scope
+error[E0599]: no variant or associated item named `QuantumError` found for enum `cognitive:
+error[E0599]: no method named `collapse_to_classical` found for reference `&SuperpositionState` in the current scope
+error[E0599]: no variant or associated item named `QuantumError` found for enum `cognitive:
+error[E0599]: no variant or associated item named `ResourceError` found for enum `cognitive:
+error[E0609]: no field `parallel_expansion_limit` on type `quantum_mcts:
+error[E0271]: expected `JoinHandle<Result<SimulationResult, CognitiveError>>` to be a future that resolves to `Result<SimulationResult, _>`, but it resolves to `Result<Result<SimulationResult, CognitiveError>, JoinError>`
+error[E0599]: no method named `clone` found for struct `QuantumSelector` in the current scope
+error[E0599]: no method named `clone` found for struct `quantum_expander:
+error[E0599]: no method named `clone` found for struct `QuantumBackpropagator` in the current scope
+error[E0599]: the method `clone` exists for struct `RwLockReadGuard<'_, HashMap<String, QuantumMCTSNode>>`, but its trait bounds were not satisfied
+error[E0599]: no method named `simulate_quantum_reward` found for struct `std:
+error[E0599]: no method named `backpropagate_quantum_reward` found for struct `QuantumBackpropagator` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0368]: binary assignment operation `*=` cannot be applied to type `Complex64`
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0368]: binary assignment operation `*=` cannot be applied to type `Complex64`
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0689]: can't call method `max` on ambiguous numeric type `{float}`
+error[E0689]: can't call method `max` on ambiguous numeric type `{float}`
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0282]: type annotations needed for `&(_, _)`
+error[E0599]: no method named `num_entanglements` found for struct `tokio:
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `clone` found for struct `tokio:
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0609]: no field `depth` on type `&quantum_mcts:
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0609]: no field `re` on type `Complex64`
+error[E0609]: no field `re` on type `Complex64`
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0061]: this function takes 4 arguments but 5 arguments were supplied
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0689]: can't call method `max` on ambiguous numeric type `{float}`
+error[E0061]: this function takes 4 arguments but 5 arguments were supplied
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `entanglement_count` found for struct `tokio:
+error[E0599]: no method named `clone` found for struct `tokio:
+error[E0308]: mismatched types
+error[E0382]: borrow of moved value: `statistics`
+error[E0308]: mismatched types
+error[E0609]: no field `overall_convergence` on type `ConvergenceMetrics`
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0599]: no method named `operation_ratios` found for struct `counter_snapshot:
+error[E0599]: no method named `identify_bottlenecks` found for struct `quantum_mcts:
+error[E0599]: no method named `performance_grade` found for reference `&quantum_mcts:
+error[E0599]: no method named `tree_health_score` found for reference `&quantum_mcts:
+error[E0599]: no method named `convergence_health` found for struct `ConvergenceMetrics` in the current scope
+error[E0599]: no method named `performance_trend` found for struct `quantum_mcts:
+error[E0609]: no field `history` on type `QuantumStatisticsCollector`
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `measure` found for reference `&SuperpositionState` in the current scope
+error[E0599]: no method named `evolve` found for struct `SuperpositionState` in the current scope
+error[E0599]: no method named `compute` found for struct `std:
+error[E0599]: no method named `add_entanglement` found for struct `tokio:
+error[E0599]: no variant or associated item named `Weak` found for enum `quantum:
+error[E0599]: no method named `correct_amplitude` found for struct `std:
+error[E0599]: no method named `get_entangled` found for struct `tokio:
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0368]: binary assignment operation `*=` cannot be applied to type `Complex64`
+error[E0599]: no method named `start_search_timer` found for struct `std:
+error[E0599]: no method named `improve_tree` found for struct `std:
+error[E0599]: no method named `finalize_search` found for struct `std:
+error[E0061]: this method takes 2 arguments but 1 argument was supplied
+error[E0599]: no method named `quantum_expand` found for struct `std:
+error[E0061]: this method takes 3 arguments but 2 arguments were supplied
+error[E0599]: no method named `update_entanglement` found for struct `std:
+error[E0599]: no variant or associated item named `ProcessingError` found for enum `cognitive:
+error[E0599]: no method named `get_tree_statistics` found for struct `std:
+error[E0616]: field `cache` of struct `MemoryLifecycle` is private
+error[E0616]: field `cache` of struct `MemoryLifecycle` is private
+error[E0616]: field `coordinator` of struct `MemoryLifecycle` is private
+error[E0616]: field `cache` of struct `MemoryLifecycle` is private
+error[E0277]: the trait bound `&str: CreateResource<Vec<MemoryNodeSchema>>` is not satisfied
+error[E0599]: no method named `content` found for struct `surrealdb:
+error[E0515]: cannot return value referencing function parameter `v`
+error[E0616]: field `config` of struct `MemoryQueryExecutor` is private
+error[E0616]: field `config` of struct `MemoryQueryExecutor` is private
+error[E0616]: field `config` of struct `MemoryQueryExecutor` is private
+error[E0616]: field `config` of struct `MemoryQueryExecutor` is private
+error[E0616]: field `config` of struct `MemoryQueryExecutor` is private
+error[E0616]: field `config` of struct `MemoryQueryExecutor` is private
+error[E0599]: no method named `len` found for enum `std:
+error[E0308]: mismatched types
+error[E0616]: field `config` of struct `MemoryQueryExecutor` is private
+error[E0609]: no field `text_query` on type `filter:
+error[E0609]: no field `metadata_filters` on type `filter:
+error[E0609]: no field `sort_order` on type `&MemoryQuery`
+error[E0609]: no field `text_query` on type `filter:
+error[E0609]: no field `metadata_filters` on type `filter:
+error[E0609]: no field `sort_order` on type `&MemoryQuery`
+error[E0616]: field `config` of struct `MemoryQueryExecutor` is private
+error[E0599]: no method named `get_memories_by_type` found for reference `&dyn MemoryManager` in the current scope
+error[E0616]: field `config` of struct `MemoryQueryExecutor` is private
+error[E0616]: field `config` of struct `MemoryQueryExecutor` is private
+error[E0599]: no method named `get_memories_by_type` found for reference `&dyn MemoryManager` in the current scope
+error[E0616]: field `config` of struct `MemoryQueryExecutor` is private
+error[E0616]: field `config` of struct `MemoryQueryExecutor` is private
+error[E0599]: no method named `search_memories_by_text` found for reference `&dyn MemoryManager` in the current scope
+error[E0616]: field `config` of struct `MemoryQueryExecutor` is private
+error[E0599]: no method named `search_memories_by_text` found for reference `&dyn MemoryManager` in the current scope
+error[E0616]: field `config` of struct `MemoryQueryExecutor` is private
+error[E0599]: no method named `created_at` found for mutable reference `&mut MemoryNode` in the current scope
+error[E0599]: no method named `created_at` found for mutable reference `&mut MemoryNode` in the current scope
+error[E0609]: no field `metadata_filters` on type `filter:
+error[E0609]: no field `metadata_filters` on type `filter:
+error[E0609]: no field `metadata_filters` on type `filter:
+error[E0609]: no field `metadata_filters` on type `filter:
+error[E0624]: method `execute_type_based_query` is private
+error[E0609]: no field `text_query` on type `filter:
+error[E0624]: method `execute_text_search_query` is private
+error[E0609]: no field `sort_order` on type `&MemoryQuery`
+error[E0616]: field `config` of struct `MemoryQueryExecutor` is private
+error[E0624]: method `has_reached_limit` is private
+error[E0599]: no method named `execute` found for struct `MemoryQueryExecutor` in the current scope
+error[E0061]: this function takes 1 argument but 0 arguments were supplied
+error[E0277]: `SemanticMemoryManager` is not a future
+error[E0599]: no function or associated item named `new` found for struct `ConfidenceCalculator` in the current scope
+error[E0599]: no function or associated item named `new` found for struct `SemanticItemTypeClassifier` in the current scope
+error[E0599]: no function or associated item named `new` found for struct `RelationshipValidator` in the current scope
+error[E0599]: no function or associated item named `with_config` found for struct `SemanticMemoryManager` in the current scope
+error[E0599]: no function or associated item named `new` found for struct `ConfidenceCalculator` in the current scope
+error[E0599]: no function or associated item named `new` found for struct `SemanticItemTypeClassifier` in the current scope
+error[E0599]: no function or associated item named `new` found for struct `RelationshipValidator` in the current scope
+error[E0599]: no method named `calculate_for_item` found for struct `ConfidenceCalculator` in the current scope
+error[E0599]: no method named `calculate_for_item` found for struct `ConfidenceCalculator` in the current scope
+error[E0599]: no method named `validate_relationship` found for struct `RelationshipValidator` in the current scope
+error[E0599]: no method named `validate_relationship` found for struct `RelationshipValidator` in the current scope
+error[E0277]: the trait bound `item_types:
+error[E0599]: no method named `calculate_statistics` found for struct `ConfidenceCalculator` in the current scope
+error[E0277]: the trait bound `semantic:
+error[E0599]: no method named `get_statistics` found for struct `SemanticMemoryManager` in the current scope
+error[E0599]: no method named `perform_health_check` found for struct `SemanticMemoryManager` in the current scope
+error[E0609]: no field `max_age_days` on type `memory_manager_core:
+error[E0609]: no field `max_unused_days` on type `memory_manager_core:
+error[E0609]: no field `preserve_high_confidence` on type `memory_manager_core:
+error[E0609]: no field `max_age_days` on type `memory_manager_core:
+error[E0609]: no field `max_unused_days` on type `memory_manager_core:
+error[E0609]: no field `min_confidence_threshold` on type `memory_manager_core:
+error[E0609]: no field `max_age_days` on type `memory_manager_core:
+error[E0609]: no field `min_confidence_threshold` on type `memory_manager_core:
+error[E0609]: no field `max_unused_days` on type `memory_manager_core:
+error[E0616]: field `metrics` of struct `operations_core:
+error[E0616]: field `operation_cache` of struct `operations_core:
+error[E0616]: field `operation_cache` of struct `operations_core:
+error[E0277]: cannot multiply `usize` by `{float}`
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0599]: no function or associated item named `new` found for struct `SingleOptimizationResult` in the current scope
+error[E0599]: no function or associated item named `new` found for struct `SingleOptimizationResult` in the current scope
+error[E0599]: no function or associated item named `new` found for struct `SingleOptimizationResult` in the current scope
+error[E0599]: no method named `get_summary` found for struct `operations_core:
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0277]: the size for values of type `[f32]` cannot be known at compilation time
+error[E0624]: method `validate_vector_dimensions` is private
+error[E0624]: method `normalize_vector` is private
+error[E0616]: field `dimension_cache` of struct `async_vector_core:
+error[E0616]: field `vectors` of struct `async_vector_core:
+error[E0616]: field `metadata` of struct `async_vector_core:
+error[E0624]: method `increment_operations` is private
+error[E0616]: field `metrics` of struct `async_vector_core:
+error[E0616]: field `vectors` of struct `async_vector_core:
+error[E0616]: field `metadata` of struct `async_vector_core:
+error[E0624]: method `increment_operations` is private
+error[E0616]: field `vectors` of struct `async_vector_core:
+error[E0616]: field `metadata` of struct `async_vector_core:
+error[E0616]: field `dimension_cache` of struct `async_vector_core:
+error[E0624]: method `increment_operations` is private
+error[E0616]: field `metrics` of struct `async_vector_core:
+error[E0624]: method `validate_vector_dimensions` is private
+error[E0624]: method `normalize_vector` is private
+error[E0616]: field `dimension_cache` of struct `async_vector_core:
+error[E0616]: field `vectors` of struct `async_vector_core:
+error[E0616]: field `metadata` of struct `async_vector_core:
+error[E0624]: method `increment_operations` is private
+error[E0616]: field `metrics` of struct `async_vector_core:
+error[E0599]: no variant or associated item named `BatchOperationFailed` found for enum `utils:
+error[E0616]: field `vectors` of struct `async_vector_core:
+error[E0599]: no variant or associated item named `VectorNotFound` found for enum `utils:
+error[E0616]: field `metadata` of struct `async_vector_core:
+error[E0624]: method `increment_operations` is private
+error[E0616]: field `metadata` of struct `async_vector_core:
+error[E0616]: field `vectors` of struct `async_vector_core:
+error[E0624]: method `validate_vector_dimensions` is private
+error[E0616]: field `vectors` of struct `async_vector_core:
+error[E0616]: field `metadata` of struct `async_vector_core:
+error[E0560]: struct `vector:
+error[E0624]: method `increment_operations` is private
+error[E0616]: field `metrics` of struct `async_vector_core:
+error[E0616]: field `metrics` of struct `async_vector_core:
+error[E0624]: method `validate_vector_dimensions` is private
+error[E0616]: field `vectors` of struct `async_vector_core:
+error[E0616]: field `metadata` of struct `async_vector_core:
+error[E0560]: struct `vector:
+error[E0624]: method `increment_operations` is private
+error[E0616]: field `metrics` of struct `async_vector_core:
+error[E0616]: field `metrics` of struct `async_vector_core:
+error[E0624]: method `validate_vector_dimensions` is private
+error[E0616]: field `vectors` of struct `async_vector_core:
+error[E0616]: field `metadata` of struct `async_vector_core:
+error[E0560]: struct `vector:
+error[E0609]: no field `similarity` on type `&vector:
+error[E0609]: no field `similarity` on type `&vector:
+error[E0624]: method `increment_operations` is private
+error[E0616]: field `metrics` of struct `async_vector_core:
+error[E0616]: field `metrics` of struct `async_vector_core:
+error[E0599]: no method named `metrics` found for struct `tokio:
+error[E0599]: no variant or associated item named `InvalidConfiguration` found for enum `utils:
+error[E0616]: field `search_executor` of struct `AsyncVectorOptimizationCoordinator` is private
+error[E0616]: field `search_executor` of struct `AsyncVectorOptimizationCoordinator` is private
+error[E0616]: field `search_executor` of struct `AsyncVectorOptimizationCoordinator` is private
+error[E0616]: field `search_executor` of struct `AsyncVectorOptimizationCoordinator` is private
+error[E0616]: field `metrics` of struct `AsyncVectorOptimizationCoordinator` is private
+error[E0616]: field `optimization_executor` of struct `AsyncVectorOptimizationCoordinator` is private
+error[E0616]: field `metrics` of struct `AsyncVectorOptimizationCoordinator` is private
+error[E0308]: mismatched types
+error[E0599]: no variant or associated item named `ApproximateNearestNeighbor` found for enum `search_strategies:
+error[E0560]: struct `vector:
+error[E0560]: struct `vector:
+error[E0560]: struct `vector:
+error[E0560]: struct `vector:
+error[E0502]: cannot borrow `*self` as mutable because it is also borrowed as immutable
+error[E0502]: cannot borrow `*self` as mutable because it is also borrowed as immutable
+error[E0502]: cannot borrow `*self` as mutable because it is also borrowed as immutable
+error[E0502]: cannot borrow `*self` as mutable because it is also borrowed as immutable
+error[E0502]: cannot borrow `*self` as mutable because it is also borrowed as immutable
+error[E0502]: cannot borrow `*self` as mutable because it is also borrowed as immutable
+error[E0046]: not all trait items implemented, missing: `update`, `delete`, `embed`
+error[E0592]: duplicate definitions with name `new`
+error[E0592]: duplicate definitions with name `validate`
+error[E0592]: duplicate definitions with name `initialize_quantum_state`
+error[E0592]: duplicate definitions with name `apply_quantum_layer`
+error[E0592]: duplicate definitions with name `apply_cnot_gate`
+error[E0592]: duplicate definitions with name `evaluate`
+error[E0592]: duplicate definitions with name `new`
+error[E0592]: duplicate definitions with name `add_gate`
+error[E0592]: duplicate definitions with name `status_summary`
+error[E0592]: duplicate definitions with name `quick_health_check`
+error[E0592]: duplicate definitions with name `perform_comprehensive_operation`
+error[E0592]: duplicate definitions with name `perform_automatic_maintenance`
+error[E0592]: duplicate definitions with name `perform_combined_optimization`
+error[E0592]: duplicate definitions with name `get_comprehensive_statistics`
+error[E0592]: duplicate definitions with name `create_performance_report`
+error[E0592]: duplicate definitions with name `calculate_latency_grade`
+error[E0592]: duplicate definitions with name `calculate_throughput_grade`
+error[E0592]: duplicate definitions with name `calculate_reliability_grade`
+error[E0592]: duplicate definitions with name `calculate_efficiency_grade`
+error[E0592]: duplicate definitions with name `is_overly_dense`
+error[E0592]: duplicate definitions with name `is_sparse`
+error[E0592]: duplicate definitions with name `has_good_connectivity`
+error[E0592]: duplicate definitions with name `start_tracking`
+error[E0592]: duplicate definitions with name `reset`
+error[E0592]: duplicate definitions with name `record_error`
+error[E0592]: duplicate definitions with name `find_metadata_by_key_substring`
+error[E0592]: duplicate definitions with name `get_metadata_matching_pattern`
+error[E0592]: duplicate definitions with name `count_metadata_matching_pattern`
+error[E0592]: duplicate definitions with name `get_sorted_metadata_keys`
+error[E0592]: duplicate definitions with name `filter_metadata_by_type`
+error[E0592]: duplicate definitions with name `update_metadata`
+error[E0592]: duplicate definitions with name `remove_metadata`
+error[E0592]: duplicate definitions with name `get_metadata`
+error[E0592]: duplicate definitions with name `metadata`
+error[E0592]: duplicate definitions with name `clear_metadata`
+error[E0592]: duplicate definitions with name `replace_metadata`
+error[E0592]: duplicate definitions with name `merge_metadata`
+error[E0592]: duplicate definitions with name `metadata_count`
+error[E0592]: duplicate definitions with name `has_metadata`
+error[E0592]: duplicate definitions with name `has_metadata_key`
+error[E0592]: duplicate definitions with name `metadata_keys`
+error[E0592]: duplicate definitions with name `metadata_values`
+error[E0592]: duplicate definitions with name `update_multiple_metadata`
+error[E0592]: duplicate definitions with name `remove_multiple_metadata`
+error[E0592]: duplicate definitions with name `get_metadata_as_string`
+error[E0592]: duplicate definitions with name `get_metadata_as_number`
+error[E0592]: duplicate definitions with name `get_metadata_as_bool`
+error[E0592]: duplicate definitions with name `set_metadata_string`
+error[E0592]: duplicate definitions with name `set_metadata_number`
+error[E0592]: duplicate definitions with name `set_metadata_bool`
+error[E0592]: duplicate definitions with name `metadata_equals`
+error[E0592]: duplicate definitions with name `clone_metadata`
+error[E0592]: duplicate definitions with name `metadata_summary`
+error[E0592]: duplicate definitions with name `find_metadata_by_key_substring`
+error[E0592]: duplicate definitions with name `get_metadata_matching_pattern`
+error[E0592]: duplicate definitions with name `count_metadata_matching_pattern`
+error[E0592]: duplicate definitions with name `get_sorted_metadata_keys`
+error[E0592]: duplicate definitions with name `filter_metadata_by_type`
+error[E0592]: duplicate definitions with name `update_metadata`
+error[E0592]: duplicate definitions with name `remove_metadata`
+error[E0592]: duplicate definitions with name `get_metadata`
+error[E0592]: duplicate definitions with name `metadata`
+error[E0592]: duplicate definitions with name `clear_metadata`
+error[E0592]: duplicate definitions with name `replace_metadata`
+error[E0592]: duplicate definitions with name `merge_metadata`
+error[E0592]: duplicate definitions with name `metadata_count`
+error[E0592]: duplicate definitions with name `has_metadata`
+error[E0592]: duplicate definitions with name `has_metadata_key`
+error[E0592]: duplicate definitions with name `metadata_keys`
+error[E0592]: duplicate definitions with name `metadata_values`
+error[E0592]: duplicate definitions with name `find_metadata_by_key_substring`
+error[E0592]: duplicate definitions with name `update_multiple_metadata`
+error[E0592]: duplicate definitions with name `remove_multiple_metadata`
+error[E0592]: duplicate definitions with name `find_metadata_by_key_substring`
+error[E0592]: duplicate definitions with name `get_metadata_matching_pattern`
+error[E0592]: duplicate definitions with name `count_metadata_matching_pattern`
+error[E0592]: duplicate definitions with name `get_sorted_metadata_keys`
+error[E0592]: duplicate definitions with name `filter_metadata_by_type`
+error[E0592]: duplicate definitions with name `filter_metadata_by_value`
+error[E0592]: duplicate definitions with name `filter_metadata_by_key`
+error[E0592]: duplicate definitions with name `get_string_metadata`
+error[E0592]: duplicate definitions with name `get_number_metadata`
+error[E0592]: duplicate definitions with name `get_boolean_metadata`
+error[E0592]: duplicate definitions with name `find_keys_with_string_value_containing`
+error[E0592]: duplicate definitions with name `get_metadata_in_numeric_range`
+error[E0592]: duplicate definitions with name `count_metadata_by_type`
+error[E0592]: duplicate definitions with name `get_keys_with_prefix`
+error[E0592]: duplicate definitions with name `get_keys_with_suffix`
+error[E0592]: duplicate definitions with name `any_metadata_value_matches`
+error[E0592]: duplicate definitions with name `all_metadata_values_match`
+error[E0592]: duplicate definitions with name `find_first_metadata`
+error[E0592]: duplicate definitions with name `get_metadata_statistics`
+error[E0592]: duplicate definitions with name `find_metadata_by_key_substring`
+error[E0592]: duplicate definitions with name `update_metadata`
+error[E0592]: duplicate definitions with name `remove_metadata`
+error[E0592]: duplicate definitions with name `get_metadata`
+error[E0592]: duplicate definitions with name `metadata`
+error[E0592]: duplicate definitions with name `clear_metadata`
+error[E0592]: duplicate definitions with name `replace_metadata`
+error[E0592]: duplicate definitions with name `merge_metadata`
+error[E0592]: duplicate definitions with name `metadata_count`
+error[E0592]: duplicate definitions with name `has_metadata`
+error[E0592]: duplicate definitions with name `has_metadata_key`
+error[E0592]: duplicate definitions with name `metadata_keys`
+error[E0592]: duplicate definitions with name `metadata_values`
+error[E0592]: duplicate definitions with name `update_multiple_metadata`
+error[E0592]: duplicate definitions with name `remove_multiple_metadata`
+error[E0592]: duplicate definitions with name `find_metadata_by_key_substring`
+error[E0592]: duplicate definitions with name `add_tags`
+error[E0592]: duplicate definitions with name `remove_tag`
+error[E0592]: duplicate definitions with name `has_tag`
+error[E0592]: duplicate definitions with name `tags`
+error[E0592]: duplicate definitions with name `clear_tags`
+error[E0592]: duplicate definitions with name `replace_tags`
+error[E0592]: duplicate definitions with name `tag_count`
+error[E0592]: duplicate definitions with name `has_tags`
+error[E0592]: duplicate definitions with name `filter_tags`
+error[E0592]: duplicate definitions with name `find_tags_containing`
+error[E0592]: duplicate definitions with name `add_tag_if_not_exists`
+error[E0592]: duplicate definitions with name `toggle_tag`
+error[E0592]: duplicate definitions with name `get_tags_matching_pattern`
+error[E0592]: duplicate definitions with name `count_tags_matching_pattern`
+error[E0560]: struct `cognitive:
+error[E0533]: expected value, found struct variant `ModelType:
+error[E0560]: struct `cognitive:
+error[E0560]: struct `cognitive:
+error[E0560]: struct `cognitive:
+error[E0533]: expected value, found struct variant `ModelType:
+error[E0560]: struct `cognitive:
+error[E0560]: struct `cognitive:
+error[E0560]: struct `cognitive:
+error[E0533]: expected value, found struct variant `ModelType:
+error[E0560]: struct `cognitive:
+error[E0560]: struct `cognitive:
+error[E0599]: no method named `weight` found for enum `agents:
+error[E0560]: struct `cognitive:
+error[E0533]: expected value, found struct variant `ModelType:
+error[E0560]: struct `cognitive:
+error[E0560]: struct `cognitive:
+error[E0308]: mismatched types
+error[E0609]: no field `baseline_metrics` on type `&coordinator_types:
+error[E0560]: struct `cognitive:
+error[E0533]: expected value, found struct variant `ModelType:
+error[E0560]: struct `cognitive:
+error[E0560]: struct `cognitive:
+error[E0308]: mismatched types
+error[E0599]: no method named `is_positive` found for reference `&&agents:
+error[E0609]: no field `baseline_metrics` on type `&coordinator_types:
+error[E0609]: no field `content_type` on type `&coordinator_types:
+error[E0609]: no field `evolution_rules` on type `&coordinator_types:
+error[E0609]: no field `baseline_metrics` on type `&coordinator_types:
+error[E0599]: no variant or associated item named `GPT4` found for enum `ModelType` in the current scope
+error[E0560]: struct `cognitive:
+error[E0560]: struct `cognitive:
+error[E0308]: mismatched types
+error[E0609]: no field `consensus_threshold` on type `&mut Committee`
+error[E0609]: no field `consensus_threshold` on type `&Committee`
+error[E0609]: no field `max_concurrent` on type `&mut Committee`
+error[E0609]: no field `max_concurrent` on type `&Committee`
+error[E0599]: no variant named `ConsensusReached` found for enum `CommitteeEvent`
+error[E0026]: variant `CommitteeEvent:
+error[E0027]: pattern does not mention fields `triggered_by_phase`, `round_number`
+error[E0061]: this function takes 4 arguments but 2 arguments were supplied
+error[E0277]: `Committee` is not a future
+error[E0282]: type annotations needed for `std:
+error[E0308]: mismatched types
+error[E0609]: no field `total_nodes` on type `tree_types:
+error[E0609]: no field `total_visits` on type `tree_types:
+error[E0609]: no field `best_path` on type `tree_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0599]: no method named `clone` found for struct `SubsystemCoordinator` in the current scope
+error[E0599]: no function or associated item named `new_with_error` found for struct `PendingMemory` in the current scope
+error[E0599]: no function or associated item named `new_from_channel` found for struct `PendingMemory` in the current scope
+error[E0308]: mismatched types
+error[E0599]: no function or associated item named `new_with_error` found for struct `PendingMemory` in the current scope
+error[E0599]: no function or associated item named `new_from_channel` found for struct `PendingMemory` in the current scope
+error[E0308]: mismatched types
+error[E0061]: this method takes 2 arguments but 1 argument was supplied
+error[E0308]: mismatched types
+error[E0061]: this method takes 2 arguments but 1 argument was supplied
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0599]: no method named `query_by_type` found for struct `SurrealDBMemoryManager` in the current scope
+error[E0609]: no field `baseline_metrics` on type `std:
+error[E0609]: no field `content_type` on type `std:
+error[E0609]: no field `evolution_rules` on type `std:
+error[E0609]: no field `baseline_metrics` on type `std:
+error[E0609]: no field `baseline_metrics` on type `std:
+error[E0609]: no field `baseline_metrics` on type `std:
+error[E0689]: can't call method `min` on ambiguous numeric type `{float}`
+error[E0609]: no field `metadata` on type `&node_types:
+error[E0609]: no field `metadata` on type `&node_types:
+error[E0609]: no field `metadata` on type `&node_types:
+error[E0609]: no field `baseline_metrics` on type `std:
+error[E0609]: no field `content_type` on type `std:
+error[E0609]: no field `evolution_rules` on type `std:
+error[E0609]: no field `metadata` on type `&node_types:
+error[E0609]: no field `metadata` on type `&node_types:
+error[E0277]: `ActionGenerator` doesn't implement `std:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0616]: field `committee` of struct `ActionGenerator` is private
+error[E0599]: no method named `values` found for struct `Vec<usize>` in the current scope
+error[E0599]: no method named `values` found for struct `Vec<usize>` in the current scope
+error[E0277]: a value of type `Vec<u64>` cannot be built from an iterator over elements of type `u32`
+error[E0599]: no method named `values` found for struct `Vec<usize>` in the current scope
+error[E0609]: no field `applied_action` on type `&MCTSNode`
+error[E0308]: mismatched types
+error[E0599]: no method named `values` found for struct `Vec<usize>` in the current scope
+error[E0609]: no field `applied_action` on type `&MCTSNode`
+error[E0599]: no function or associated item named `find_characteristic_nodes` found for struct `BasicNodeSearch` in the current scope
+error[E0599]: no function or associated item named `find_bottleneck_nodes` found for struct `BasicNodeSearch` in the current scope
+error[E0308]: mismatched types
+error[E0599]: no method named `calculate_depth` found for reference `&MCTSNode` in the current scope
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0599]: no method named `calculate_depth` found for reference `&MCTSNode` in the current scope
+error[E0308]: mismatched types
+error[E0277]: cannot add-assign `u32` to `u64`
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0277]: a value of type `Vec<u64>` cannot be built from an iterator over elements of type `u32`
+error[E0308]: mismatched types
+error[E0599]: no method named `calculate_depth` found for reference `&MCTSNode` in the current scope
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0599]: no method named `calculate_depth` found for reference `&MCTSNode` in the current scope
+error[E0308]: mismatched types
+error[E0599]: no method named `calculate_depth` found for reference `&MCTSNode` in the current scope
+error[E0599]: no method named `calculate_depth` found for reference `&MCTSNode` in the current scope
+error[E0308]: mismatched types
+error[E0599]: no method named `values` found for struct `Vec<usize>` in the current scope
+error[E0599]: no method named `calculate_depth` found for reference `&MCTSNode` in the current scope
+error[E0277]: a value of type `u64` cannot be made by summing an iterator over elements of type `u32`
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0599]: no method named `calculate_depth` found for reference `&MCTSNode` in the current scope
+error[E0308]: mismatched types
+error[E0599]: no method named `calculate_depth` found for reference `&MCTSNode` in the current scope
+error[E0599]: no function or associated item named `find_characteristic_nodes` found for struct `BasicNodeSearch` in the current scope
+error[E0599]: no function or associated item named `find_bottleneck_nodes` found for struct `BasicNodeSearch` in the current scope
+error[E0599]: no function or associated item named `find_bottleneck_nodes` found for struct `BasicNodeSearch` in the current scope
+error[E0599]: no function or associated item named `from_tree` found for struct `tree_types:
+error[E0599]: no method named `analyze_tree_structure` found for struct `TreeAnalyzer` in the current scope
+error[E0599]: no method named `find_bottlenecks` found for struct `TreeAnalyzer` in the current scope
+error[E0061]: this function takes 1 argument but 2 arguments were supplied
+error[E0609]: no field `convergence_rate` on type `tree_types:
+error[E0609]: no field `total_nodes` on type `tree_types:
+error[E0616]: field `exploration_constant` of struct `TreeOperations` is private
+error[E0616]: field `exploration_constant` of struct `TreeOperations` is private
+error[E0616]: field `exploration_constant` of struct `TreeOperations` is private
+error[E0616]: field `exploration_constant` of struct `TreeOperations` is private
+error[E0616]: field `exploration_constant` of struct `TreeOperations` is private
+error[E0616]: field `exploration_constant` of struct `TreeOperations` is private
+error[E0609]: no field `best_performance_score` on type `tree_types:
+error[E0609]: no field `total_nodes` on type `tree_types:
+error[E0609]: no field `average_branching_factor` on type `tree_types:
+error[E0609]: no field `best_performance_score` on type `tree_types:
+error[E0609]: no field `best_performance_score` on type `tree_types:
+error[E0599]: no method named `overall_efficiency` found for struct `CoordinatorStatistics` in the current scope
+error[E0599]: no method named `overall_efficiency` found for struct `CoordinatorStatistics` in the current scope
+error[E0599]: no method named `is_critical` found for reference `&node_search_bottleneck:
+error[E0616]: field `executor` of struct `MCTS` is private
+error[E0616]: field `executor` of struct `MCTS` is private
+error[E0616]: field `max_parallel` of struct `MCTS` is private
+error[E0616]: field `max_parallel` of struct `MCTS` is private
+error[E0616]: field `executor` of struct `MCTS` is private
+error[E0616]: field `tree` of struct `MCTS` is private
+error[E0616]: field `root_id` of struct `MCTS` is private
+error[E0616]: field `tree` of struct `MCTS` is private
+error[E0616]: field `action_coordinator` of struct `MCTS` is private
+error[E0616]: field `action_coordinator` of struct `MCTS` is private
+error[E0609]: no field `total_nodes` on type `tree_types:
+error[E0609]: no field `total_visits` on type `tree_types:
+error[E0609]: no field `best_performance_score` on type `tree_types:
+error[E0609]: no field `average_branching_factor` on type `tree_types:
+error[E0609]: no field `convergence_rate` on type `tree_types:
+error[E0616]: field `executor` of struct `MCTS` is private
+error[E0616]: field `tree` of struct `MCTS` is private
+error[E0616]: field `root_id` of struct `MCTS` is private
+error[E0599]: no method named `values` found for struct `Vec<usize>` in the current scope
+error[E0599]: no method named `uct_value` found for reference `&MCTSNode` in the current scope
+error[E0282]: type annotations needed
+error[E0599]: no function or associated item named `new_child` found for struct `MCTSNode` in the current scope
+error[E0061]: this method takes 1 argument but 2 arguments were supplied
+error[E0308]: mismatched types
+error[E0599]: no method named `values` found for struct `Vec<usize>` in the current scope
+error[E0599]: no method named `uct_value` found for reference `&MCTSNode` in the current scope
+error[E0282]: type annotations needed
+error[E0599]: no method named `values` found for struct `Vec<usize>` in the current scope
+error[E0282]: type annotations needed
+error[E0599]: no method named `calculate_depth` found for reference `&MCTSNode` in the current scope
+error[E0308]: mismatched types
+error[E0277]: the trait bound `std:
+error[E0593]: closure is expected to take 1 argument, but it takes 2 arguments
+error[E0599]: no method named `values` found for struct `Vec<usize>` in the current scope
+error[E0282]: type annotations needed
+error[E0599]: no function or associated item named `from_tree` found for struct `tree_types:
+error[E0599]: no method named `values` found for struct `Vec<usize>` in the current scope
+error[E0308]: mismatched types
+error[E0277]: the trait bound `std:
+error[E0599]: no method named `values` found for struct `Vec<usize>` in the current scope
+error[E0609]: no field `applied_action` on type `&MCTSNode`
+error[E0609]: no field `total_nodes` on type `tree_types:
+error[E0609]: no field `total_visits` on type `tree_types:
+error[E0609]: no field `total_nodes` on type `tree_types:
+error[E0609]: no field `best_performance_score` on type `tree_types:
+error[E0609]: no field `convergence_rate` on type `tree_types:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0609]: no field `final_latency` on type `&OptimizationOutcome`
+error[E0609]: no field `final_memory` on type `&OptimizationOutcome`
+error[E0609]: no field `final_relevance` on type `&OptimizationOutcome`
+error[E0609]: no field `max_iterations` on type `std:
+error[E0609]: no field `target_quality` on type `std:
+error[E0277]: the trait bound `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0277]: the trait bound `coordinator_types:
+error[E0609]: no field `objective` on type `coordinator_types:
+error[E0609]: no field `objective` on type `coordinator_types:
+error[E0609]: no field `constraints` on type `coordinator_types:
+error[E0609]: no field `constraints` on type `coordinator_types:
+error[E0609]: no field `success_criteria` on type `coordinator_types:
+error[E0609]: no field `success_criteria` on type `coordinator_types:
+error[E0609]: no field `timeout_ms` on type `coordinator_types:
+error[E0609]: no field `timeout_ms` on type `coordinator_types:
+error[E0609]: no field `max_iterations` on type `coordinator_types:
+error[E0609]: no field `max_iterations` on type `coordinator_types:
+error[E0609]: no field `target_quality` on type `coordinator_types:
+error[E0609]: no field `target_quality` on type `coordinator_types:
+error[E0609]: no field `target_quality` on type `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0609]: no field `timeout_ms` on type `coordinator_types:
+error[E0609]: no field `timeout_ms` on type `coordinator_types:
+error[E0609]: no field `max_iterations` on type `coordinator_types:
+error[E0609]: no field `max_iterations` on type `coordinator_types:
+error[E0609]: no field `target_quality` on type `coordinator_types:
+error[E0609]: no field `target_quality` on type `coordinator_types:
+error[E0609]: no field `target_quality` on type `coordinator_types:
+error[E0609]: no field `objective` on type `&coordinator_types:
+error[E0609]: no field `constraints` on type `&coordinator_types:
+error[E0609]: no field `success_criteria` on type `&coordinator_types:
+error[E0609]: no field `timeout_ms` on type `&coordinator_types:
+error[E0609]: no field `max_iterations` on type `&coordinator_types:
+error[E0609]: no field `target_quality` on type `&coordinator_types:
+error[E0609]: no field `target_quality` on type `&coordinator_types:
+error[E0599]: no variant or associated item named `Memory` found for enum `cognitive:
+error[E0599]: no variant or associated item named `Readability` found for enum `cognitive:
+error[E0599]: no variant or associated item named `Security` found for enum `cognitive:
+error[E0609]: no field `objective` on type `&coordinator_types:
+error[E0609]: no field `objective` on type `&coordinator_types:
+error[E0609]: no field `objective` on type `&coordinator_types:
+error[E0609]: no field `constraints` on type `&coordinator_types:
+error[E0609]: no field `constraints` on type `&coordinator_types:
+error[E0609]: no field `success_criteria` on type `&coordinator_types:
+error[E0609]: no field `success_criteria` on type `&coordinator_types:
+error[E0609]: no field `timeout_ms` on type `&coordinator_types:
+error[E0609]: no field `max_iterations` on type `&coordinator_types:
+error[E0609]: no field `target_quality` on type `&coordinator_types:
+error[E0609]: no field `target_quality` on type `&coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0609]: no field `constraints` on type `&coordinator_types:
+error[E0609]: no field `constraints` on type `coordinator_types:
+error[E0609]: no field `constraints` on type `coordinator_types:
+error[E0609]: no field `success_criteria` on type `&coordinator_types:
+error[E0609]: no field `success_criteria` on type `coordinator_types:
+error[E0609]: no field `success_criteria` on type `coordinator_types:
+error[E0609]: no field `timeout_ms` on type `coordinator_types:
+error[E0609]: no field `timeout_ms` on type `&coordinator_types:
+error[E0609]: no field `timeout_ms` on type `coordinator_types:
+error[E0609]: no field `timeout_ms` on type `&coordinator_types:
+error[E0609]: no field `timeout_ms` on type `coordinator_types:
+error[E0609]: no field `timeout_ms` on type `&coordinator_types:
+error[E0609]: no field `max_iterations` on type `coordinator_types:
+error[E0609]: no field `max_iterations` on type `&coordinator_types:
+error[E0609]: no field `max_iterations` on type `coordinator_types:
+error[E0609]: no field `max_iterations` on type `&coordinator_types:
+error[E0609]: no field `max_iterations` on type `coordinator_types:
+error[E0609]: no field `max_iterations` on type `&coordinator_types:
+error[E0609]: no field `target_quality` on type `coordinator_types:
+error[E0609]: no field `target_quality` on type `coordinator_types:
+error[E0609]: no field `target_quality` on type `&coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0599]: no variant or associated item named `Memory` found for enum `cognitive:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0599]: no variant or associated item named `Security` found for enum `cognitive:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0560]: struct `coordinator_types:
+error[E0609]: no field `objective` on type `coordinator_types:
+error[E0609]: no field `constraints` on type `coordinator_types:
+error[E0609]: no field `constraints` on type `coordinator_types:
+error[E0609]: no field `success_criteria` on type `coordinator_types:
+error[E0609]: no field `success_criteria` on type `coordinator_types:
+error[E0609]: no field `optimization_type` on type `coordinator_types:
+error[E0609]: no field `timeout_ms` on type `coordinator_types:
+error[E0609]: no field `timeout_ms` on type `coordinator_types:
+error[E0609]: no field `timeout_ms` on type `coordinator_types:
+error[E0609]: no field `max_iterations` on type `coordinator_types:
+error[E0609]: no field `target_quality` on type `coordinator_types:
+error[E0609]: no field `objective` on type `&coordinator_types:
+error[E0609]: no field `objective` on type `&coordinator_types:
+error[E0609]: no field `constraints` on type `&coordinator_types:
+error[E0609]: no field `constraints` on type `&coordinator_types:
+error[E0609]: no field `success_criteria` on type `&coordinator_types:
+error[E0609]: no field `success_criteria` on type `&coordinator_types:
+error[E0609]: no field `optimization_type` on type `&coordinator_types:
+error[E0609]: no field `optimization_type` on type `&coordinator_types:
+error[E0609]: no field `timeout_ms` on type `&coordinator_types:
+error[E0609]: no field `timeout_ms` on type `&coordinator_types:
+error[E0609]: no field `max_iterations` on type `&coordinator_types:
+error[E0609]: no field `max_iterations` on type `&coordinator_types:
+error[E0609]: no field `target_quality` on type `&coordinator_types:
+error[E0609]: no field `target_quality` on type `&coordinator_types:
+error[E0609]: no field `objective` on type `&coordinator_types:
+error[E0609]: no field `optimization_type` on type `&coordinator_types:
+error[E0609]: no field `constraints` on type `&coordinator_types:
+error[E0609]: no field `success_criteria` on type `&coordinator_types:
+error[E0609]: no field `timeout_ms` on type `&coordinator_types:
+error[E0609]: no field `max_iterations` on type `&coordinator_types:
+error[E0609]: no field `target_quality` on type `&coordinator_types:
+error[E0277]: the trait bound `coordinator_types:
+error[E0609]: no field `objective` on type `&coordinator_types:
+error[E0609]: no field `constraints` on type `&coordinator_types:
+error[E0609]: no field `success_criteria` on type `&coordinator_types:
+error[E0609]: no field `target_quality` on type `&coordinator_types:
+error[E0609]: no field `target_quality` on type `&coordinator_types:
+error[E0609]: no field `constraints` on type `&coordinator_types:
+error[E0609]: no field `success_criteria` on type `&coordinator_types:
+error[E0609]: no field `objective` on type `&coordinator_types:
+error[E0609]: no field `objective` on type `&coordinator_types:
+error[E0609]: no field `baseline_metrics` on type `&std:
+error[E0609]: no field `content_type` on type `&std:
+error[E0609]: no field `baseline_metrics` on type `&std:
+error[E0609]: no field `content_type` on type `&std:
+error[E0609]: no field `baseline_metrics` on type `&std:
+error[E0609]: no field `content_type` on type `&std:
+error[E0609]: no field `baseline_metrics` on type `&std:
+error[E0609]: no field `baseline_metrics` on type `&std:
+error[E0609]: no field `baseline_metrics` on type `&std:
+error[E0609]: no field `baseline_metrics` on type `&std:
+error[E0609]: no field `baseline_metrics` on type `&std:
+error[E0609]: no field `baseline_metrics` on type `&std:
+error[E0614]: type `f32` cannot be dereferenced
+error[E0277]: the trait bound `ArrayVec<Association, 16>: Serialize` is not satisfied
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `ArrayVec<Association, 16>: Deserialize<'_>` is not satisfied
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `ArrayVec<Association, 16>: Deserialize<'_>` is not satisfied
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `ArrayVec<Association, 16>: Deserialize<'_>` is not satisfied
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `ArrayVec<ArrayString<32>, 8>: Serialize` is not satisfied
+error[E0277]: the trait bound `ArrayVec<ArrayString<32>, 16>: Serialize` is not satisfied
+error[E0277]: the trait bound `ArrayVec<ArrayString<24>, 4>: Serialize` is not satisfied
+error[E0277]: the trait bound `ArrayVec<ArrayString<32>, 8>: Deserialize<'_>` is not satisfied
+error[E0277]: the trait bound `ArrayVec<ArrayString<32>, 16>: Deserialize<'_>` is not satisfied
+error[E0277]: the trait bound `ArrayVec<ArrayString<24>, 4>: Deserialize<'_>` is not satisfied
+error[E0277]: the trait bound `ArrayVec<ArrayString<32>, 8>: Deserialize<'_>` is not satisfied
+error[E0277]: the trait bound `ArrayVec<ArrayString<32>, 16>: Deserialize<'_>` is not satisfied
+error[E0277]: the trait bound `ArrayVec<ArrayString<24>, 4>: Deserialize<'_>` is not satisfied
+error[E0277]: the trait bound `ArrayVec<ArrayString<32>, 8>: Deserialize<'_>` is not satisfied
+error[E0277]: the trait bound `ArrayVec<ArrayString<32>, 16>: Deserialize<'_>` is not satisfied
+error[E0277]: the trait bound `ArrayVec<ArrayString<24>, 4>: Deserialize<'_>` is not satisfied
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0599]: no variant or associated item named `NotImplemented` found for enum `quantum:
+error[E0599]: no variant or associated item named `NotImplemented` found for enum `quantum:
+error[E0599]: no variant or associated item named `NotImplemented` found for enum `quantum:
+error[E0599]: no variant or associated item named `NotImplemented` found for enum `quantum:
+error[E0277]: the trait bound `stabilizer_core_types:
+error[E0277]: the trait bound `stabilizer_core_types:
+error[E0599]: the method `insert` exists for struct `std:
+error[E0599]: the method `insert` exists for struct `std:
+error[E0282]: type annotations needed for `&_`
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0283]: type annotations needed for `SmallVec<_>`
+error[E0599]: no variant or associated item named `InvalidInput` found for enum `quantum:
+error[E0599]: no variant or associated item named `InvalidInput` found for enum `quantum:
+error[E0599]: no variant or associated item named `InvalidInput` found for enum `quantum:
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no variant or associated item named `InvalidInput` found for enum `quantum:
+error[E0599]: no method named `conj` found for struct `Complex64` in the current scope
+error[E0609]: no field `re` on type `Complex64`
+error[E0599]: no variant or associated item named `InvalidInput` found for enum `quantum:
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0599]: no method named `apply_to_state` found for struct `topological_pauli_strings:
+error[E0599]: no function or associated item named `generate_toric_code_operators` found for struct `LogicalOperatorSet` in the current scope
+error[E0599]: no function or associated item named `generate_planar_code_operators` found for struct `LogicalOperatorSet` in the current scope
+error[E0599]: no function or associated item named `generate_color_code_operators` found for struct `LogicalOperatorSet` in the current scope
+error[E0599]: no function or associated item named `generate_hyperbolic_operators` found for struct `LogicalOperatorSet` in the current scope
+error[E0599]: no method named `conj` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0368]: binary assignment operation `*=` cannot be applied to type `Complex64`
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `conj` found for struct `Complex64` in the current scope
+error[E0282]: type annotations needed for `std:
+error[E0368]: binary assignment operation `*=` cannot be applied to type `Complex64`
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0277]: `Complex64` doesn't implement `std:
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0277]: `Complex64` doesn't implement `std:
+error[E0599]: no function or associated item named `generate` found for struct `topological_lattice_types:
+error[E0560]: struct `SurfaceCode` has no field named `code_type`
+error[E0560]: struct `SurfaceCode` has no field named `lattice`
+error[E0560]: struct `SurfaceCode` has no field named `stabilizers`
+error[E0308]: mismatched types
+error[E0560]: struct `SurfaceCode` has no field named `parameters`
+error[E0599]: no method named `all_operators` found for struct `LogicalOperators` in the current scope
+error[E0609]: no field `lattice` on type `&SurfaceCode`
+error[E0609]: no field `num_logical_qubits` on type `LogicalOperators`
+error[E0609]: no field `stabilizers` on type `&SurfaceCode`
+error[E0609]: no field `lattice` on type `&SurfaceCode`
+error[E0609]: no field `stabilizers` on type `&SurfaceCode`
+error[E0277]: `?` couldn't convert the error to `std:
+error[E0609]: no field `code_type` on type `&SurfaceCode`
+error[E0609]: no field `lattice` on type `&SurfaceCode`
+error[E0609]: no field `stabilizers` on type `&SurfaceCode`
+error[E0599]: no method named `statistics` found for struct `LogicalOperators` in the current scope
+error[E0609]: no field `parameters` on type `&SurfaceCode`
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0689]: can't call method `clamp` on ambiguous numeric type `{float}`
+error[E0624]: associated function `calculate_parameter_count` is private
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0026]: variant `OptimizationBackend:
+error[E0027]: pattern does not mention field `decay`
+error[E0609]: no field `gradient_method` on type `InferenceEngine`
+error[E0599]: no variant or associated item named `Backpropagation` found for enum `GradientMethod` in the current scope
+error[E0614]: type `f64` cannot be dereferenced
+error[E0609]: no field `gates` on type `&QuantumLayer`
+error[E0223]: ambiguous associated type
+error[E0223]: ambiguous associated type
+error[E0223]: ambiguous associated type
+error[E0223]: ambiguous associated type
+error[E0223]: ambiguous associated type
+error[E0223]: ambiguous associated type
+error[E0223]: ambiguous associated type
+error[E0308]: mismatched types
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0433]: failed to resolve: use of unresolved module or unlinked crate `fastrand`
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0277]: `QuantumBackpropagationEngine` doesn't implement `std:
+error[E0599]: no function or associated item named `get` found for struct `SystemAnalyzer` in the current scope
+error[E0599]: no function or associated item named `get` found for struct `SystemAnalyzer` in the current scope
+error[E0599]: no function or associated item named `get` found for struct `SystemAnalyzer` in the current scope
+error[E0599]: no function or associated item named `get` found for struct `SystemAnalyzer` in the current scope
+error[E0063]: missing fields `batch_size`, `debug_mode`, `max_entanglements_per_node` and 1 other field in initializer of `quantum_mcts:
+error[E0599]: no method named `load_from_environment` found for struct `EnvironmentLoader` in the current scope
+error[E0599]: no method named `parallelism` found for mutable reference `&mut QuantumMCTSConfigBuilder` in the current scope
+error[E0599]: no method named `parallelism` found for mutable reference `&mut QuantumMCTSConfigBuilder` in the current scope
+error[E0599]: no method named `parallelism` found for mutable reference `&mut QuantumMCTSConfigBuilder` in the current scope
+error[E0599]: no method named `parallelism` found for mutable reference `&mut QuantumMCTSConfigBuilder` in the current scope
+error[E0599]: no method named `parallelism` found for mutable reference `&mut QuantumMCTSConfigBuilder` in the current scope
+error[E0599]: no method named `parallelism` found for mutable reference `&mut QuantumMCTSConfigBuilder` in the current scope
+error[E0599]: no method named `summary` found for reference `&quantum_mcts:
+error[E0599]: no method named `operations_attempted` found for reference `&quantum_mcts:
+error[E0599]: no method named `operations_successful` found for reference `&quantum_mcts:
+error[E0599]: no method named `operations_attempted` found for reference `&quantum_mcts:
+error[E0599]: no method named `average_operation_latency` found for reference `&quantum_mcts:
+error[E0599]: no method named `entanglements_created` found for reference `&quantum_mcts:
+error[E0599]: no method named `operations_attempted` found for reference `&quantum_mcts:
+error[E0599]: no method named `operations_attempted` found for reference `&quantum_mcts:
+error[E0599]: no method named `operations_successful` found for reference `&quantum_mcts:
+error[E0599]: no method named `operations_attempted` found for reference `&quantum_mcts:
+error[E0599]: no method named `average_operation_latency` found for reference `&quantum_mcts:
+error[E0599]: no method named `active_entanglements` found for reference `&quantum_mcts:
+error[E0599]: no method named `needs_maintenance` found for struct `quantum_mcts:
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0599]: no method named `average_path_length` found for struct `network_topology:
+error[E0599]: no method named `clustering_coefficient` found for struct `network_topology:
+error[E0609]: no field `average_strength` on type `EntanglementQuality`
+error[E0609]: no field `strong_connections` on type `EntanglementQuality`
+error[E0609]: no field `weak_connections` on type `EntanglementQuality`
+error[E0609]: no field `active_issues` on type `NetworkHealthReport`
+error[E0599]: no method named `is_critical` found for reference `&&NetworkBottleneck` in the current scope
+error[E0599]: no method named `entanglements_created` found for struct `AggregatedMetrics` in the current scope
+error[E0599]: no method named `operations_attempted` found for struct `AggregatedMetrics` in the current scope
+error[E0599]: no method named `operations_attempted` found for struct `AggregatedMetrics` in the current scope
+error[E0599]: no method named `operations_successful` found for struct `AggregatedMetrics` in the current scope
+error[E0599]: no method named `operations_attempted` found for struct `AggregatedMetrics` in the current scope
+error[E0599]: no method named `average_operation_latency` found for struct `AggregatedMetrics` in the current scope
+error[E0034]: multiple applicable items in scope
+error[E0599]: no method named `is_critical` found for reference `&&NetworkBottleneck` in the current scope
+error[E0599]: no method named `operations_attempted` found for struct `AggregatedMetrics` in the current scope
+error[E0599]: no method named `operations_successful` found for struct `AggregatedMetrics` in the current scope
+error[E0599]: no method named `operations_attempted` found for struct `AggregatedMetrics` in the current scope
+error[E0609]: no field `weak_connections` on type `EntanglementQuality`
+error[E0609]: no field `strong_connections` on type `EntanglementQuality`
+error[E0599]: no method named `average_operation_latency` found for struct `AggregatedMetrics` in the current scope
+error[E0599]: no method named `clustering_coefficient` found for struct `network_topology:
+error[E0599]: no method named `is_critical` found for reference `&&NetworkBottleneck` in the current scope
+error[E0599]: no method named `entanglements_created` found for struct `AggregatedMetrics` in the current scope
+error[E0599]: no method named `operations_attempted` found for struct `AggregatedMetrics` in the current scope
+error[E0599]: no method named `operations_successful` found for struct `AggregatedMetrics` in the current scope
+error[E0599]: no method named `average_operation_latency` found for struct `AggregatedMetrics` in the current scope
+error[E0061]: this function takes 1 argument but 0 arguments were supplied
+error[E0061]: this function takes 2 arguments but 3 arguments were supplied
+error[E0061]: this function takes 2 arguments but 3 arguments were supplied
+error[E0609]: no field `entanglement_strength_threshold` on type `quantum_mcts:
+error[E0599]: no method named `quantum_state` found for reference `&quantum_mcts:
+error[E0599]: no method named `quantum_state` found for reference `&quantum_mcts:
+error[E0599]: no method named `visit_count` found for reference `&quantum_mcts:
+error[E0599]: no method named `visit_count` found for reference `&quantum_mcts:
+error[E0609]: no field `entanglement_strength_threshold` on type `quantum_mcts:
+error[E0599]: no method named `quantum_state` found for reference `&quantum_mcts:
+error[E0599]: no method named `quantum_state` found for reference `&quantum_mcts:
+error[E0599]: no method named `visit_count` found for reference `&quantum_mcts:
+error[E0599]: no method named `visit_count` found for reference `&quantum_mcts:
+error[E0689]: can't call method `max` on ambiguous numeric type `{float}`
+error[E0560]: struct `network_topology:
+error[E0560]: struct `network_topology:
+error[E0560]: struct `network_topology:
+error[E0560]: struct `network_topology:
+error[E0609]: no field `average_path_length` on type `&network_topology:
+error[E0599]: no method named `quantum_state` found for reference `&quantum_mcts:
+error[E0599]: no method named `visit_count` found for reference `&quantum_mcts:
+error[E0609]: no field `entanglement_strength_threshold` on type `quantum_mcts:
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0689]: can't call method `min` on ambiguous numeric type `{float}`
+error[E0609]: no field `average_path_length` on type `&network_topology:
+error[E0609]: no field `average_path_length` on type `&network_topology:
+error[E0277]: the trait bound `quantum_mcts:
+error[E0277]: the trait bound `quantum_mcts:
+error[E0609]: no field `total_entanglements` on type `quantum_mcts:
+error[E0277]: the trait bound `engine_issue_types:
+error[E0277]: the trait bound `engine_issue_types:
+error[E0277]: the trait bound `engine_issue_types:
+error[E0609]: no field `average_path_length` on type `&network_topology:
+error[E0609]: no field `average_path_length` on type `&network_topology:
+error[E0689]: can't call method `max` on ambiguous numeric type `{float}`
+error[E0609]: no field `total_entanglements` on type `&quantum_mcts:
+error[E0609]: no field `average_strength` on type `&quantum_mcts:
+error[E0609]: no field `max_strength` on type `&quantum_mcts:
+error[E0609]: no field `average_strength` on type `&quantum_mcts:
+error[E0609]: no field `max_strength` on type `&quantum_mcts:
+error[E0689]: can't call method `max` on ambiguous numeric type `{float}`
+error[E0609]: no field `total_entanglements` on type `&quantum_mcts:
+error[E0609]: no field `total_entanglements` on type `&quantum_mcts:
+error[E0689]: can't call method `min` on ambiguous numeric type `{float}`
+error[E0609]: no field `total_edges` on type `&network_topology:
+error[E0609]: no field `average_path_length` on type `&network_topology:
+error[E0609]: no field `average_path_length` on type `&network_topology:
+error[E0609]: no field `total_entanglements` on type `&quantum_mcts:
+error[E0609]: no field `max_strength` on type `&quantum_mcts:
+error[E0609]: no field `average_strength` on type `&quantum_mcts:
+error[E0609]: no field `max_strength` on type `&quantum_mcts:
+error[E0609]: no field `average_strength` on type `&quantum_mcts:
+error[E0609]: no field `average_strength` on type `&quantum_mcts:
+error[E0689]: can't call method `max` on ambiguous numeric type `{float}`
+error[E0689]: can't call method `min` on ambiguous numeric type `{float}`
+error[E0609]: no field `average_path_length` on type `&network_topology:
+error[E0609]: no field `average_path_length` on type `&network_topology:
+error[E0689]: can't call method `max` on ambiguous numeric type `{float}`
+error[E0609]: no field `total_entanglements` on type `&quantum_mcts:
+error[E0609]: no field `average_strength` on type `&quantum_mcts:
+error[E0609]: no field `max_strength` on type `&quantum_mcts:
+error[E0609]: no field `average_strength` on type `&quantum_mcts:
+error[E0609]: no field `max_strength` on type `&quantum_mcts:
+error[E0689]: can't call method `max` on ambiguous numeric type `{float}`
+error[E0609]: no field `total_entanglements` on type `&quantum_mcts:
+error[E0609]: no field `total_entanglements` on type `&quantum_mcts:
+error[E0689]: can't call method `min` on ambiguous numeric type `{float}`
+error[E0689]: can't call method `max` on ambiguous numeric type `{float}`
+error[E0689]: can't call method `min` on ambiguous numeric type `{float}`
+error[E0061]: this function takes 1 argument but 0 arguments were supplied
+error[E0061]: this function takes 2 arguments but 3 arguments were supplied
+error[E0061]: this function takes 2 arguments but 3 arguments were supplied
+error[E0599]: no method named `summary` found for struct `std:
+error[E0609]: no field `cache_size` on type `&mut quantum_mcts:
+error[E0609]: no field `cache_size` on type `&mut quantum_mcts:
+error[E0609]: no field `enable_parallel_processing` on type `&mut quantum_mcts:
+error[E0609]: no field `enable_adaptive_thresholds` on type `&mut quantum_mcts:
+error[E0609]: no field `max_concurrent_operations` on type `&mut quantum_mcts:
+error[E0609]: no field `max_concurrent_operations` on type `&mut quantum_mcts:
+error[E0609]: no field `operation_timeout_ms` on type `&mut quantum_mcts:
+error[E0609]: no field `operation_timeout_ms` on type `&mut quantum_mcts:
+error[E0609]: no field `operation_timeout_ms` on type `&mut quantum_mcts:
+error[E0609]: no field `operation_timeout_ms` on type `&mut quantum_mcts:
+error[E0609]: no field `enable_predictive_caching` on type `&mut quantum_mcts:
+error[E0061]: this function takes 1 argument but 0 arguments were supplied
+error[E0599]: no method named `enable_high_precision_timing` found for struct `quantum_mcts:
+error[E0599]: no method named `enable_detailed_statistics` found for struct `quantum_mcts:
+error[E0599]: no method named `record_engine_startup` found for reference `&quantum_mcts:
+error[E0599]: no method named `record_engine_shutdown` found for reference `&quantum_mcts:
+error[E0599]: no method named `reset_counters` found for reference `&quantum_mcts:
+error[E0599]: no method named `reset_timers` found for reference `&quantum_mcts:
+error[E0061]: this function takes 2 arguments but 3 arguments were supplied
+error[E0599]: no method named `enable_optimizations` found for struct `QuantumEntanglementManager` in the current scope
+error[E0599]: no method named `has_valid_configuration` found for reference `&QuantumEntanglementManager` in the current scope
+error[E0599]: no method named `has_active_metrics` found for reference `&QuantumEntanglementManager` in the current scope
+error[E0599]: no method named `impact_score` found for reference `&CreationResult` in the current scope
+error[E0609]: no field `efficiency_improvement` on type `&quantum_mcts:
+error[E0599]: no method named `overall_score` found for reference `&NetworkHealthReport` in the current scope
+error[E0599]: no method named `impact_score` found for reference `&CreationResult` in the current scope
+error[E0609]: no field `efficiency_improvement` on type `&quantum_mcts:
+error[E0599]: no method named `overall_score` found for reference `&NetworkHealthReport` in the current scope
+error[E0599]: no function or associated item named `with_custom_metrics` found for struct `quantum_mcts:
+error[E0609]: no field `average_operation_time_us` on type `&AggregatedMetrics`
+error[E0609]: no field `average_operation_time_us` on type `&AggregatedMetrics`
+error[E0609]: no field `success_rate` on type `&AggregatedMetrics`
+error[E0609]: no field `success_rate` on type `&AggregatedMetrics`
+error[E0689]: can't call method `max` on ambiguous numeric type `{float}`
+error[E0609]: no field `average_operation_time_us` on type `&AggregatedMetrics`
+error[E0609]: no field `success_rate` on type `&AggregatedMetrics`
+error[E0609]: no field `cache_hit_rate` on type `&AggregatedMetrics`
+error[E0609]: no field `operations_per_second` on type `&AggregatedMetrics`
+error[E0609]: no field `success_rate` on type `AggregatedMetrics`
+error[E0609]: no field `average_operation_time_us` on type `AggregatedMetrics`
+error[E0609]: no field `operations_per_second` on type `AggregatedMetrics`
+error[E0609]: no field `cache_hit_rate` on type `AggregatedMetrics`
+error[E0609]: no field `uptime_seconds` on type `AggregatedMetrics`
+error[E0609]: no field `optimization` on type `&quantum_mcts:
+error[E0609]: no field `pruning` on type `&quantum_mcts:
+error[E0609]: no field `balancing` on type `&quantum_mcts:
+error[E0609]: no field `health` on type `&quantum_mcts:
+error[E0034]: multiple applicable items in scope
+error[E0609]: no field `health` on type `&quantum_mcts:
+error[E0609]: no field `entanglement_strength_threshold` on type `quantum_mcts:
+error[E0609]: no field `max_concurrent_operations` on type `quantum_mcts:
+error[E0609]: no field `batch_operation_size` on type `quantum_mcts:
+error[E0609]: no field `enable_vectorized_operations` on type `quantum_mcts:
+error[E0609]: no field `cache_size_multiplier` on type `quantum_mcts:
+error[E0609]: no field `prefetch_depth` on type `quantum_mcts:
+error[E0609]: no field `parallel_execution_threshold` on type `quantum_mcts:
+error[E0609]: no field `max_concurrent_operations` on type `quantum_mcts:
+error[E0609]: no field `batch_operation_size` on type `quantum_mcts:
+error[E0609]: no field `operation_timeout_ms` on type `quantum_mcts:
+error[E0609]: no field `enable_preemptive_optimization` on type `quantum_mcts:
+error[E0609]: no field `cache_warmup_enabled` on type `quantum_mcts:
+error[E0609]: no field `priority_scheduling` on type `quantum_mcts:
+error[E0609]: no field `max_concurrent_operations` on type `quantum_mcts:
+error[E0609]: no field `batch_operation_size` on type `quantum_mcts:
+error[E0609]: no field `cache_size_multiplier` on type `quantum_mcts:
+error[E0609]: no field `enable_memory_pooling` on type `quantum_mcts:
+error[E0609]: no field `garbage_collection_frequency` on type `quantum_mcts:
+error[E0609]: no field `enable_compression` on type `quantum_mcts:
+error[E0609]: no field `lazy_initialization` on type `quantum_mcts:
+error[E0308]: mismatched types
+error[E0599]: no method named `record_optimization_metrics` found for struct `std:
+error[E0609]: no field `optimizations_applied` on type `&optimization:
+error[E0599]: no method named `record_creation_metrics` found for struct `std:
+error[E0599]: no method named `record_pruning_metrics` found for struct `std:
+error[E0609]: no field `entanglements_removed` on type `&quantum_mcts:
+error[E0599]: no method named `record_balancing_metrics` found for struct `std:
+error[E0599]: no method named `record_health_metrics` found for struct `std:
+error[E0599]: no method named `record_combined_operation_metrics` found for struct `std:
+error[E0599]: no associated item named `Critical` found for struct `EngineStatus` in the current scope
+error[E0599]: no associated item named `Degraded` found for struct `EngineStatus` in the current scope
+error[E0599]: no associated item named `Good` found for struct `EngineStatus` in the current scope
+error[E0599]: no associated item named `Optimal` found for struct `EngineStatus` in the current scope
+error[E0609]: no field `success_rate` on type `AggregatedMetrics`
+error[E0609]: no field `average_operation_time_us` on type `AggregatedMetrics`
+error[E0609]: no field `cache_hit_rate` on type `AggregatedMetrics`
+error[E0609]: no field `operations_per_second` on type `AggregatedMetrics`
+error[E0599]: no associated item named `Optimal` found for struct `EngineStatus` in the current scope
+error[E0599]: no associated item named `Good` found for struct `EngineStatus` in the current scope
+error[E0599]: no associated item named `Degraded` found for struct `EngineStatus` in the current scope
+error[E0599]: no associated item named `Critical` found for struct `EngineStatus` in the current scope
+error[E0599]: no method named `summary` found for struct `std:
+error[E0599]: no associated item named `Optimal` found for struct `EngineStatus` in the current scope
+error[E0599]: no associated item named `Good` found for struct `EngineStatus` in the current scope
+error[E0599]: no associated item named `Degraded` found for struct `EngineStatus` in the current scope
+error[E0599]: no associated item named `Critical` found for struct `EngineStatus` in the current scope
+error[E0599]: no method named `performance_summary` found for struct `maintenance_statistics:
+error[E0599]: no function or associated item named `new` found for struct `PerformanceTracker` in the current scope
+error[E0599]: no method named `efficiency_score` found for reference `&maintenance_statistics:
+error[E0599]: no method named `is_urgent` found for reference `&maintenance_statistics:
+error[E0609]: no field `required_actions` on type `&maintenance_statistics:
+error[E0599]: no method named `is_urgent` found for struct `maintenance_statistics:
+error[E0599]: no method named `is_urgent` found for struct `maintenance_statistics:
+error[E0599]: no method named `summary` found for struct `maintenance_statistics:
+error[E0599]: no method named `performance_summary` found for struct `maintenance_statistics:
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0599]: no method named `entanglement_count` found for reference `&EntanglementCounters` in the current scope
+error[E0599]: no method named `operation_count` found for reference `&EntanglementCounters` in the current scope
+error[E0599]: no method named `influence_calculation_count` found for reference `&EntanglementCounters` in the current scope
+error[E0599]: no method named `error_count` found for reference `&EntanglementCounters` in the current scope
+error[E0609]: no field `error_count` on type `&BatchStatistics`
+error[E0609]: no field `error_count` on type `&InfluenceStatistics`
+error[E0609]: no field `average_calculation_time` on type `&InfluenceStatistics`
+error[E0599]: no method named `total_operations` found for reference `&benchmark_results:
+error[E0599]: no method named `error_count` found for reference `&benchmark_results:
+error[E0599]: no method named `average_response_time` found for reference `&benchmark_results:
+error[E0599]: no method named `sample_count` found for reference `&rolling_monitor:
+error[E0599]: no method named `error_count` found for reference `&rolling_monitor:
+error[E0599]: no method named `average_sample_time` found for reference `&rolling_monitor:
+error[E0624]: associated function `score_to_grade` is private
+error[E0609]: no field `error_count` on type `&BatchStatistics`
+error[E0609]: no field `error_count` on type `&InfluenceStatistics`
+error[E0609]: no field `average_calculation_time` on type `&InfluenceStatistics`
+error[E0599]: no method named `total_operations` found for reference `&benchmark_results:
+error[E0599]: no method named `error_count` found for reference `&benchmark_results:
+error[E0599]: no method named `average_response_time` found for reference `&benchmark_results:
+error[E0599]: no method named `sample_count` found for reference `&rolling_monitor:
+error[E0599]: no method named `error_count` found for reference `&rolling_monitor:
+error[E0599]: no method named `average_sample_time` found for reference `&rolling_monitor:
+error[E0308]: mismatched types
+error[E0061]: this method takes 2 arguments but 0 arguments were supplied
+error[E0061]: this method takes 4 arguments but 3 arguments were supplied
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0599]: no method named `record_entanglement` found for struct `std:
+error[E0308]: mismatched types
+error[E0599]: no method named `record_error` found for struct `std:
+error[E0599]: no method named `description` found for enum `reporting:
+error[E0061]: this function takes 1 argument but 0 arguments were supplied
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no variant or associated item named `Strong` found for enum `quantum:
+error[E0599]: no variant or associated item named `Medium` found for enum `quantum:
+error[E0599]: no variant or associated item named `Weak` found for enum `quantum:
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no variant or associated item named `Strong` found for enum `quantum:
+error[E0599]: no variant or associated item named `Medium` found for enum `quantum:
+error[E0599]: no variant or associated item named `Weak` found for enum `quantum:
+error[E0061]: this function takes 1 argument but 0 arguments were supplied
+error[E0609]: no field `entanglement_operations` on type `quantum_mcts:
+error[E0609]: no field `entanglements_created` on type `quantum_mcts:
+error[E0609]: no field `entanglement_operations` on type `quantum_mcts:
+error[E0615]: attempted to take value of method `performance_score` on type `&node_types:
+error[E0609]: no field `memory_usage` on type `&node_types:
+error[E0609]: no field `complexity_score` on type `&node_types:
+error[E0609]: no field `parallelism_potential` on type `&node_types:
+error[E0609]: no field `cache_efficiency` on type `&node_types:
+error[E0599]: no method named `coherence` found for reference `&SuperpositionState` in the current scope
+error[E0599]: no variant or associated item named `QuantumError` found for enum `cognitive:
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `entanglement_entropy` found for reference `&SuperpositionState` in the current scope
+error[E0599]: no variant or associated item named `QuantumError` found for enum `cognitive:
+error[E0615]: attempted to take value of method `performance_score` on type `&node_types:
+error[E0609]: no field `complexity_score` on type `&node_types:
+error[E0609]: no field `memory_usage` on type `&node_types:
+error[E0689]: can't call method `clamp` on ambiguous numeric type `{float}`
+error[E0609]: no field `memory_usage` on type `&node_types:
+error[E0609]: no field `functions` on type `&node_types:
+error[E0609]: no field `parallelism_potential` on type `&node_types:
+error[E0609]: no field `complexity_score` on type `&node_types:
+error[E0609]: no field `complexity_score` on type `&node_types:
+error[E0599]: no method named `coherence` found for reference `&SuperpositionState` in the current scope
+error[E0599]: no variant or associated item named `QuantumError` found for enum `cognitive:
+error[E0599]: no method named `arg` found for struct `Complex64` in the current scope
+error[E0599]: no method named `dimension` found for reference `&SuperpositionState` in the current scope
+error[E0609]: no field `complexity_score` on type `&node_types:
+error[E0689]: can't call method `clamp` on ambiguous numeric type `{float}`
+error[E0615]: attempted to take value of method `performance_score` on type `&node_types:
+error[E0609]: no field `memory_usage` on type `&node_types:
+error[E0609]: no field `reliability_score` on type `&node_types:
+error[E0609]: no field `functions` on type `&node_types:
+error[E0609]: no field `functions` on type `&node_types:
+error[E0061]: this function takes 4 arguments but 0 arguments were supplied
+error[E0308]: mismatched types
+error[E0599]: no function or associated item named `uniform` found for struct `SuperpositionState` in the current scope
+error[E0599]: no variant or associated item named `QuantumError` found for enum `cognitive:
+error[E0560]: struct `quantum_mcts:
+error[E0609]: no field `complexity_score` on type `&node_types:
+error[E0609]: no field `functions` on type `&node_types:
+error[E0599]: no method named `apply_bias` found for struct `SuperpositionState` in the current scope
+error[E0599]: no variant or associated item named `QuantumError` found for enum `cognitive:
+error[E0609]: no field `functions` on type `&node_types:
+error[E0609]: no field `complexity_score` on type `&node_types:
+error[E0615]: attempted to take value of method `performance_score` on type `&node_types:
+error[E0615]: attempted to take value of method `performance_score` on type `&node_types:
+error[E0609]: no field `memory_usage` on type `&node_types:
+error[E0609]: no field `parallelism_potential` on type `&node_types:
+error[E0609]: no field `entanglement_map` on type `&quantum_mcts:
+error[E0615]: attempted to take value of method `performance_score` on type `node_types:
+error[E0609]: no field `complexity_score` on type `node_types:
+error[E0609]: no field `memory_usage` on type `node_types:
+error[E0615]: attempted to take value of method `performance_score` on type `node_types:
+error[E0615]: attempted to take value of method `performance_score` on type `node_types:
+error[E0609]: no field `cache_efficiency` on type `node_types:
+error[E0609]: no field `parallelism_potential` on type `node_types:
+error[E0615]: attempted to take value of method `performance_score` on type `node_types:
+error[E0599]: no method named `evolve_phase` found for struct `SuperpositionState` in the current scope
+error[E0599]: no variant or associated item named `QuantumError` found for enum `cognitive:
+error[E0599]: no method named `create_entanglement` found for struct `SuperpositionState` in the current scope
+error[E0599]: no variant or associated item named `QuantumError` found for enum `cognitive:
+error[E0599]: no method named `amplify_amplitudes` found for struct `SuperpositionState` in the current scope
+error[E0599]: no variant or associated item named `QuantumError` found for enum `cognitive:
+error[E0609]: no field `complexity_score` on type `node_types:
+error[E0560]: struct `quantum_mcts:
+error[E0599]: no method named `reset_for_reuse` found for struct `quantum_mcts:
+error[E0599]: no function or associated item named `default` found for struct `node_types:
+error[E0599]: no method named `unwrap_or` found for type `usize` in the current scope
+error[E0609]: no field `min_visits_for_pruning` on type `quantum_mcts:
+error[E0609]: no field `amplitude_pruning_threshold` on type `quantum_mcts:
+error[E0609]: no field `visit_count` on type `&quantum_mcts:
+error[E0609]: no field `visit_count` on type `&quantum_mcts:
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0609]: no field `visit_count` on type `&quantum_mcts:
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0609]: no field `visit_count` on type `&quantum_mcts:
+error[E0609]: no field `max_tree_depth` on type `quantum_mcts:
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0609]: no field `visit_count` on type `&quantum_mcts:
+error[E0609]: no field `last_update` on type `&quantum_mcts:
+error[E0599]: no method named `unwrap_or` found for type `usize` in the current scope
+error[E0609]: no field `min_visits_for_pruning` on type `quantum_mcts:
+error[E0609]: no field `amplitude_pruning_threshold` on type `quantum_mcts:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0609]: no field `parallel_expansion_limit` on type `quantum_mcts:
+error[E0609]: no field `functions` on type `&node_types:
+error[E0609]: no field `complexity_score` on type `&node_types:
+error[E0609]: no field `parallel_expansion_limit` on type `quantum_mcts:
+error[E0609]: no field `parallel_expansion_limit` on type `quantum_mcts:
+error[E0599]: no method named `clone` found for struct `QuantumSelector` in the current scope
+error[E0599]: no method named `clone` found for struct `quantum_expander:
+error[E0599]: no method named `clone` found for struct `QuantumBackpropagator` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0599]: no method named `memory_usage` found for struct `SuperpositionState` in the current scope
+error[E0599]: no method named `optimize_memory` found for struct `SuperpositionState` in the current scope
+error[E0599]: no method named `validate` found for struct `SuperpositionState` in the current scope
+error[E0599]: no function or associated item named `default` found for struct `node_types:
+error[E0369]: binary operation `==` cannot be applied to type `node_types:
+error[E0369]: binary operation `==` cannot be applied to type `SuperpositionState`
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0609]: no field `re` on type `Complex64`
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `arg` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0689]: can't call method `tanh` on ambiguous numeric type `{float}`
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: the method `entry` exists for struct `std:
+error[E0599]: the method `insert` exists for struct `std:
+error[E0689]: can't call method `max` on ambiguous numeric type `{float}`
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0277]: `QuantumStatisticsCollector` doesn't implement `std:
+error[E0308]: mismatched types
+error[E0599]: no variant or associated item named `Poor` found for enum `quantum_mcts:
+error[E0277]: the trait bound `quantum_mcts:
+error[E0609]: no field `overall_convergence` on type `ConvergenceMetrics`
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0599]: no method named `norm` found for struct `Complex64` in the current scope
+error[E0277]: the trait bound `NodeMetrics: Serialize` is not satisfied
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `NodeMetrics: Deserialize<'_>` is not satisfied
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `NodeMetrics: Deserialize<'_>` is not satisfied
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `NodeMetrics: Deserialize<'_>` is not satisfied
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0277]: the trait bound `std:
+error[E0609]: no field `overall_convergence` on type `ConvergenceMetrics`
+error[E0689]: can't call method `min` on ambiguous numeric type `{float}`
+error[E0609]: no field `overall_convergence` on type `ConvergenceMetrics`
+error[E0609]: no field `overall_convergence` on type `ConvergenceMetrics`
+error[E0609]: no field `overall_convergence` on type `ConvergenceMetrics`
+error[E0609]: no field `overall_convergence` on type `ConvergenceMetrics`
+error[E0277]: the trait bound `quantum_mcts:
+error[E0277]: the trait bound `std:
+error[E0609]: no field `overall_convergence` on type `ConvergenceMetrics`
+error[E0609]: no field `overall_convergence` on type `ConvergenceMetrics`
+error[E0609]: no field `overall_convergence` on type `ConvergenceMetrics`
+error[E0609]: no field `throughput_metrics` on type `quantum_mcts:
+error[E0609]: no field `overall_convergence` on type `ConvergenceMetrics`
+error[E0609]: no field `avg_visits_per_node` on type `quantum_mcts:
+error[E0609]: no field `overall_convergence` on type `ConvergenceMetrics`
+error[E0599]: no method named `convergence_grade` found for struct `ConvergenceMetrics` in the current scope
+error[E0609]: no field `throughput_metrics` on type `quantum_mcts:
+error[E0609]: no field `overall_convergence` on type `ConvergenceMetrics`
+error[E0609]: no field `overall_convergence` on type `ConvergenceMetrics`
+error[E0609]: no field `throughput_metrics` on type `quantum_mcts:
+error[E0609]: no field `throughput_metrics` on type `quantum_mcts:
+error[E0277]: the trait bound `quantum_mcts:
+error[E0609]: no field `overall_convergence` on type `&ConvergenceMetrics`
+error[E0609]: no field `amplitude_concentration` on type `&ConvergenceMetrics`
+error[E0609]: no field `visit_concentration` on type `&ConvergenceMetrics`
+error[E0609]: no field `overall_convergence` on type `&ConvergenceMetrics`
+error[E0599]: no method named `stability_score` found for reference `&ConvergenceMetrics` in the current scope
+error[E0609]: no field `node_creation_rate` on type `quantum_mcts:
+error[E0609]: no field `node_creation_rate` on type `quantum_mcts:
+error[E0609]: no field `node_creation_rate` on type `quantum_mcts:
+error[E0609]: no field `node_creation_rate` on type `quantum_mcts:
+error[E0599]: no method named `overall_cache_hit_rate` found for struct `quantum_mcts:
+error[E0609]: no field `avg_visits_per_node` on type `quantum_mcts:
+error[E0609]: no field `avg_visits_per_node` on type `quantum_mcts:
+error[E0609]: no field `avg_visits_per_node` on type `quantum_mcts:
+error[E0609]: no field `avg_visits_per_node` on type `quantum_mcts:
+error[E0609]: no field `node_creation_rate` on type `quantum_mcts:
+error[E0599]: no method named `overall_cache_hit_rate` found for struct `quantum_mcts:
+error[E0609]: no field `overall_convergence` on type `ConvergenceMetrics`
+error[E0609]: no field `avg_visits_per_node` on type `quantum_mcts:
+error[E0609]: no field `node_creation_rate` on type `quantum_mcts:
+error[E0599]: no method named `overall_cache_hit_rate` found for struct `quantum_mcts:
+error[E0609]: no field `node_creation_rate` on type `quantum_mcts:
+error[E0599]: no method named `overall_cache_hit_rate` found for struct `quantum_mcts:
+error[E0609]: no field `avg_visits_per_node` on type `quantum_mcts:
+error[E0599]: no function or associated item named `analyze` found for struct `tree_stats_analyzer:
+error[E0609]: no field `node_creation_rate` on type `quantum_mcts:
+error[E0599]: no method named `overall_cache_hit_rate` found for struct `quantum_mcts:
+error[E0609]: no field `avg_visits_per_node` on type `quantum_mcts:
+error[E0277]: `QuantumSelector` doesn't implement `std:
+error[E0277]: `QuantumBackpropagator` doesn't implement `std:
+error[E0277]: `QuantumEntanglementManager` doesn't implement `std:
+error[E0277]: `RecursiveImprovementEngine` doesn't implement `std:
+error[E0277]: `QuantumStatisticsCollector` doesn't implement `std:
+error[E0283]: type annotations needed
+error[E0308]: mismatched types
+error[E0277]: the `?` operator can only be applied to values that implement `Try`
+error[E0308]: mismatched types
+error[E0277]: the `?` operator can only be applied to values that implement `Try`
+error[E0061]: this function takes 2 arguments but 1 argument was supplied
+error[E0277]: the `?` operator can only be applied to values that implement `Try`
+error[E0061]: this function takes 2 arguments but 1 argument was supplied
+error[E0277]: the `?` operator can only be applied to values that implement `Try`
+error[E0061]: this function takes 7 arguments but 1 argument was supplied
+error[E0277]: the `?` operator can only be applied to values that implement `Try`
+error[E0308]: mismatched types
+error[E0277]: the `?` operator can only be applied to values that implement `Try`
+error[E0061]: this function takes 5 arguments but 2 arguments were supplied
+error[E0277]: the `?` operator can only be applied to values that implement `Try`
+error[E0599]: no variant or associated item named `SerializationError` found for enum `graph_db:
+error[E0599]: no variant or associated item named `SerializationError` found for enum `graph_db:
+error[E0609]: no field `node_type` on type `graph_db:
+error[E0599]: no variant or associated item named `SerializationError` found for enum `graph_db:
+error[E0599]: no variant or associated item named `SerializationError` found for enum `graph_db:
+error[E0599]: no variant or associated item named `SerializationError` found for enum `graph_db:
+error[E0599]: no method named `get_attribute` found for reference `&entity:
+error[E0599]: no method named `get_attribute` found for reference `&entity:
+error[E0599]: no method named `get_attribute` found for reference `&entity:
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0599]: no variant or associated item named `SerializationError` found for enum `graph_db:
+error[E0277]: the trait bound `surrealdb:
+error[E0599]: no method named `is_finite` found for reference `&serde_json:
+error[E0599]: no variant or associated item named `SerializationError` found for enum `graph_db:
+error[E0599]: no variant or associated item named `SerializationError` found for enum `graph_db:
+error[E0599]: no variant or associated item named `SerializationError` found for enum `graph_db:
+error[E0308]: mismatched types
+error[E0369]: binary operation `==` cannot be applied to type `AggregationType`
+error[E0308]: mismatched types
+error[E0061]: this method takes 1 argument but 2 arguments were supplied
+error[E0061]: this method takes 1 argument but 2 arguments were supplied
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0061]: this method takes 1 argument but 2 arguments were supplied
+error[E0271]: expected `{async block@packages/sweetmcp-memory/src/graph/entity/relationships.rs:314
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0277]: the type `dyn entity:
+error[E0616]: field `cache` of struct `MemoryLifecycle` is private
+error[E0277]: the trait bound `StandardUniform: Distribution<usize>` is not satisfied
+error[E0277]: the trait bound `StandardUniform: Distribution<usize>` is not satisfied
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0609]: no field `created_at` on type `&MemoryRelationship`
+error[E0609]: no field `updated_at` on type `&MemoryRelationship`
+error[E0609]: no field `strength` on type `&MemoryRelationship`
+error[E0308]: mismatched types
+error[E0063]: missing fields `created_at`, `embedding` and `updated_at` in initializer of `MemoryNode`
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0560]: struct `MemoryRelationship` has no field named `created_at`
+error[E0560]: struct `MemoryRelationship` has no field named `updated_at`
+error[E0560]: struct `MemoryRelationship` has no field named `strength`
+error[E0609]: no field `strength` on type `&MemoryRelationship`
+error[E0609]: no field `strength` on type `&MemoryRelationship`
+error[E0277]: the trait bound `&str: CreateResource<Vec<MemoryNodeSchema>>` is not satisfied
+error[E0599]: no method named `content` found for struct `surrealdb:
+error[E0308]: mismatched types
+error[E0277]: the trait bound `&str: CreateResource<Vec<Relationship>>` is not satisfied
+error[E0599]: no method named `content` found for struct `surrealdb:
+error[E0308]: mismatched types
+error[E0609]: no field `created_at` on type `MemoryRelationship`
+error[E0609]: no field `updated_at` on type `MemoryRelationship`
+error[E0609]: no field `strength` on type `MemoryRelationship`
+error[E0308]: mismatched types
+error[E0599]: no variant or associated item named `Relationship` found for enum `MemoryType` in the current scope
+error[E0063]: missing fields `created_at`, `embedding` and `updated_at` in initializer of `MemoryNode`
+error[E0599]: no method named `decode` found for struct `GeneralPurpose` in the current scope
+error[E0599]: no variant or associated item named `ChannelClosed` found for enum `utils:
+error[E0599]: no variant or associated item named `ChannelClosed` found for enum `utils:
+error[E0599]: no variant or associated item named `ChannelClosed` found for enum `utils:
+error[E0599]: no method named `is_empty` found for struct `filter:
+error[E0599]: no method named `validate` found for struct `filter:
+error[E0599]: no method named `merge_with` found for struct `filter:
+error[E0599]: no method named `count_active_filters` found for struct `filter:
+error[E0599]: no method named `get_metadata` found for reference `&MemoryNode` in the current scope
+error[E0599]: no variant or associated item named `CreatedAtAsc` found for enum `SortOrder` in the current scope
+error[E0599]: no variant or associated item named `CreatedAtDesc` found for enum `SortOrder` in the current scope
+error[E0599]: no variant or associated item named `UpdatedAtAsc` found for enum `SortOrder` in the current scope
+error[E0599]: no variant or associated item named `UpdatedAtDesc` found for enum `SortOrder` in the current scope
+error[E0599]: no variant or associated item named `AccessCountAsc` found for enum `SortOrder` in the current scope
+error[E0599]: no variant or associated item named `AccessCountDesc` found for enum `SortOrder` in the current scope
+error[E0599]: no variant or associated item named `RelevanceScore` found for enum `SortOrder` in the current scope
+error[E0599]: no method named `created_at` found for reference `&MemoryNode` in the current scope
+error[E0599]: no method named `created_at` found for reference `&MemoryNode` in the current scope
+error[E0599]: no method named `created_at` found for reference `&MemoryNode` in the current scope
+error[E0599]: no method named `created_at` found for reference `&MemoryNode` in the current scope
+error[E0599]: no method named `updated_at` found for reference `&MemoryNode` in the current scope
+error[E0599]: no method named `updated_at` found for reference `&MemoryNode` in the current scope
+error[E0599]: no method named `updated_at` found for reference `&MemoryNode` in the current scope
+error[E0599]: no method named `updated_at` found for reference `&MemoryNode` in the current scope
+error[E0599]: no method named `access_count` found for reference `&MemoryNode` in the current scope
+error[E0599]: no method named `access_count` found for reference `&MemoryNode` in the current scope
+error[E0599]: no method named `access_count` found for reference `&MemoryNode` in the current scope
+error[E0599]: no method named `access_count` found for reference `&MemoryNode` in the current scope
+error[E0599]: no method named `relevance_score` found for reference `&MemoryNode` in the current scope
+error[E0599]: no method named `relevance_score` found for reference `&MemoryNode` in the current scope
+error[E0308]: mismatched types
+error[E0609]: no field `text_query` on type `filter:
+error[E0609]: no field `metadata_filters` on type `filter:
+error[E0609]: no field `sort_order` on type `&MemoryQuery`
+error[E0560]: struct `MemoryQuery` has no field named `sort_order`
+error[E0599]: no variant or associated item named `Relevance` found for enum `SortOrder` in the current scope
+error[E0560]: struct `MemoryQuery` has no field named `limit`
+error[E0560]: struct `MemoryQuery` has no field named `offset`
+error[E0609]: no field `sort_order` on type `MemoryQuery`
+error[E0609]: no field `limit` on type `MemoryQuery`
+error[E0609]: no field `offset` on type `MemoryQuery`
+error[E0609]: no field `limit` on type `MemoryQuery`
+error[E0609]: no field `offset` on type `MemoryQuery`
+error[E0609]: no field `limit` on type `&MemoryQuery`
+error[E0609]: no field `limit` on type `&MemoryQuery`
+error[E0609]: no field `limit` on type `&MemoryQuery`
+error[E0599]: no variant or associated item named `Working` found for enum `MemoryType` in the current scope
+error[E0599]: no variant or associated item named `Working` found for enum `MemoryType` in the current scope
+error[E0609]: no field `sort_by` on type `&filter:
+error[E0609]: no field `sort_desc` on type `&filter:
+error[E0609]: no field `start_time` on type `&filter:
+error[E0609]: no field `end_time` on type `&filter:
+error[E0609]: no field `start_time` on type `&filter:
+error[E0609]: no field `end_time` on type `&filter:
+error[E0609]: no field `project_id` on type `&filter:
+error[E0609]: no field `project_id` on type `memory_metadata:
+error[E0609]: no field `min_importance` on type `&filter:
+error[E0609]: no field `importance_score` on type `&MemoryNode`
+error[E0609]: no field `max_importance` on type `&filter:
+error[E0609]: no field `importance_score` on type `&MemoryNode`
+error[E0609]: no field `min_content_length` on type `&filter:
+error[E0609]: no field `max_content_length` on type `&filter:
+error[E0609]: no field `has_embeddings` on type `&filter:
+error[E0609]: no field `has_relationships` on type `&filter:
+error[E0609]: no field `importance_score` on type `&std:
+error[E0609]: no field `importance_score` on type `&std:
+error[E0609]: no field `importance_score` on type `&std:
+error[E0609]: no field `importance_score` on type `&std:
+error[E0609]: no field `from_id` on type `MemoryRelationship`
+error[E0609]: no field `from_id` on type `MemoryRelationship`
+error[E0609]: no field `to_id` on type `MemoryRelationship`
+error[E0609]: no field `to_id` on type `MemoryRelationship`
+error[E0609]: no field `from_id` on type `MemoryRelationship`
+error[E0609]: no field `bidirectional` on type `MemoryRelationship`
+error[E0560]: struct `MemoryRelationship` has no field named `from_id`
+error[E0609]: no field `to_id` on type `MemoryRelationship`
+error[E0560]: struct `MemoryRelationship` has no field named `to_id`
+error[E0609]: no field `from_id` on type `MemoryRelationship`
+error[E0560]: struct `MemoryRelationship` has no field named `strength`
+error[E0609]: no field `strength` on type `MemoryRelationship`
+error[E0560]: struct `MemoryRelationship` has no field named `bidirectional`
+error[E0560]: struct `MemoryRelationship` has no field named `created_at`
+error[E0609]: no field `created_at` on type `MemoryRelationship`
+error[E0609]: no field `to_id` on type `MemoryRelationship`
+error[E0609]: no field `to_id` on type `&MemoryRelationship`
+error[E0609]: no field `to_id` on type `&MemoryRelationship`
+error[E0609]: no field `to_id` on type `&MemoryRelationship`
+error[E0609]: no field `to_id` on type `&MemoryRelationship`
+error[E0609]: no field `bidirectional` on type `&MemoryRelationship`
+error[E0609]: no field `to_id` on type `&MemoryRelationship`
+error[E0609]: no field `to_id` on type `&MemoryRelationship`
+error[E0609]: no field `to_id` on type `&MemoryRelationship`
+error[E0609]: no field `to_id` on type `&&MemoryRelationship`
+error[E0609]: no field `strength` on type `&MemoryRelationship`
+error[E0609]: no field `to_id` on type `&mut MemoryRelationship`
+error[E0609]: no field `strength` on type `&mut MemoryRelationship`
+error[E0609]: no field `to_id` on type `&mut MemoryRelationship`
+error[E0609]: no field `strength` on type `&mut MemoryRelationship`
+error[E0609]: no field `strength` on type `&MemoryRelationship`
+error[E0609]: no field `bidirectional` on type `&MemoryRelationship`
+error[E0609]: no field `to_id` on type `&MemoryRelationship`
+error[E0609]: no field `to_id` on type `&MemoryRelationship`
+error[E0609]: no field `strength` on type `&MemoryRelationship`
+error[E0609]: no field `strength` on type `&MemoryRelationship`
+error[E0609]: no field `to_id` on type `&MemoryRelationship`
+error[E0609]: no field `strength` on type `&MemoryRelationship`
+error[E0609]: no field `from_id` on type `&MemoryRelationship`
+error[E0609]: no field `to_id` on type `&MemoryRelationship`
+error[E0599]: the method `join` exists for struct `Vec<&std:
+error[E0599]: the method `join` exists for struct `Vec<&std:
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0034]: multiple applicable items in scope
+error[E0614]: type `usize` cannot be dereferenced
+error[E0614]: type `usize` cannot be dereferenced
+error[E0599]: no method named `trim` found for enum `serde_json:
+error[E0599]: no method named `to_lowercase` found for enum `serde_json:
+error[E0599]: no method named `to_lowercase` found for enum `serde_json:
+error[E0308]: mismatched types
+error[E0599]: no method named `to_lowercase` found for enum `serde_json:
+error[E0599]: no method named `to_lowercase` found for enum `serde_json:
+error[E0308]: mismatched types
+error[E0599]: no method named `validate` found for reference `&item_core:
+error[E0277]: the trait bound `semantic:
+error[E0277]: the trait bound `semantic:
+error[E0277]: the trait bound `semantic:
+error[E0277]: the trait bound `semantic:
+error[E0599]: no method named `len` found for enum `serde_json:
+error[E0599]: no method named `len` found for enum `serde_json:
+error[E0689]: can't call method `min` on ambiguous numeric type `{float}`
+error[E0599]: no variant or associated item named `InvalidConfiguration` found for enum `utils:
+error[E0599]: no variant or associated item named `InvalidConfiguration` found for enum `utils:
+error[E0599]: no variant or associated item named `InvalidConfiguration` found for enum `utils:
+error[E0599]: the method `get` exists for struct `std:
+error[E0599]: the method `remove` exists for struct `std:
+error[E0599]: the method `insert` exists for struct `std:
+error[E0599]: the method `remove` exists for struct `std:
+error[E0599]: the method `contains_key` exists for struct `std:
+error[E0599]: the method `remove` exists for struct `std:
+error[E0599]: the method `get` exists for struct `std:
+error[E0599]: the method `remove` exists for struct `std:
+error[E0599]: the method `remove` exists for struct `std:
+error[E0282]: type annotations needed
+error[E0616]: field `strategy` of struct `operations_core:
+error[E0616]: field `strategy` of struct `operations_core:
+error[E0616]: field `strategy` of struct `operations_core:
+error[E0616]: field `strategy` of struct `operations_core:
+error[E0616]: field `strategy` of struct `operations_core:
+error[E0616]: field `safety_constraints` of struct `operations_core:
+error[E0616]: field `safety_constraints` of struct `operations_core:
+error[E0599]: no method named `as_ref` found for enum `serde_json:
+error[E0599]: no method named `as_ref` found for struct `std:
+error[E0282]: type annotations needed
+error[E0282]: type annotations needed
+error[E0282]: type annotations needed
+error[E0282]: type annotations needed
+error[E0599]: `f32` is not an iterator
+error[E0282]: type annotations needed
+error[E0282]: type annotations needed
+error[E0599]: no method named `as_ref` found for struct `std:
+error[E0599]: no method named `is_none` found for enum `serde_json:
+error[E0609]: no field `embedding` on type `&semantic_item:
+error[E0599]: `f32` is not an iterator
+error[E0599]: no method named `is_none` found for struct `std:
+error[E0277]: can't compare `&_` with `std:
+error[E0277]: can't compare `&_` with `std:
+error[E0616]: field `safety_constraints` of struct `operations_core:
+error[E0616]: field `safety_constraints` of struct `operations_core:
+error[E0616]: field `strategy` of struct `operations_core:
+error[E0599]: no function or associated item named `quality_focused` found for struct `optimization_strategy:
+error[E0599]: no method named `memory_usage_mb` found for reference `&memory_manager_core:
+error[E0599]: no method named `access_count` found for reference `&semantic_item:
+error[E0599]: no method named `strength` found for reference `&&semantic_relationship:
+error[E0599]: no method named `is_expired` found for reference `&&semantic_relationship:
+error[E0599]: no method named `content` found for reference `&&semantic_item:
+error[E0599]: no method named `access_count` found for reference `&&semantic_item:
+error[E0599]: no method named `is_expired` found for reference `&&semantic_relationship:
+error[E0599]: no method named `get_metrics` found for struct `operations_core:
+error[E0599]: no method named `update_strategy` found for struct `operations_core:
+error[E0599]: no variant or associated item named `Cleanup` found for enum `RecommendationType` in the current scope
+error[E0560]: struct `optimization_recommendations:
+error[E0560]: struct `optimization_recommendations:
+error[E0560]: struct `optimization_recommendations:
+error[E0560]: struct `optimization_recommendations:
+error[E0560]: struct `optimization_recommendations:
+error[E0599]: no method named `contains` found for enum `serde_json:
+error[E0277]: the trait bound `semantic:
+error[E0599]: no method named `contains` found for enum `serde_json:
+error[E0599]: no method named `len` found for enum `serde_json:
+error[E0599]: no method named `len` found for enum `serde_json:
+error[E0599]: no method named `len` found for enum `serde_json:
+error[E0599]: no method named `len` found for enum `serde_json:
+error[E0599]: no method named `to_lowercase` found for enum `serde_json:
+error[E0599]: no method named `to_lowercase` found for enum `serde_json:
+error[E0308]: mismatched types
+error[E0599]: no method named `to_lowercase` found for enum `serde_json:
+error[E0369]: binary operation `!=` cannot be applied to type `&item_core:
+error[E0369]: binary operation `!=` cannot be applied to type `&semantic:
+error[E0599]: no method named `len` found for enum `serde_json:
+error[E0689]: can't call method `log2` on ambiguous numeric type `{float}`
+error[E0277]: the trait bound `semantic:
+error[E0599]: no method named `validate_relationship` found for struct `RelationshipValidator` in the current scope
+error[E0599]: no method named `batch_validate` found for struct `RelationshipValidator` in the current scope
+error[E0599]: the method `entry` exists for struct `HashMap<SemanticRelationshipType, usize>`, but its trait bounds were not satisfied
+error[E0599]: no method named `is_bidirectional` found for enum `semantic:
+error[E0599]: no method named `quality_weight` found for enum `semantic:
+error[E0283]: type annotations needed
+error[E0283]: type annotations needed
+error[E0599]: no variant or associated item named `InvalidVector` found for enum `utils:
+error[E0599]: no variant or associated item named `InvalidVector` found for enum `utils:
+error[E0599]: no variant or associated item named `InvalidVector` found for enum `utils:
+error[E0599]: no variant named `DimensionMismatch` found for enum `utils:
+error[E0599]: no variant named `DimensionMismatch` found for enum `utils:
+error[E0599]: no variant named `DimensionMismatch` found for enum `utils:
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0599]: no method named `search_vectors_internal` found for struct `async_vector_core:
+error[E0616]: field `vectors` of struct `async_vector_core:
+error[E0616]: field `metadata` of struct `async_vector_core:
+error[E0616]: field `operation_counter` of struct `async_vector_core:
+error[E0616]: field `dimension_cache` of struct `async_vector_core:
+error[E0616]: field `metrics` of struct `async_vector_core:
+error[E0599]: no variant or associated item named `ApproximateNearestNeighbor` found for enum `search_strategies:
+error[E0609]: no field `improvement_percentage` on type `&DimensionReductionResult`
+error[E0609]: no field `improvement_percentage` on type `&QuantizationResult`
+error[E0615]: attempted to take value of method `improvement_percentage` on type `&IndexOptimizationResult`
+error[E0615]: attempted to take value of method `improvement_percentage` on type `&CacheOptimizationResult`
+error[E0615]: attempted to take value of method `improvement_percentage` on type `&BatchOptimizationResult`
+error[E0615]: attempted to take value of method `improvement_percentage` on type `&MemoryLayoutResult`
+error[E0063]: missing field `performance_trend` in initializer of `coordinator_metrics:
+error[E0599]: no variant or associated item named `ApproximateNearestNeighbor` found for enum `search_strategies:
+error[E0599]: no variant or associated item named `Dot` found for enum `async_vector_operations:
+error[E0599]: no associated item named `ByType` found for struct `filter:
+error[E0223]: ambiguous associated type
+error[E0599]: no associated item named `ByMetadata` found for struct `filter:
+error[E0599]: no associated item named `Combined` found for struct `filter:
+error[E0308]: mismatched types
+error[E0308]: mismatched types
+error[E0599]: no variant or associated item named `ApproximateNearestNeighbor` found for enum `search_strategies:
+error[E0015]: cannot call non-const method `core:
+error[E0382]: borrow of moved value: `action`
+error[E0382]: borrow of moved value: `bottlenecks`
+error[E0382]: borrow of moved value: `anomalies`
+error[E0382]: borrow of moved value: `cluster_memories`
+error[E0382]: use of moved value: `config.logical_operations`
+error[E0382]: use of moved value: `config.logical_operations`
+error[E0004]: non-exhaustive patterns: `&mut OptimizationBackend
+error[E0382]: borrow of moved value: `state`
+error[E0596]: cannot borrow `self.engine` as mutable, as it is behind a `&` reference
+error[E0133]: call to unsafe function `set_var` is unsafe and requires unsafe block
+error[E0382]: use of moved value: `base`
+error[E0596]: cannot borrow `self.rolling_monitor` as mutable, as it is behind a `&` reference
+error[E0596]: cannot borrow `self.active_benchmark` as mutable, as it is behind a `&` reference
+error[E0596]: cannot borrow `self.rolling_monitor` as mutable, as it is behind a `&` reference
+error[E0596]: cannot borrow `self.active_benchmark` as mutable, as it is behind a `&` reference
+error[E0382]: borrow of moved value: `urgency`
+error[E0382]: borrow of moved value: `performance`
+error[E0596]: cannot borrow `self.selector` as mutable, as it is behind a `&` reference
+error[E0596]: cannot borrow `self.selector` as mutable, as it is behind a `&` reference
+error[E0382]: borrow of moved value: `trends`
+error[E0507]: cannot move out of `self.item_type` which is behind a shared reference
+error[E0507]: cannot move out of `self.relationship_type` which is behind a shared reference

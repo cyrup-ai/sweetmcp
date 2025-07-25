@@ -5,13 +5,24 @@
 //! optimized performance and zero allocation fast paths.
 
 pub mod agents;
-pub mod evaluation;
+pub mod agent_config;
+pub mod agent_perspectives;
 pub mod committee;
+pub mod committee_agent;
+pub mod committee_config;
+pub mod config;
+pub mod evaluation;
+pub mod evaluation_context;
+pub mod evaluation_structures;
+pub mod evaluators;
+pub mod metrics;
+pub mod types;
 
 // Re-export key types and functionality
 pub use agents::{
-    CommitteeAgent, AgentEvaluation, AgentPerspective, AgentStats, AgentFactory
+    CommitteeAgent, AgentEvaluation, AgentStats, AgentFactory
 };
+pub use agent_perspectives::AgentPerspective;
 pub use evaluation::{
     EvaluationRubric, ConsensusDecision, EvaluationContext, ScoringWeights, RubricStats
 };
@@ -24,8 +35,9 @@ use std::sync::Arc;
 use tokio::sync::mpsc;
 use tracing::{debug, info, warn};
 
-use crate::cognitive::mcts::CodeState;
-use crate::cognitive::types::{CognitiveError, OptimizationSpec};
+use crate::cognitive::mcts::types::node_types::CodeState;
+use crate::cognitive::types::CognitiveError;
+use crate::vector::async_vector_optimization::OptimizationSpec;
 
 /// High-level committee coordinator for simplified usage
 pub struct CommitteeCoordinator {

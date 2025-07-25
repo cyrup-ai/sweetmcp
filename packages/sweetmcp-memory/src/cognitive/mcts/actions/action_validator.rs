@@ -4,7 +4,8 @@
 //! optimizations for MCTS action safety and feasibility checking.
 
 use super::super::types::{CodeState, ActionMetadata};
-use crate::cognitive::types::{CognitiveError, OptimizationSpec, ImpactFactors};
+use crate::cognitive::types::{CognitiveError, ImpactFactors};
+use crate::vector::async_vector_optimization::OptimizationSpec;
 use std::sync::Arc;
 use tracing::{debug, warn};
 

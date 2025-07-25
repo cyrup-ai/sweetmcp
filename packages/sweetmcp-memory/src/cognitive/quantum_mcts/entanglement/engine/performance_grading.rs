@@ -12,6 +12,55 @@ use super::{
     maintenance_statistics::EngineStatistics,
 };
 
+/// Individual performance grade
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum PerformanceGrade {
+    /// Excellent performance (A grade)
+    A,
+    /// Good performance (B grade)
+    B,
+    /// Acceptable performance (C grade)
+    C,
+    /// Poor performance (D grade)
+    D,
+    /// Failing performance (F grade)
+    F,
+}
+
+impl PerformanceGrade {
+    /// Convert to character representation
+    pub fn to_char(self) -> char {
+        match self {
+            PerformanceGrade::A => 'A',
+            PerformanceGrade::B => 'B',
+            PerformanceGrade::C => 'C',
+            PerformanceGrade::D => 'D',
+            PerformanceGrade::F => 'F',
+        }
+    }
+    
+    /// Create from character
+    pub fn from_char(c: char) -> Self {
+        match c {
+            'A' => PerformanceGrade::A,
+            'B' => PerformanceGrade::B,
+            'C' => PerformanceGrade::C,
+            'D' => PerformanceGrade::D,
+            _ => PerformanceGrade::F,
+        }
+    }
+    
+    /// Check if grade is acceptable (C or better)
+    pub fn is_acceptable(self) -> bool {
+        self >= PerformanceGrade::C
+    }
+    
+    /// Check if grade is excellent (A)
+    pub fn is_excellent(self) -> bool {
+        self == PerformanceGrade::A
+    }
+}
+
 /// Trend direction for performance analysis
 #[derive(Debug, Clone, PartialEq)]
 pub enum TrendDirection {

@@ -10,21 +10,21 @@ pub use super::benchmarking_comparison::*;
 pub use super::benchmarking_monitor::*;
 
 // Re-export core types and functionality
-pub use benchmarking_core::{
+pub use super::benchmarking_core::{
     EntanglementBenchmark, BenchmarkStats,
 };
 
-pub use benchmarking_results::{
+pub use super::benchmarking_results::{
     BenchmarkResults, PerformanceCategory, PerformanceTrend, ResultQuality,
 };
 
-pub use benchmarking_comparison::{
+pub use super::benchmarking_comparison::{
     BenchmarkComparison, ComparisonMetrics, RegressionAnalysis, ImprovementAnalysis,
     RegressionStatus, RegressionSeverity, ImprovementStatus, ImprovementMagnitude,
     ComparisonVerdict,
 };
 
-pub use benchmarking_monitor::{
+pub use super::benchmarking_monitor::{
     RollingPerformanceMonitor, PerformanceSample, RollingStatistics,
     PerformanceTrend as MonitorTrend,
 };

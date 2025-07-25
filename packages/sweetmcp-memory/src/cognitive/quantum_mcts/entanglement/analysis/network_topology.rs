@@ -27,6 +27,10 @@ pub struct NetworkTopology {
     pub max_degree: usize,
     /// Network density (0.0 to 1.0)
     pub network_density: f64,
+    /// Connected components in the network
+    pub connected_components: usize,
+    /// Average path length between nodes
+    pub average_path_length: f64,
     /// Whether the network is fully connected
     pub is_connected: bool,
     /// Clustering coefficient for small-world properties

@@ -14,6 +14,7 @@ use crate::cognitive::{
 use super::{
     node_state::QuantumMCTSNode,
     config::QuantumMCTSConfig,
+    entanglement_factory as factory,
 };
 
 // Import and re-export submodules from entanglement directory

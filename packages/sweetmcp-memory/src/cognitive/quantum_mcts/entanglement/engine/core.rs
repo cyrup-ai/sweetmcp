@@ -163,7 +163,8 @@ impl QuantumEntanglementEngine {
         debug!("Warming up quantum entanglement engine");
         
         self.manager.warmup().await?;
-        self.metrics.start_tracking();
+        // Use the metrics' start_tracking method explicitly
+        let _tracker = self.metrics.start_tracking();
         
         Ok(())
     }

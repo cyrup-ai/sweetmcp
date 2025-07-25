@@ -4,8 +4,16 @@
 //! multi-head attention, softmax operations, and attention weight calculations
 //! with zero allocation patterns and blazing-fast performance.
 
-use crate::cognitive::attention::core::*;
+use super::AttentionMechanism;
 use crate::cognitive::quantum::types::{CognitiveResult, CognitiveError};
+
+/// Output from attention computation
+#[derive(Debug, Clone)]
+pub struct AttentionOutput {
+    pub weighted_values: Vec<f32>,
+    pub attention_scores: Vec<Vec<f32>>,
+    pub context_vector: Vec<f32>,
+}
 
 impl AttentionMechanism {
     /// Calculate attention weights for a query

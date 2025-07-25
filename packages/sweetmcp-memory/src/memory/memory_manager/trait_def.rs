@@ -11,6 +11,10 @@ use crate::memory::memory_relationship::MemoryRelationship;
 use crate::memory::memory_stream::MemoryStream;
 use crate::utils::error::Error;
 
+// Add alias types for compatibility
+pub type Memory = MemoryNode;
+pub type Relationship = MemoryRelationship;
+
 /// Future type alias for memory operations
 /// 
 /// Provides a convenient type alias for boxed futures used in async operations
@@ -97,6 +101,15 @@ pub trait MemoryManager: Send + Sync {
     /// Stream of memory nodes matching the search criteria
     fn search_by_content(&self, query: &str, limit: usize) -> MemoryStream;
 
+    /// Query memory nodes by type
+    /// 
+    /// # Arguments
+    /// * `memory_type` - The type of memory nodes to query for
+    /// 
+    /// # Returns
+    /// Stream of memory nodes of the specified type
+    fn query_by_type(&self, memory_type: crate::memory::MemoryType) -> MemoryStream;
+
     /// Search memory nodes by vector similarity
     /// 
     /// # Arguments
@@ -106,4 +119,46 @@ pub trait MemoryManager: Send + Sync {
     /// # Returns
     /// Stream of memory nodes ordered by similarity score
     fn search_by_vector(&self, vector: Vec<f32>, limit: usize) -> MemoryStream;
+
+    /// List memories with pagination
+    /// 
+    /// # Arguments
+    /// * `limit` - Maximum number of results to return
+    /// * `offset` - Number of results to skip
+    /// * `filter` - Optional filter criteria
+    /// 
+    /// # Returns
+    /// Future resolving to a vector of memory nodes
+    fn list_memories(&self, limit: usize, offset: usize, filter: Option<&str>) -> MemoryFuture<Vec<Memory>>;
+
+    /// Get a relationship by ID
+    /// 
+    /// # Arguments
+    /// * `id` - The unique identifier of the relationship
+    /// 
+    /// # Returns
+    /// Future resolving to the relationship if found
+    fn get_relationship(&self, id: &str) -> MemoryFuture<Relationship>;
+
+    /// List relationships with pagination
+    /// 
+    /// # Arguments
+    /// * `limit` - Maximum number of results to return
+    /// * `offset` - Number of results to skip
+    /// * `filter` - Optional filter criteria
+    /// 
+    /// # Returns
+    /// Future resolving to a vector of relationships
+    fn list_relationships(&self, limit: usize, offset: usize, filter: Option<&str>) -> MemoryFuture<Vec<Relationship>>;
+
+    /// Get relationships for a specific memory
+    /// 
+    /// # Arguments
+    /// * `memory_id` - The ID of the memory node
+    /// * `relationship_type` - Optional filter by relationship type
+    /// * `direction` - Optional direction filter
+    /// 
+    /// # Returns
+    /// Future resolving to a vector of relationships
+    fn get_memory_relationships(&self, memory_id: &str, relationship_type: Option<&str>, direction: Option<&str>) -> MemoryFuture<Vec<Relationship>>;
 }

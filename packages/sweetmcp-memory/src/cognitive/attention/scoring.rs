@@ -4,8 +4,7 @@
 //! top memory retrieval, and attention score management with zero allocation
 //! patterns and blazing-fast performance.
 
-use crate::cognitive::attention::core::*;
-use crate::cognitive::attention::computation::AttentionUtils;
+use super::{AttentionMechanism, AttentionUtils};
 
 impl AttentionMechanism {
     /// Score memories based on similarity to query

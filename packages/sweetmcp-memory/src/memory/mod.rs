@@ -7,14 +7,16 @@ pub mod filter;
 pub mod history;
 pub mod lifecycle;
 pub mod manager;
+#[cfg(feature = "bench")]
+pub mod memory_benchmarks;
 pub mod memory_manager;
 pub mod memory_metadata;
 pub mod memory_node;
 pub mod memory_relationship;
 pub mod memory_schema;
 pub mod memory_stream;
-pub mod pending_types;
 pub mod memory_type;
+pub mod pending_types;
 pub mod procedural;
 pub mod query;
 pub mod relationship;

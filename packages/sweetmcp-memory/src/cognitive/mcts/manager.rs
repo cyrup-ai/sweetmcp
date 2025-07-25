@@ -1,86 +1,15 @@
-//! MCTS module coordination
+//! MCTS Manager - High-level MCTS operations coordination
 //!
-//! This module provides the main coordination layer for Monte Carlo Tree Search operations,
-//! integrating all submodules with blazing-fast performance and zero allocation optimizations.
+//! This module provides the MCTSManager for comprehensive MCTS management with
+//! optimization profiles, factory integration, and performance tracking.
 
-pub mod types;
-pub mod tree_operations;
-pub mod execution;
-pub mod analysis;
-pub mod actions;
-pub mod controller;
-pub mod runner;
-pub mod results;
-pub mod factory;
-
-// Re-export key types for ergonomic access
-pub use types::{
-    CodeState, MCTSNode, TreeStatistics, NodeStatistics, EfficiencyMetrics, ActionMetadata,
+use crate::cognitive::mcts::{
+    controller::MCTS,
+    factory::{MCTSFactory, OptimizationProfile},
+    results::{MCTSResult, MemoryUsage, PerformanceSummary},
+    tree_operations,
+    types::CodeState,
 };
-pub use tree_operations::{
-    TreeOperations, TreeEfficiency, OptimizationResult, EfficiencyCategory,
-};
-pub use execution::{
-    MCTSExecutor, ExecutionResult, ExecutionCategory, ExecutionRecommendation, 
-    ExecutionSummary, RecommendationPriority,
-};
-pub use analysis::{
-    TreeAnalyzer, PathInfo, NodeCriteria, NodeMatch, TreeStructureAnalysis,
-    VisitStatistics, Bottleneck, BottleneckType, BottleneckSeverity,
-};
-pub use actions::{
-    ActionGenerator, ActionApplicator, ActionCoordinator, CacheStatistics,
-    ApplicationStatistics, CoordinatorStatistics,
-};
-pub use controller::MCTS;
-pub use results::{MCTSResult, MemoryUsage, PerformanceSummary, MemoryDistribution};
-pub use factory::{MCTSFactory, OptimizationProfile, PerformanceRequirements};
-
-// Convenience macros for common MCTS operations
-#[macro_export]
-macro_rules! create_mcts {
-    ($state:expr, $analyzer:expr, $spec:expr, $objective:expr, $tx:expr) => {
-        MCTS::new($state, $analyzer, $spec, $objective, $tx).await
-    };
-    ($state:expr, $analyzer:expr, $spec:expr, $objective:expr, $tx:expr, $profile:expr) => {
-        MCTSFactory::create_with_profile($state, $analyzer, $spec, $objective, $tx, $profile).await
-    };
-}
-
-#[macro_export]
-macro_rules! run_mcts {
-    ($mcts:expr, $iterations:expr) => {
-        $mcts.run($iterations).await
-    };
-    ($mcts:expr, $iterations:expr, parallel) => {
-        $mcts.run_parallel($iterations).await
-    };
-    ($mcts:expr, $iterations:expr, adaptive) => {
-        $mcts.run_adaptive($iterations, 1000, $iterations * 2).await
-    };
-}
-
-#[macro_export]
-macro_rules! mcts_factory {
-    (speed, $($args:expr),*) => {
-        MCTSFactory::create_speed_optimized($($args),*).await
-    };
-    (quality, $($args:expr),*) => {
-        MCTSFactory::create_quality_optimized($($args),*).await
-    };
-    (balanced, $($args:expr),*) => {
-        MCTSFactory::create_balanced($($args),*).await
-    };
-    (memory, $($args:expr),*) => {
-        MCTSFactory::create_memory_optimized($($args),*).await
-    };
-    (realtime, $($args:expr),*) => {
-        MCTSFactory::create_realtime($($args),*).await
-    };
-    (batch, $($args:expr),*) => {
-        MCTSFactory::create_batch_processing($($args),*).await
-    };
-}
 
 /// Comprehensive MCTS manager for high-level operations
 pub struct MCTSManager {

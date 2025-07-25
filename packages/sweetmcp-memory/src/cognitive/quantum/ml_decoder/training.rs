@@ -11,7 +11,6 @@ use super::gradients::*;
 use super::quantum_ops::*;
 use super::config::*;
 
-use super::core::{MLDecoder, OptimizationBackend, GradientMethod};
 
 impl MLDecoder {
     /// Comprehensive training pipeline that coordinates all training aspects

@@ -173,7 +173,7 @@ impl QuantumBackpropagator {
         base_learning_rate: f64,
     ) -> Result<BackpropagationResult, CognitiveError> {
         if rewards.len() != weights.len() {
-            return Err(CognitiveError::InvalidParameter(
+            return Err(CognitiveError::InvalidQuantumState(
                 "Rewards and weights must have the same length".to_string()
             ));
         }

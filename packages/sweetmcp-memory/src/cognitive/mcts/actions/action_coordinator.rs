@@ -9,7 +9,7 @@ use std::time::Instant;
 use std::sync::Arc;
 use super::super::types::{ActionMetadata, NodeStatistics, CodeState};
 use super::action_generator::ActionGenerator;
-use crate::cognitive::types::{OptimizationSpec};
+use crate::vector::async_vector_optimization::OptimizationSpec;
 use crate::cognitive::committee::EvaluationCommittee;
 
 /// Action coordinator for managing MCTS action execution

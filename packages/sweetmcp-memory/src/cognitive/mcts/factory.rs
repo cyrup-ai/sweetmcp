@@ -10,7 +10,8 @@ use tracing::debug;
 
 use crate::cognitive::committee::CommitteeEvent;
 use crate::cognitive::performance::PerformanceAnalyzer;
-use crate::cognitive::types::{CognitiveError, OptimizationSpec};
+use crate::cognitive::types::CognitiveError;
+use crate::vector::async_vector_optimization::OptimizationSpec;
 
 use super::{
     types::CodeState,

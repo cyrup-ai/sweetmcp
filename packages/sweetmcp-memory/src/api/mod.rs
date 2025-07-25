@@ -1,6 +1,8 @@
 //! API module for exposing memory system functionality
 //! This module is feature-gated with the "api" feature
 
+pub mod sdk;
+
 // TODO: Implement these modules
 // #[cfg(feature = "api")]
 // pub mod routes;

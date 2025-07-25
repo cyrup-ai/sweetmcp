@@ -3,8 +3,9 @@
 //! This module provides blazing-fast timeout handling with zero allocation
 //! optimizations and elegant fallback strategies for resilient committee operations.
 
-use crate::cognitive::mcts::CodeState;
-use crate::cognitive::types::{CognitiveError, OptimizationSpec};
+use crate::cognitive::mcts::types::node_types::CodeState;
+use crate::cognitive::types::CognitiveError;
+use crate::vector::async_vector_optimization::OptimizationSpec;
 use super::super::core::ConsensusDecision;
 use std::time::Duration;
 use tokio::time::timeout;

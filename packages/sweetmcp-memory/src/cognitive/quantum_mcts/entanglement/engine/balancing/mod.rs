@@ -22,10 +22,8 @@ use std::collections::HashMap;
 use tracing::debug;
 
 use crate::cognitive::types::CognitiveError;
-use super::super::super::super::{
-    analysis::NetworkTopology,
-    node_state::QuantumMCTSNode,
-};
+use super::super::analysis::NetworkTopology;
+use crate::cognitive::quantum_mcts::node_state::QuantumMCTSNode;
 
 /// High-level balancing coordinator with ergonomic interface
 pub struct BalancingCoordinator {

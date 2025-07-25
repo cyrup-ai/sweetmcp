@@ -9,6 +9,12 @@ use super::counters::{EntanglementCounters, CounterSnapshot, CounterDelta};
 /// Performance calculation utilities for entanglement metrics
 pub struct MetricsCalculator;
 
+/// Alias for backward compatibility
+pub type PerformanceCalculations = MetricsCalculator;
+
+/// Alias for backward compatibility 
+pub type PerformanceSnapshot = ComprehensiveMetrics;
+
 impl MetricsCalculator {
     /// Calculate success rate for entanglement operations
     pub fn calculate_success_rate(counters: &EntanglementCounters) -> f64 {
@@ -409,6 +415,9 @@ impl MetricsCalculator {
         }
     }
 }
+
+/// Alias for backward compatibility
+pub type TrendAnalysis = PerformanceTrend;
 
 /// Comprehensive performance metrics
 #[derive(Debug, Clone)]

@@ -4,20 +4,36 @@
 //! including stabilizer codes, topological codes, surface codes, and color codes
 //! with zero-allocation patterns and blazing-fast performance.
 
-// Stabilizer quantum error correction
+// All quantum error correction modules
+pub mod circuit_builder;
+pub mod circuit_impl;
+pub mod circuits;
+pub mod codes;
+pub mod gate_impl;
+pub mod logical_qubits;
+pub mod measurements;
+pub mod quantum_circuits;
+pub mod quantum_error_correction;
+pub mod stabilizer_basic_operations;
 pub mod stabilizer_core_types;
-
-// Surface code quantum
-// Re-export surface code module
+pub mod stabilizer_css_types;
+pub mod stabilizer_decoders;
+pub mod stabilizer_mod;
+pub mod stabilizer_operations;
+pub mod stabilizer_types;
 pub mod surface_code;
+pub mod syndromes;
+pub mod topological_lattice;
+pub mod topological_lattice_types;
+pub mod topological_logical_operators;
+pub mod topological_pauli;
+pub mod topological_pauli_strings;
+pub mod topological_stabilizers;
+pub mod topological_types;
+pub mod types;
 
 // Backward compatibility alias
-pub use surface_code::SurfaceCode as QuantumErrorCorrection;
 pub use surface_code::SurfaceCode as TopologicalCode;
-pub use surface_code::SurfaceCode as ErrorCorrectionCode;
-
-// Main quantum error correction types
-pub mod quantum_error_correction;
 pub use quantum_error_correction::{
     QuantumErrorCorrection, ErrorCorrectionCode, ErrorCorrectionCodeType,
     CodeParameters, StabilizerGenerator, LogicalOperator, LogicalOperatorType,
@@ -26,7 +42,6 @@ pub use quantum_error_correction::{
 };
 
 // Core type definitions
-pub mod topological_types;
 pub use topological_types::*;
 
 // Ensure all types are properly exported (removed LogicalOperatorType duplicate)
@@ -37,61 +52,33 @@ pub use topological_types::{
 // Main error correction types for external use are now in quantum_error_correction module
 
 // Pauli operator implementations
-pub mod topological_pauli;
 pub use topological_pauli::{TopologicalPauli, PauliType};
-
-pub mod topological_pauli_strings;
 pub use topological_pauli_strings::PauliString;
-
-// Lattice structure and generation
-pub mod topological_lattice_types;
 pub use topological_lattice_types::{
     TopologicalLattice, LatticeVertex, LatticeEdge, LatticeFace, 
-    BoundaryConditions, LatticeStatistics
+    LatticeStatistics, BoundaryConditions
 };
 
-pub mod topological_lattice_generation;
 // Re-export generation methods through TopologicalLattice impl
 
 // Stabilizer generators and operations
-pub mod topological_stabilizers;
-pub use topological_stabilizers::{
+pub use self::topological_stabilizers::{
     TopologicalStabilizer, StabilizerGroup, StabilizerStatistics
 };
 
-pub mod topological_stabilizer_generation;
 // Re-export generation methods through StabilizerGroup impl
 
 // Logical operators
-pub mod topological_logical_operators;
 pub use topological_logical_operators::{
     TopologicalLogicalOperator, LogicalOperatorSet, LogicalOperatorStatistics
 };
 
-pub mod topological_logical_generation;
 // Re-export generation methods through LogicalOperatorSet impl
 
 use crate::cognitive::types::{CognitiveError, CognitiveResult};
 use crate::cognitive::quantum::Complex64;
 
-/// Main topological code implementation
-#[derive(Debug, Clone)]
-pub struct TopologicalCode {
-    /// Code type
-    pub code_type: TopologicalCodeType,
-    
-    /// Underlying lattice structure
-    pub lattice: TopologicalLattice,
-    
-    /// Stabilizer generators
-    pub stabilizers: StabilizerGroup,
-    
-    /// Logical operators
-    pub logical_operators: LogicalOperatorSet,
-    
-    /// Code parameters
-    pub parameters: TopologicalParameters,
-}
+// Main topological code implementation is now re-exported from surface_code
 
 /// Topological code parameters
 #[derive(Debug, Clone)]

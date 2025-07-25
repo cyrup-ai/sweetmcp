@@ -152,7 +152,7 @@ impl CSSCode {
     ) -> CognitiveResult<Self> {
         // Validate CSS structure
         if x_stabilizers.len() + z_stabilizers.len() != base_code.n - base_code.k {
-            return Err(CognitiveError::InvalidParameter(
+            return Err(CognitiveError::InvalidQuantumState(
                 "X and Z stabilizers must sum to n-k".to_string()
             ));
         }
@@ -161,7 +161,7 @@ impl CSSCode {
         for x_stab in &x_stabilizers {
             for z_stab in &z_stabilizers {
                 if !Self::stabilizers_commute(x_stab, z_stab) {
-                    return Err(CognitiveError::InvalidParameter(
+                    return Err(CognitiveError::InvalidQuantumState(
                         "X and Z stabilizers must commute".to_string()
                     ));
                 }
@@ -260,20 +260,20 @@ impl ClassicalCodeParams {
     ) -> CognitiveResult<Self> {
         // Validate dimensions
         if generator_matrix.len() != k {
-            return Err(CognitiveError::InvalidParameter(
+            return Err(CognitiveError::InvalidQuantumState(
                 format!("Generator matrix must have {} rows", k)
             ));
         }
 
         if parity_check_matrix.len() != n - k {
-            return Err(CognitiveError::InvalidParameter(
+            return Err(CognitiveError::InvalidQuantumState(
                 format!("Parity check matrix must have {} rows", n - k)
             ));
         }
 
         for row in &generator_matrix {
             if row.len() != n {
-                return Err(CognitiveError::InvalidParameter(
+                return Err(CognitiveError::InvalidQuantumState(
                     format!("Generator matrix rows must have length {}", n)
                 ));
             }
@@ -281,7 +281,7 @@ impl ClassicalCodeParams {
 
         for row in &parity_check_matrix {
             if row.len() != n {
-                return Err(CognitiveError::InvalidParameter(
+                return Err(CognitiveError::InvalidQuantumState(
                     format!("Parity check matrix rows must have length {}", n)
                 ));
             }

@@ -3,15 +3,16 @@
 //! This module provides the main coordination layer for Monte Carlo Tree Search operations,
 //! integrating all submodules with blazing-fast performance and zero allocation optimizations.
 
-pub mod types;
-pub mod tree_operations;
-pub mod execution;
-pub mod analysis;
 pub mod actions;
+pub mod analysis;
 pub mod controller;
-pub mod runner;
-pub mod results;
+pub mod execution;
 pub mod factory;
+pub mod manager;
+pub mod results;
+pub mod runner;
+pub mod tree_operations;
+pub mod types;
 
 // Re-export key types for ergonomic access
 pub use types::{
@@ -35,3 +36,4 @@ pub use actions::{
 pub use controller::MCTS;
 pub use results::{MCTSResult, MemoryUsage, PerformanceSummary, MemoryDistribution};
 pub use factory::{MCTSFactory, OptimizationProfile, PerformanceRequirements};
+pub use manager::MCTSManager;

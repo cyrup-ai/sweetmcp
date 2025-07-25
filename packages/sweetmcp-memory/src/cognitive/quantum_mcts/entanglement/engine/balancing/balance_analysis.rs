@@ -8,7 +8,7 @@ use tracing::debug;
 
 use crate::cognitive::types::CognitiveError;
 use super::super::super::super::{
-    analysis::NetworkTopology,
+    entanglement::analysis::NetworkTopology,
     node_state::QuantumMCTSNode,
 };
 

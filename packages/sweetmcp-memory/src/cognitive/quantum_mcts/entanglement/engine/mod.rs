@@ -4,6 +4,15 @@
 //! engine submodules with blazing-fast zero-allocation patterns and elegant
 //! ergonomic interfaces.
 
+pub mod balancing;
+pub mod core;
+pub mod core_types;
+pub mod factory;
+pub mod health;
+pub mod operations;
+pub mod optimization;
+pub mod pruning;
+
 use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -26,13 +35,10 @@ use super::super::{
 // Declare all engine submodules
 pub mod operation_types;
 pub mod engine_factory;
-pub mod operation_executor;
 pub mod combined_optimization;
 pub mod maintenance_statistics;
 pub mod maintenance_assessment;
 pub mod performance_grading;
-
-// Import submodule functionality (removed duplicate imports - using pub use instead)
 
 // Re-export all types for ergonomic usage
 pub use self::{
@@ -47,13 +53,6 @@ pub use self::{
     pruning::{PruningResult, PruningStrategy, StrengthStatistics, RecentPruningStatistics},
     health::{NetworkHealthReport, HealthCheckConfig, HealthIssue, IssueSeverity},
 };
-
-// Import engine core components
-mod core;
-mod optimization;
-mod pruning;
-mod balancing;
-mod health;
 
 /// Engine coordination facade for simplified high-level operations
 pub struct EngineCoordinator {

@@ -1,7 +1,8 @@
 //! Main committee implementation extracted from consensus.rs
 
-use crate::cognitive::mcts::CodeState;
-use crate::cognitive::types::{CognitiveError, OptimizationSpec};
+use crate::cognitive::mcts::types::node_types::CodeState;
+use crate::cognitive::types::CognitiveError;
+use crate::vector::async_vector_optimization::OptimizationSpec;
 use sha2::{Digest, Sha256};
 use std::collections::HashMap;
 use std::sync::Arc;

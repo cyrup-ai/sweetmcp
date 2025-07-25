@@ -9,12 +9,12 @@ pub use core::SurrealDBMemoryManager;
 pub use types::{MemoryNodeCreateContent, RelationshipCreateContent};
 
 // Module declarations
-mod types;
-mod trait_def;
-mod core;
-mod crud;
-mod relationships;
-mod search;
+pub mod types;
+pub mod trait_def;
+pub mod core;
+pub mod crud;
+pub mod relationships;
+pub mod search;
 
 // Re-export key functionality from submodules
 use crate::memory::memory_node::MemoryNode;
