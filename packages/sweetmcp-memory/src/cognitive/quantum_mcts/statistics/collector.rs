@@ -20,10 +20,12 @@ use super::{
         config::QuantumMCTSConfig,
     },
     types::QuantumTreeStatistics,
-    counter_snapshot::CounterSnapshot,
     calculation_engine::CalculationEngine,
     atomic_operations::AtomicOperationsManager,
 };
+
+// Re-export for public use
+pub use super::counter_snapshot::CounterSnapshot;
 
 /// Lock-free statistics collector with atomic operations
 pub struct QuantumStatisticsCollector {

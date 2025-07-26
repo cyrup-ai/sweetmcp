@@ -94,18 +94,18 @@ impl InfiniteOrchestrator {
         );
         
         // Run the optimization
-        let outcome = evolution.optimize().await
+        let result = evolution.optimize().await
             .map_err(|e| CognitiveError::OrchestrationError(e.to_string()))?;
         
         info!(
             "Iteration {} completed - Latency: {:.2}ms, Memory: {:.2}MB, Relevance: {:.2}%",
             plan.iteration,
-            outcome.final_latency,
-            outcome.final_memory,
-            outcome.final_relevance * 100.0
+            result.final_latency,
+            result.final_memory,
+            result.final_relevance * 100.0
         );
         
-        Ok(outcome)
+        Ok(result.outcome)
     }
 
     /// Check if an outcome is better than the current best

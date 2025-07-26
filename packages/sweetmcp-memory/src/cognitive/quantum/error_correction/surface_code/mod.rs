@@ -18,15 +18,18 @@ use std::time::Instant;
 
 // Re-export key types for ergonomic API
 pub use syndrome_detection::{
-    QubitPosition, PauliType, PauliOperator, StabilizerType, StabilizerGenerator,
+    QubitPosition, PauliOperator, StabilizerType, StabilizerGenerator,
     SurfaceCodeSyndrome, SyndromeDetector, SyndromeDetectionConfig, SyndromeDetectionMetrics,
 };
+// Import types directly from source
+pub use super::topological_pauli::PauliType;
+pub use super::topological_types::BoundaryType;
 pub use correction_algorithms::{
     LogicalError, LogicalErrorType, SurfaceCodeCorrection, CorrectionAlgorithm,
     ErrorChain, ChainType, SurfaceCodeCorrector, CorrectionMetrics, CorrectionConfig,
 };
 pub use layout_management::{
-    BoundaryType, SurfaceCodeLayout, QubitType, LayoutMetrics,
+    SurfaceCodeLayout, QubitType, LayoutMetrics,
     SurfaceCodeLayoutBuilder, OptimizationTarget, LayoutConstraints,
 };
 pub use logical_operations::{

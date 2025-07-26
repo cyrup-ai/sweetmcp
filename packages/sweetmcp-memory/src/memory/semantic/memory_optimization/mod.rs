@@ -27,10 +27,6 @@ pub use {
         CacheStatistics, ExecutionMetrics, OperationCache, OptimizationExecutor, OptimizationResult,
         OptimizationStrategy, PerformanceTrend, SafetyConstraints, SingleOptimizationResult,
     },
-    // From operations_implementations - re-export the OptimizationExecutor
-    operations_implementations::OptimizationExecutor,
-    // From operations_utilities - re-export the utility methods
-    operations_utilities::OptimizationExecutor as OptimizationUtils,
 };
 
 use std::collections::HashMap;
@@ -369,7 +365,7 @@ impl MemoryOptimizationCoordinator {
     }
 
     #[inline]
-    fn calculate_performance_metrics(&self, statistics: &MemoryStatistics) -> PerformanceMetrics {
+    fn calculate_performance_metrics(&self, _statistics: &MemoryStatistics) -> PerformanceMetrics {
         PerformanceMetrics {
             response_time_ms: 150.0, // Simulated
             throughput_ops_per_sec: 500.0, // Simulated

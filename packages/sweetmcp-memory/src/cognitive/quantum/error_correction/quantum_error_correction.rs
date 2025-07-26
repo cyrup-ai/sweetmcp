@@ -2,13 +2,28 @@
 //!
 //! This module provides comprehensive quantum error correction capabilities with zero allocation
 //! optimizations and blazing-fast performance for quantum computing operations.
+//!
+//! # Features
+//! - Stabilizer codes (CSS and non-CSS)
+//! - Topological codes (surface codes, color codes)
+//! - Error correction circuits
+//! - Performance metrics and statistics
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::time::Instant;
 
+// Re-export commonly used types for convenience
+pub use super::{
+    BoundaryType, ColorType, PauliType, StabilizerGroup, StabilizerStatistics,
+    TopologicalCodeType, TopologicalPauli, TopologicalStabilizer, TopologicalStabilizerType,
+};
+
 /// Main quantum error correction system
-#[derive(Debug, Clone)]
+///
+/// Handles multiple error correction codes and provides a unified interface
+/// for error correction operations across different code types.
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct QuantumErrorCorrection {
     /// Error correction configuration
     pub config: ErrorCorrectionConfig,
@@ -88,17 +103,20 @@ impl QuantumErrorCorrection {
 }
 
 /// Error correction code implementation
+///
+/// Represents a quantum error correction code with its associated
+/// stabilizers and logical operators.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ErrorCorrectionCode {
     /// Code name
     pub name: String,
-    /// Code type
+    /// Code type (surface code, color code, etc.)
     pub code_type: ErrorCorrectionCodeType,
-    /// Code parameters
+    /// Code parameters (distance, rate, etc.)
     pub parameters: CodeParameters,
-    /// Stabilizer generators
+    /// Stabilizer generators that define the code space
     pub stabilizers: Vec<StabilizerGenerator>,
-    /// Logical operators
+    /// Logical operators for encoded qubits
     pub logical_operators: Vec<LogicalOperator>,
 }
 
@@ -126,18 +144,23 @@ impl ErrorCorrectionCode {
 }
 
 /// Error correction code types
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+///
+/// Defines the different types of quantum error correction codes
+/// supported by the system.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum ErrorCorrectionCodeType {
-    /// Surface code
-    Surface,
-    /// Color code
-    Color,
-    /// Stabilizer code
-    Stabilizer,
-    /// Topological code
-    Topological,
-    /// CSS code
-    CSS,
+    /// 2D Surface code with open boundaries
+    SurfaceCode,
+    /// 2D Toric code with periodic boundaries
+    ToricCode,
+    /// Color code with hexagonal or square lattice
+    ColorCode,
+    /// Generic topological code
+    TopologicalCode,
+    /// Generic stabilizer code
+    StabilizerCode,
+    /// CSS (Calderbank-Shor-Steane) code
+    CSSCode,
 }
 
 /// Code parameters
@@ -154,36 +177,57 @@ pub struct CodeParameters {
 }
 
 /// Stabilizer generator
+///
+/// Represents a generator of the stabilizer group that defines the code space.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct StabilizerGenerator {
-    /// Generator ID
-    pub id: String,
-    /// Pauli operators
-    pub pauli_operators: Vec<PauliOperator>,
-    /// Generator weight
+    /// Pauli string representation (e.g., "XIXI")
+    pub pauli_string: String,
+    /// Weight of the stabilizer (number of non-identity terms)
     pub weight: usize,
+    /// Whether it's an X-type or Z-type stabilizer
+    pub is_x_type: bool,
+    /// Phase factor (1 or -1)
+    pub phase: i8,
+    /// Qubit indices this stabilizer acts on
+    pub support: Vec<usize>,
 }
 
 /// Logical operator
+///
+/// Represents a logical operation on the encoded qubits.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LogicalOperator {
-    /// Operator ID
-    pub id: String,
-    /// Operator type
+    /// Pauli string representation (e.g., "XIXI")
+    pub pauli_string: String,
+    /// Type of logical operator (X, Y, Z)
     pub operator_type: LogicalOperatorType,
-    /// Pauli string
-    pub pauli_string: Vec<PauliOperator>,
+    /// Weight of the operator (number of non-identity terms)
+    pub weight: usize,
+    /// Qubit indices this operator acts on
+    pub support: Vec<usize>,
+    /// Whether this is a bare or dressed operator
+    pub is_dressed: bool,
 }
 
 /// Logical operator types
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+///
+/// Defines the types of logical operations that can be performed
+/// on encoded qubits.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum LogicalOperatorType {
-    /// Logical X operator
-    LogicalX,
-    /// Logical Z operator
-    LogicalZ,
-    /// Logical Y operator
-    LogicalY,
+    /// Logical X operator (bit-flip)
+    X,
+    /// Logical Y operator (combined bit and phase flip)
+    Y,
+    /// Logical Z operator (phase-flip)
+    Z,
+    /// Hadamard operator
+    H,
+    /// Phase operator
+    S,
+    /// π/8 operator
+    T,
 }
 
 /// Pauli operator
@@ -200,25 +244,36 @@ pub enum PauliOperator {
 }
 
 /// Error correction configuration
-#[derive(Debug, Clone)]
+///
+/// Contains parameters that control the behavior of the error correction process.
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ErrorCorrectionConfig {
-    /// Error detection threshold
+    /// Maximum number of error correction rounds to attempt
+    pub max_rounds: usize,
+    /// Error threshold for correction (0.0 to 1.0)
     pub error_threshold: f64,
-    /// Correction factor
-    pub correction_factor: f64,
-    /// Maximum correction attempts
-    pub max_correction_attempts: usize,
-    /// Enable syndrome extraction
-    pub enable_syndrome_extraction: bool,
+    /// Whether to use parallel processing for improved performance
+    pub parallel_processing: bool,
+    /// Number of threads to use (if parallel processing is enabled)
+    pub num_threads: usize,
+    /// Whether to enable adaptive error correction
+    pub adaptive_correction: bool,
+    /// Maximum number of syndromes to consider for adaptive correction
+    pub max_syndromes: usize,
+    /// Whether to enable fault-tolerant operations
+    pub fault_tolerant: bool,
 }
 
 impl Default for ErrorCorrectionConfig {
     fn default() -> Self {
         Self {
+            max_rounds: 10,
             error_threshold: 0.1,
-            correction_factor: 0.9,
-            max_correction_attempts: 10,
-            enable_syndrome_extraction: true,
+            parallel_processing: true,
+            num_threads: 4,
+            adaptive_correction: true,
+            max_syndromes: 100,
+            fault_tolerant: false,
         }
     }
 }
@@ -258,45 +313,82 @@ impl ErrorCorrectionStatistics {
 }
 
 /// Error correction metrics
-#[derive(Debug, Clone)]
+///
+/// Tracks performance metrics for error correction operations in real-time.
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ErrorCorrectionMetrics {
-    /// Total correction time
-    pub total_correction_time_us: u64,
-    /// Peak memory usage
-    pub peak_memory_bytes: usize,
-    /// Current active corrections
-    pub active_corrections: usize,
-    /// Last update timestamp
-    pub last_updated: Instant,
+    /// Start time of current correction
+    #[serde(skip_serializing, skip_deserializing)]
+    start_time: Instant,
+    /// Total correction time in microseconds
+    total_correction_time_us: f64,
+    /// Number of corrections performed
+    num_corrections: u64,
+    /// Moving average of correction time
+    moving_avg_correction_time_us: f64,
+    /// Peak memory usage in bytes
+    pub peak_memory_usage: u64,
+    /// Current memory usage in bytes
+    pub current_memory_usage: u64,
+    /// Number of qubits being corrected
+    pub num_qubits: usize,
+    /// Code distance being used
+    pub code_distance: usize,
+    /// Error syndrome weights
+    pub syndrome_weights: Vec<usize>,
+    /// Number of syndrome extraction rounds
+    pub syndrome_rounds: u32,
 }
 
 impl ErrorCorrectionMetrics {
     /// Create new error correction metrics
     pub fn new() -> Self {
         Self {
-            total_correction_time_us: 0,
-            peak_memory_bytes: 0,
-            active_corrections: 0,
-            last_updated: Instant::now(),
+            start_time: Instant::now(),
+            total_correction_time_us: 0.0,
+            num_corrections: 0,
+            moving_avg_correction_time_us: 0.0,
+            peak_memory_usage: 0,
+            current_memory_usage: 0,
+            num_qubits: 0,
+            code_distance: 0,
+            syndrome_weights: Vec::new(),
+            syndrome_rounds: 0,
         }
     }
 
     /// Update correction time metrics
     pub fn update_correction_time(&mut self, correction_time_us: f64) {
-        self.total_correction_time_us += correction_time_us as u64;
+        self.total_correction_time_us += correction_time_us;
+        self.num_corrections += 1;
+        self.moving_avg_correction_time_us = self.total_correction_time_us / self.num_corrections as f64;
         self.last_updated = Instant::now();
     }
 }
 
 /// Correction result
-#[derive(Debug, Clone)]
+///
+/// Contains the outcome of an error correction operation.
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CorrectionResult {
+    /// Whether the correction was successful
+    pub success: bool,
     /// Number of errors detected
-    pub errors_detected: usize,
+    pub num_errors_detected: usize,
     /// Number of errors corrected
-    pub errors_corrected: usize,
-    /// Correction success rate
-    pub correction_success_rate: f64,
+    pub num_errors_corrected: usize,
+    /// Correction time in microseconds
+    pub correction_time_us: f64,
+    /// Any additional information about the correction
+    pub info: String,
+    /// Error syndrome (if any)
+    pub syndrome: Option<Vec<u8>>,
+    /// Whether a logical error occurred
+    pub logical_error: bool,
+    /// Number of syndrome extraction rounds performed
+    pub syndrome_rounds: u32,
+    /// Memory usage in bytes
+    pub memory_usage_bytes: u64,
 }
 
 /// Error correction errors

@@ -43,7 +43,7 @@ impl McpBridge {
                     warn!(
                         "Slow MCP server response: {:?} for request: {}",
                         duration,
-                        json_rpc_request.get("method").unwrap_or(&Value::Null)
+                        json_rpc_request.get("method").unwrap_or(&serde_json::Value::Null)
                     );
                 }
                 
@@ -72,7 +72,7 @@ impl McpBridge {
         let mut responses = Vec::with_capacity(requests.len());
 
         // Process requests concurrently with controlled parallelism
-        let semaphore = tokio::sync::Semaphore::new(10); // Limit concurrent requests
+        let semaphore = std::sync::Arc::new(tokio::sync::Semaphore::new(10)); // Limit concurrent requests
         let mut tasks = Vec::new();
 
         for request in requests {
@@ -138,13 +138,16 @@ impl McpBridge {
                     return response;
                 }
                 Err(error) => {
-                    last_error = Some(error);
+                    let error_string = error.to_string();
                     
                     // Don't retry on client errors (4xx status codes)
-                    if error.to_string().contains("400") || error.to_string().contains("401") ||
-                       error.to_string().contains("403") || error.to_string().contains("404") {
+                    if error_string.contains("400") || error_string.contains("401") ||
+                       error_string.contains("403") || error_string.contains("404") {
+                        last_error = Some(error);
                         break;
                     }
+                    
+                    last_error = Some(error);
                 }
             }
         }

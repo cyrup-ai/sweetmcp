@@ -100,6 +100,42 @@ impl VectorStore for InMemoryVectorStore {
         
         PendingVectorOp::new(rx)
     }
+    
+    fn update(
+        &self,
+        id: String,
+        vector: Vec<f32>,
+        metadata: Option<serde_json::Value>,
+    ) -> PendingVectorOp {
+        let (tx, rx) = oneshot::channel();
+        let store = self.clone();
+        
+        tokio::spawn(async move {
+            // First remove the existing vector
+            let _ = store.remove_vector_internal(&id).await;
+            // Then add the new one
+            let result = store.add_vector_internal(id, vector, metadata).await;
+            let _ = tx.send(result);
+        });
+        
+        PendingVectorOp::new(rx)
+    }
+    
+    fn delete(&self, id: String) -> PendingVectorOp {
+        self.remove(id)
+    }
+    
+    fn embed(&self, _text: String) -> PendingEmbedding {
+        let (tx, rx) = oneshot::channel();
+        
+        // In a real implementation, this would call an embedding model
+        // For now, return an error since this is just a stub
+        tokio::spawn(async move {
+            let _ = tx.send(Err(Error::NotImplemented("Embedding not implemented".to_string())));
+        });
+        
+        PendingEmbedding::new(rx)
+    }
 }
 
 impl InMemoryVectorStore {
@@ -289,10 +325,10 @@ impl InMemoryVectorStore {
 
     /// Check if metadata matches filter
     #[inline]
-    fn matches_filter(&self, metadata: &serde_json::Value, filter: &MemoryFilter) -> bool {
+    fn matches_filter(&self, metadata: &serde_json::Value, _filter: &MemoryFilter) -> bool {
         // Simplified filter matching - can be extended based on MemoryFilter implementation
-        match (metadata, filter) {
-            (serde_json::Value::Object(meta_obj), _) => {
+        match metadata {
+            serde_json::Value::Object(_meta_obj) => {
                 // Check if any filter criteria match
                 // This is a simplified implementation - extend based on actual MemoryFilter structure
                 true // Placeholder - implement actual filter logic
@@ -493,11 +529,89 @@ impl Clone for InMemoryVectorStore {
 }
 
 /// Distance metric enumeration for range search
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum DistanceMetric {
+    /// Euclidean distance (L2 norm)
     Euclidean,
+    /// Manhattan distance (L1 norm)
     Manhattan,
+    /// Cosine similarity (1 - cosine)
     Cosine,
+    /// Dot product similarity
+    DotProduct,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use approx::assert_relative_eq;
+
+    #[test]
+    fn test_distance_metric_euclidean() {
+        let a = [1.0, 0.0];
+        let b = [0.0, 1.0];
+        let distance = DistanceMetric::Euclidean.distance(&a, &b);
+        assert_relative_eq!(distance, 2.0f32.sqrt(), epsilon = 1e-6);
+    }
+
+    #[test]
+    fn test_distance_metric_manhattan() {
+        let a = [1.0, 2.0];
+        let b = [3.0, 5.0];
+        let distance = DistanceMetric::Manhattan.distance(&a, &b);
+        assert_relative_eq!(distance, 5.0); // |1-3| + |2-5| = 2 + 3 = 5
+    }
+
+    #[test]
+    fn test_distance_metric_cosine() {
+        let a = [1.0, 0.0];
+        let b = [0.0, 1.0];
+        let distance = DistanceMetric::Cosine.distance(&a, &b);
+        assert_relative_eq!(distance, 1.0, epsilon = 1e-6); // 90 degrees -> cos(90) = 0 -> 1-0 = 1
+        
+        // Test with same vector (0 distance)
+        let distance_same = DistanceMetric::Cosine.distance(&a, &a);
+        assert_relative_eq!(distance_same, 0.0, epsilon = 1e-6);
+    }
+
+    #[test]
+    fn test_distance_metric_dot_product() {
+        let a = [1.0, 0.0];
+        let b = [0.0, 1.0];
+        let distance = DistanceMetric::DotProduct.distance(&a, &b);
+        assert_relative_eq!(distance, 0.0, epsilon = 1e-6); // Orthogonal vectors
+        
+        // Test with same vector (normalized)
+        let norm = 2.0f32.sqrt();
+        let a_norm = [1.0/norm, 1.0/norm];
+        let distance_same = DistanceMetric::DotProduct.distance(&a_norm, &a_norm);
+        assert_relative_eq!(distance_same, -1.0, epsilon = 1e-6); // Negative because we return -dot product
+    }
+
+    #[test]
+    fn test_serialize_deserialize() {
+        let metrics = vec![
+            DistanceMetric::Euclidean,
+            DistanceMetric::Manhattan,
+            DistanceMetric::Cosine,
+            DistanceMetric::DotProduct,
+        ];
+
+        for metric in metrics {
+            let serialized = serde_json::to_string(&metric).unwrap();
+            let deserialized: DistanceMetric = serde_json::from_str(&serialized).unwrap();
+            assert_eq!(metric, deserialized);
+        }
+    }
+
+    #[test]
+    fn test_typical_ranges() {
+        assert_eq!(DistanceMetric::Euclidean.typical_range(), (0.0, 2.0));
+        assert_eq!(DistanceMetric::Manhattan.typical_range(), (0.0, 2.0));
+        assert_eq!(DistanceMetric::Cosine.typical_range(), (0.0, 2.0));
+        assert_eq!(DistanceMetric::DotProduct.typical_range(), (-1.0, 1.0));
+    }
 }
 
 impl DistanceMetric {
@@ -508,22 +622,68 @@ impl DistanceMetric {
             DistanceMetric::Euclidean => "euclidean",
             DistanceMetric::Manhattan => "manhattan",
             DistanceMetric::Cosine => "cosine",
+            DistanceMetric::DotProduct => "dot_product",
         }
     }
 
     /// Check if metric is symmetric
     #[inline]
     pub fn is_symmetric(&self) -> bool {
-        true // All implemented metrics are symmetric
+        match self {
+            DistanceMetric::Euclidean | 
+            DistanceMetric::Manhattan | 
+            DistanceMetric::Cosine => true,
+            DistanceMetric::DotProduct => false, // Dot product is not symmetric
+        }
     }
 
     /// Get typical range for this metric
-    #[inline]
     pub fn typical_range(&self) -> (f32, f32) {
         match self {
-            DistanceMetric::Euclidean => (0.0, f32::INFINITY),
-            DistanceMetric::Manhattan => (0.0, f32::INFINITY),
-            DistanceMetric::Cosine => (0.0, 2.0), // 1 - (-1) to 1 - 1
+            DistanceMetric::Euclidean => (0.0, 2.0),  // For normalized vectors
+            DistanceMetric::Manhattan => (0.0, 2.0),  // For normalized vectors
+            DistanceMetric::Cosine => (0.0, 2.0),    // 1 - cos(θ) where θ ∈ [0,π]
+            DistanceMetric::DotProduct => (-1.0, 1.0), // For normalized vectors, dot product is in [-1, 1]
+        }
+    }
+
+    /// Calculate the distance between two vectors using this metric
+    /// 
+    /// # Panics
+    /// Panics if the vectors have different lengths
+    #[inline]
+    pub fn distance(&self, a: &[f32], b: &[f32]) -> f32 {
+        assert_eq!(a.len(), b.len(), "Vectors must have the same length");
+        
+        match self {
+            DistanceMetric::Euclidean => {
+                a.iter()
+                    .zip(b.iter())
+                    .map(|(&x, &y)| (x - y).powi(2))
+                    .sum::<f32>()
+                    .sqrt()
+            }
+            DistanceMetric::Manhattan => {
+                a.iter()
+                    .zip(b.iter())
+                    .map(|(&x, &y)| (x - y).abs())
+                    .sum()
+            }
+            DistanceMetric::Cosine => {
+                let dot: f32 = a.iter().zip(b.iter()).map(|(&x, &y)| x * y).sum();
+                let norm_a: f32 = a.iter().map(|&x| x * x).sum::<f32>().sqrt();
+                let norm_b: f32 = b.iter().map(|&y| y * y).sum::<f32>().sqrt();
+                
+                if norm_a == 0.0 || norm_b == 0.0 {
+                    return 1.0; // Handle zero-vector case
+                }
+                
+                1.0 - (dot / (norm_a * norm_b))
+            }
+            DistanceMetric::DotProduct => {
+                // For normalized vectors, this will be in [-1, 1]
+                -a.iter().zip(b.iter()).map(|(&x, &y)| x * y).sum::<f32>()
+            }
         }
     }
 }

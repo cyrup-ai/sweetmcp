@@ -198,30 +198,10 @@ impl Default for RecentPerformance {
 }
 
 /// Performance trend enumeration
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum PerformanceTrend {
-    Improving,
-    Stable,
-    Declining,
-}
+// Re-export from canonical location
+pub use crate::cognitive::quantum_mcts::entanglement::metrics::performance_trends::PerformanceTrend;
 
-impl PerformanceTrend {
-    /// Get trend description
-    #[inline]
-    pub fn description(&self) -> &'static str {
-        match self {
-            PerformanceTrend::Improving => "Performance is improving",
-            PerformanceTrend::Stable => "Performance is stable",
-            PerformanceTrend::Declining => "Performance is declining",
-        }
-    }
-
-    /// Check if trend is positive
-    #[inline]
-    pub fn is_positive(&self) -> bool {
-        matches!(self, PerformanceTrend::Improving | PerformanceTrend::Stable)
-    }
-}
+// impl block removed - using canonical implementation from performance_trends.rs
 
 /// Detailed metrics summary
 #[derive(Debug, Clone)]
@@ -256,6 +236,10 @@ impl MetricsSummary {
             PerformanceTrend::Improving => 1.0,
             PerformanceTrend::Stable => 0.8,
             PerformanceTrend::Declining => 0.4,
+            PerformanceTrend::Degrading => 0.3,  // Same as Declining since they're synonyms
+            PerformanceTrend::Volatile => 0.5,   // Middle ground for volatility
+            PerformanceTrend::Unknown => 0.6,    // Slightly below stable for unknown
+            PerformanceTrend::Insufficient => 0.6, // Same as unknown for insufficient data
         };
         let health_score = if self.is_healthy { 1.0 } else { 0.5 };
 

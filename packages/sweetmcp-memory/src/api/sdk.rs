@@ -5,12 +5,13 @@ use std::sync::Arc;
 use serde_json::Value;
 
 use crate::memory::memory_manager::MemoryManager;
+use crate::memory::{MemoryNode, MemoryType};
 use crate::vector::vector_search::{VectorSearch, SearchOptions};
 use crate::llm::completion::CompletionService;
 use crate::llm::content_analyzer::LLMContentAnalyzer;
 use crate::utils::error::Result;
-use crate::schema::memory_schema::Memory;
-use crate::schema::relationship_schema::Relationship;
+// Removed less decomposed Memory schema - using MemoryNode instead
+use crate::memory::memory_relationship::MemoryRelationship;
 
 /// Memory SDK for interacting with mem0
 pub struct MemorySDK {
@@ -48,11 +49,24 @@ impl MemorySDK {
         metadata: Option<Value>,
         embedding: Option<&[f32]>,
     ) -> Result<String> {
-        self.memory_manager.create_memory(content, metadata, embedding).await
+        let mut memory_node = MemoryNode::new(content.to_string(), MemoryType::Fact);
+        if let Some(meta) = metadata {
+            // Convert Value to MemoryMetadata through custom field
+            if let serde_json::Value::Object(ref map) = meta {
+                for (key, value) in map {
+                    memory_node = memory_node.with_custom_metadata(key.clone(), value.to_string());
+                }
+            }
+        }
+        if let Some(emb) = embedding {
+            memory_node.embedding = Some(emb.to_vec());
+        }
+        let result = self.memory_manager.create_memory(memory_node).await?;
+        Ok(result.id)
     }
     
     /// Get a memory by ID
-    pub async fn get_memory(&self, id: &str) -> Result<Memory> {
+    pub async fn get_memory(&self, id: &str) -> Result<Option<MemoryNode>> {
         self.memory_manager.get_memory(id).await
     }
     
@@ -64,12 +78,34 @@ impl MemorySDK {
         metadata: Option<Value>,
         embedding: Option<&[f32]>,
     ) -> Result<()> {
-        self.memory_manager.update_memory(id, content, metadata, embedding).await
+        // First get the existing memory
+        let mut memory_node = self.memory_manager.get_memory(id).await?
+            .ok_or_else(|| crate::utils::error::Error::NotFound(format!("Memory with id {} not found", id)))?;
+        
+        // Update fields if provided
+        if let Some(new_content) = content {
+            memory_node.content = new_content.to_string();
+        }
+        if let Some(new_metadata) = metadata {
+            // Convert Value to MemoryMetadata through custom field
+            if let serde_json::Value::Object(ref map) = new_metadata {
+                for (key, value) in map {
+                    memory_node = memory_node.with_custom_metadata(key.clone(), value.to_string());
+                }
+            }
+        }
+        if let Some(new_embedding) = embedding {
+            memory_node.embedding = Some(new_embedding.to_vec());
+        }
+        
+        self.memory_manager.update_memory(memory_node).await?;
+        Ok(())
     }
     
-    /// Delete a memory
+    /// Delete a memory  
     pub async fn delete_memory(&self, id: &str) -> Result<()> {
-        self.memory_manager.delete_memory(id).await
+        let _deleted = self.memory_manager.delete_memory(id).await?;
+        Ok(())
     }
     
     /// List memories
@@ -78,7 +114,7 @@ impl MemorySDK {
         limit: usize,
         offset: usize,
         filter: Option<&str>,
-    ) -> Result<Vec<Memory>> {
+    ) -> Result<Vec<MemoryNode>> {
         self.memory_manager.list_memories(limit, offset, filter).await
     }
     
@@ -88,7 +124,7 @@ impl MemorySDK {
         query: &str,
         limit: Option<usize>,
         min_similarity: Option<f32>,
-    ) -> Result<Vec<Memory>> {
+    ) -> Result<Vec<MemoryNode>> {
         let search_options = SearchOptions {
             limit,
             min_similarity,
@@ -101,7 +137,7 @@ impl MemorySDK {
         
         let mut memories = Vec::new();
         for result in search_results {
-            if let Ok(memory) = self.memory_manager.get_memory(&result.id).await {
+            if let Ok(Some(memory)) = self.memory_manager.get_memory(&result.id).await {
                 memories.push(memory);
             }
         }
@@ -117,17 +153,25 @@ impl MemorySDK {
         relationship_type: &str,
         metadata: Option<Value>,
     ) -> Result<String> {
-        self.memory_manager.create_relationship(source_id, target_id, relationship_type, metadata).await
+        // Create MemoryRelationship object for more decomposed interface
+        let relationship = crate::memory::MemoryRelationship::new(
+            source_id.to_string(),
+            target_id.to_string(),
+            relationship_type.to_string(),
+        );
+        let result = self.memory_manager.create_relationship(relationship).await?;
+        Ok(result.id)
     }
     
     /// Get a relationship by ID
-    pub async fn get_relationship(&self, id: &str) -> Result<Relationship> {
+    pub async fn get_relationship(&self, id: &str) -> Result<MemoryRelationship> {
         self.memory_manager.get_relationship(id).await
     }
     
     /// Delete a relationship
     pub async fn delete_relationship(&self, id: &str) -> Result<()> {
-        self.memory_manager.delete_relationship(id).await
+        let _deleted = self.memory_manager.delete_relationship(id).await?;
+        Ok(())
     }
     
     /// List relationships
@@ -136,7 +180,7 @@ impl MemorySDK {
         limit: usize,
         offset: usize,
         filter: Option<&str>,
-    ) -> Result<Vec<Relationship>> {
+    ) -> Result<Vec<MemoryRelationship>> {
         self.memory_manager.list_relationships(limit, offset, filter).await
     }
     
@@ -146,13 +190,14 @@ impl MemorySDK {
         memory_id: &str,
         relationship_type: Option<&str>,
         direction: Option<&str>,
-    ) -> Result<Vec<Relationship>> {
+    ) -> Result<Vec<MemoryRelationship>> {
         self.memory_manager.get_memory_relationships(memory_id, relationship_type, direction).await
     }
     
     /// Analyze content
     pub async fn analyze_content(&self, content: &str) -> Result<crate::llm::content_analyzer::ContentAnalysis> {
         self.content_analyzer.analyze_content(content).await
+            .map_err(|e| crate::utils::error::Error::LLM(e.to_string()))
     }
     
     /// Analyze relationship between contents
@@ -162,6 +207,7 @@ impl MemorySDK {
         content2: &str,
     ) -> Result<crate::llm::content_analyzer::RelationshipAnalysis> {
         self.content_analyzer.analyze_relationship(content1, content2).await
+            .map_err(|e| crate::utils::error::Error::LLM(e.to_string()))
     }
     
     /// Generate completion
@@ -170,6 +216,7 @@ impl MemorySDK {
         messages: Vec<std::collections::HashMap<String, String>>,
     ) -> Result<String> {
         self.completion_service.generate_completion(messages).await
+            .map_err(|e| crate::utils::error::Error::LLM(e.to_string()))
     }
     
     /// Generate completion with tools
@@ -179,6 +226,7 @@ impl MemorySDK {
         tools: Vec<std::collections::HashMap<String, String>>,
     ) -> Result<std::collections::HashMap<String, String>> {
         self.completion_service.generate_completion_with_tools(messages, tools).await
+            .map_err(|e| crate::utils::error::Error::LLM(e.to_string()))
     }
     
     /// Generate JSON completion
@@ -187,6 +235,7 @@ impl MemorySDK {
         messages: Vec<std::collections::HashMap<String, String>>,
     ) -> Result<String> {
         self.completion_service.generate_json_completion(messages).await
+            .map_err(|e| crate::utils::error::Error::LLM(e.to_string()))
     }
     
     /// Get the memory manager

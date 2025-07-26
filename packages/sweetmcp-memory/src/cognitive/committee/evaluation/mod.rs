@@ -6,6 +6,7 @@
 pub mod agent_orchestration;
 pub mod agent_simulation_batch;
 pub mod agent_simulation_core;
+pub mod agent_simulation_mod;
 pub mod agent_simulation_scores;
 pub mod builder;
 pub mod consensus;
@@ -24,3 +25,6 @@ pub use execution::EvaluationExecutor;
 pub use evaluation_simulation::AgentSimulator;
 pub use management::{ExtendedCommitteeEvent, EvaluationStatistics};
 pub use builder::CommitteeBuilder;
+
+// Wildcard exports for missing modules
+pub use agent_simulation_mod::*;

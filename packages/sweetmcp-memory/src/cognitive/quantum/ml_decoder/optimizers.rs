@@ -3,7 +3,7 @@
 //! This module provides training algorithms including Adam, SGD, and other
 //! optimization methods with zero allocation fast paths and blazing-fast performance.
 
-use super::{MLDecoder, TrainingData};
+use super::quantum_ops::{MLDecoder, TrainingData};
 use super::gradients::GradientMethod;
 use smallvec::SmallVec;
 

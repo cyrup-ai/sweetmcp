@@ -6,10 +6,9 @@
 // All semantic memory modules
 pub mod atomic_stats;
 pub mod confidence;
-pub mod config_types;
 pub mod configuration;
 pub mod coordinator;
-pub mod item;
+
 pub mod item_conversion;
 pub mod item_core;
 pub mod item_metadata_advanced;
@@ -41,14 +40,12 @@ pub mod memory_snapshots;
 pub mod memory_statistics;
 pub mod memory_stats;
 pub mod memory_utilities;
-pub mod relationship;
-pub mod relationship_types;
+
 pub mod relationships;
 pub mod semantic_item;
 pub mod semantic_relationship;
 pub mod statistics;
 pub mod stats_analysis;
-pub mod types;
 
 // Re-export key types for ergonomic access
 pub use confidence::{ConfidenceLevel, ConfidenceCalculator, ConfidenceStatistics};

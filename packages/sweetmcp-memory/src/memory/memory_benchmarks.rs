@@ -56,8 +56,8 @@ impl VectorStore {
 
 fn create_memory_vector(dim: usize) -> Vec<f32> {
     use rand::Rng;
-    let mut rng = rand::thread_rng();
-    (0..dim).map(|_| rng.gen_range(0.0..1.0)).collect()
+    let mut rng = rand::rng();
+    (0..dim).map(|_| rng.random_range(0.0..1.0)).collect()
 }
 
 /// Helper function to create a test runtime for async benchmarks

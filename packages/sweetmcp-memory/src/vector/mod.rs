@@ -13,6 +13,7 @@ pub mod vector_store;
 
 // Decomposed async vector store modules
 pub mod async_vector_core;
+pub mod async_vector_mod;
 pub mod async_vector_operations;
 pub mod async_vector_optimization;
 
@@ -25,8 +26,8 @@ pub use async_vector_core::InMemoryVectorStore;
 pub use async_vector_core::{VectorStoreMetrics, VectorStorageStats};
 pub use async_vector_operations::DistanceMetric as AsyncDistanceMetric;
 pub use async_vector_optimization::SearchStrategy;
-// Note: async_vector_mod was decomposed into async_vector_optimization
-// pub use async_vector_mod::{AggregationMethod, VectorCluster};
+// Re-export async_vector_mod types
+pub use async_vector_mod::*;
 pub use vector_index::*;
 pub use vector_operations::*;
 pub use vector_repository::*;
@@ -38,16 +39,8 @@ use std::pin::Pin;
 use std::task::{Context, Poll};
 use tokio::sync::oneshot;
 
-/// Distance metrics for vector comparison
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum DistanceMetric {
-    /// Euclidean distance (L2 norm)
-    Euclidean,
-    /// Cosine similarity
-    Cosine,
-    /// Dot product
-    DotProduct,
-}
+// Re-export DistanceMetric from async_vector_operations
+pub use async_vector_operations::DistanceMetric;
 
 /// A pending vector operation
 pub struct PendingVectorOp {

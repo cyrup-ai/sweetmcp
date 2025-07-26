@@ -6,18 +6,17 @@
 
 use std::collections::HashMap;
 use std::sync::Arc;
-use tokio::sync::{RwLock, Semaphore, mpsc};
+use tokio::sync::{Semaphore, mpsc};
 use tokio::time::{timeout, Duration};
 use futures::stream::{FuturesUnordered, StreamExt};
-use tracing::{debug, info, warn};
-use serde::{Deserialize, Serialize};
-use sha2::{Digest, Sha256};
+use tracing::warn;
+use sha2::Digest;
 
 use crate::cognitive::mcts::types::node_types::CodeState;
-use crate::cognitive::types::{CognitiveError, ImpactFactors};
+use crate::cognitive::types::CognitiveError;
 use crate::vector::async_vector_optimization::OptimizationSpec;
 use super::agents::{CommitteeAgent, AgentEvaluation};
-use super::agent_perspectives::AgentPerspective;
+use super::agents::AgentPerspective;
 use super::evaluation::{EvaluationRubric, ConsensusDecision, EvaluationContext, ScoringWeights};
 
 /// Committee configuration for evaluation behavior

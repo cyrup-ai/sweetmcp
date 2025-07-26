@@ -11,7 +11,8 @@ use std::collections::{HashMap, HashSet, VecDeque};
 use smallvec::SmallVec;
 use std::time::Instant;
 
-use super::syndrome_detection::{QubitPosition, PauliType, SurfaceCodeSyndrome};
+use super::syndrome_detection::{QubitPosition, SurfaceCodeSyndrome};
+use super::super::topological_pauli::PauliType;
 
 /// Logical error information
 #[derive(Debug, Clone)]

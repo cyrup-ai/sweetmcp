@@ -19,7 +19,7 @@ pub use quantum_ops::{
 pub use optimizers::OptimizationBackend;
 pub use gradients::GradientMethod;
 
-pub use training::{
+pub use config::{
     TrainingConfig, TrainingReport, CrossValidationReport, HyperparameterGrid,
     HyperparameterTrial, HyperparameterResult, EarlyStoppingConfig,
     LearningRateScheduler, MetricsTracker

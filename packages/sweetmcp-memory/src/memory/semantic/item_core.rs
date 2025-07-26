@@ -8,7 +8,8 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::HashMap;
 
-use super::types::{ConfidenceLevel, SemanticItemType};
+use super::confidence::ConfidenceLevel;
+use super::item_types::SemanticItemType;
 
 /// Semantic item representing knowledge, concepts, facts, or rules
 /// 

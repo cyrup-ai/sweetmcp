@@ -9,7 +9,8 @@ use crate::cognitive::types::CognitiveError;
 use super::{
     engine_core::QuantumEntanglementEngine,
     analysis::NetworkTopology,
-    engine_health::{EngineHealthReport, NetworkAnalysisReport, OptimizationPriority},
+    engine_health::{EngineHealthReport, NetworkAnalysisReport},
+    engine_health_types::OptimizationPriority,
 };
 use super::super::node_state::QuantumMCTSNode;
 

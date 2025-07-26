@@ -145,9 +145,9 @@ impl MemoryTrend {
         let mut sum_xy = 0.0;
         let mut sum_x2 = 0.0;
         
-        let start_time = self.usage_samples[0].0;
+        let _start_time = self.usage_samples[0].0;
         
-        for (i, (time, usage)) in self.usage_samples.iter().enumerate() {
+        for (i, (_time, usage)) in self.usage_samples.iter().enumerate() {
             let x = i as f64;
             let y = *usage as f64;
             

@@ -7,7 +7,7 @@ use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::sync::mpsc;
 use tokio::time::Duration;
-use tracing::{debug, error, info, warn};
+use tracing::{debug, error, info};
 
 use crate::cognitive::committee::{CommitteeEvent, EvaluationCommittee};
 use crate::cognitive::performance::PerformanceAnalyzer;

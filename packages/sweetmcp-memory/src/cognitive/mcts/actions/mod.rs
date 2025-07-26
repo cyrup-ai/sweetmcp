@@ -31,12 +31,12 @@ pub use action_coordinator::{
 };
 
 // Common imports for all submodules
-use super::types::{CodeState, ActionMetadata};
-use crate::cognitive::types::{CognitiveError, ImpactFactors};
+use super::types::CodeState;
+use crate::cognitive::types::CognitiveError;
 use crate::vector::async_vector_optimization::OptimizationSpec;
 use crate::cognitive::committee::EvaluationCommittee;
 use std::sync::Arc;
-use tracing::{debug, info};
+use tracing::info;
 
 /// Comprehensive action management facade for MCTS operations
 pub struct ActionManager {

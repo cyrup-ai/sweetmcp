@@ -18,6 +18,8 @@ pub enum MemoryTypeEnum {
     Working,
     /// Long-term memory (permanent storage)
     LongTerm,
+    /// Fact memory (factual information)
+    Fact,
     /// Custom memory type
     Custom(u8),
 }
@@ -30,6 +32,7 @@ impl fmt::Display for MemoryTypeEnum {
             MemoryTypeEnum::Procedural => write!(f, "procedural"),
             MemoryTypeEnum::Working => write!(f, "working"),
             MemoryTypeEnum::LongTerm => write!(f, "longterm"),
+            MemoryTypeEnum::Fact => write!(f, "fact"),
             MemoryTypeEnum::Custom(id) => write!(f, "custom_{}", id),
         }
     }
@@ -44,6 +47,7 @@ impl MemoryTypeEnum {
             10 if s.eq_ignore_ascii_case("procedural") => Ok(MemoryTypeEnum::Procedural),
             7 if s.eq_ignore_ascii_case("working") => Ok(MemoryTypeEnum::Working),
             8 if s.eq_ignore_ascii_case("longterm") => Ok(MemoryTypeEnum::LongTerm),
+            4 if s.eq_ignore_ascii_case("fact") => Ok(MemoryTypeEnum::Fact),
             _ => {
                 if s.len() > 7 && s.as_bytes().starts_with(b"custom_") {
                     let id_bytes = &s.as_bytes()[7..];
@@ -70,6 +74,7 @@ impl MemoryTypeEnum {
             MemoryTypeEnum::Procedural => "procedural",
             MemoryTypeEnum::Working => "working",
             MemoryTypeEnum::LongTerm => "longterm",
+            MemoryTypeEnum::Fact => "fact",
             MemoryTypeEnum::Custom(_) => "custom", // Base name, ID appended in Display
         }
     }
@@ -87,8 +92,9 @@ impl MemoryTypeEnum {
             MemoryTypeEnum::Working => 0,    // Highest priority
             MemoryTypeEnum::Episodic => 1,
             MemoryTypeEnum::Semantic => 2,
-            MemoryTypeEnum::Procedural => 3,
-            MemoryTypeEnum::LongTerm => 4,
+            MemoryTypeEnum::Fact => 3,
+            MemoryTypeEnum::Procedural => 4,
+            MemoryTypeEnum::LongTerm => 5,
             MemoryTypeEnum::Custom(id) => 128u8.saturating_add(*id), // Custom types have lower priority
         }
     }

@@ -4,7 +4,7 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use surrealdb::RecordId;
 
-use crate::memory::memory_node::MemoryType;
+use crate::memory::MemoryType;
 
 /// Database schema for memory nodes
 #[derive(Debug, Clone, Serialize, Deserialize)]

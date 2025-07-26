@@ -2,26 +2,22 @@
 
 use crate::SurrealDBMemoryManager;
 use crate::cognitive::{
-    CognitiveMemoryNode, CognitiveSettings, CognitiveState, QuantumSignature,
+    CognitiveMemoryNode, CognitiveSettings,
     attention::AttentionMechanism,
     evolution::EvolutionEngine,
-    llm_integration::{create_llm_provider, CognitiveQueryEnhancer, LLMProvider},
+    llm_integration::create_llm_provider,
     mesh::CognitiveMesh,
-    quantum::{EnhancedQuery, QuantumConfig, QuantumRouter, QueryIntent},
+    quantum::{QuantumConfig, QuantumRouter},
     state::CognitiveStateManager,
     subsystem_coordinator::SubsystemCoordinator,
-    types::EvolutionMetadata,
 };
 use crate::memory::{
     MemoryManager, MemoryNode, MemoryQuery, MemoryStream, MemoryType, PendingDeletion,
     PendingMemory, PendingRelationship, RelationshipStream,
 };
 use crate::utils::error::MemoryResult;
-use std::future::Future;
-use std::pin::Pin;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
-use surrealdb::Surreal;
 use smallvec::SmallVec;
 use crossbeam_channel::{bounded, Receiver, Sender};
 
@@ -122,7 +118,7 @@ pub struct CognitiveMemoryManager {
     /// Cognitive mesh components - lock-free access
     cognitive_mesh: Arc<CognitiveMesh>,
     quantum_router: Arc<QuantumRouter>,
-    evolution_engine: Arc<EvolutionEngine>, // Removed RwLock wrapper
+    evolution_engine: Arc<tokio::sync::RwLock<EvolutionEngine>>, // RwLock wrapper for concurrent access
 
     /// Subsystem coordinator - lock-free
     coordinator: SubsystemCoordinator,
@@ -173,7 +169,7 @@ impl CognitiveMemoryManager {
         db.use_ns(namespace)
             .use_db(database)
             .await
-            .map_err(|e| crate::utils::error::MemoryError::ConfigurationError(e.to_string()))?;
+            .map_err(|e| crate::utils::error::Error::Config(e.to_string()))?;
 
         let legacy_manager = SurrealDBMemoryManager::new(db);
         legacy_manager.initialize().await?;
@@ -206,7 +202,7 @@ impl CognitiveMemoryManager {
         let quantum_router = Arc::new(QuantumRouter::new(state_manager, quantum_config).await?);
 
         // Lock-free evolution engine
-        let evolution_engine = Arc::new(EvolutionEngine::new_lock_free(settings.evolution_rate));
+        let evolution_engine = Arc::new(tokio::sync::RwLock::new(EvolutionEngine::new_lock_free(settings.evolution_rate as f64)));
 
         let coordinator = SubsystemCoordinator::new_lock_free(
             legacy_manager.clone(),
@@ -353,6 +349,7 @@ impl CognitiveMemoryManager {
         memory: MemoryNode,
     ) -> MemoryResult<CognitiveMemoryNode> {
         coordinator.enhance_memory_cognitively_lock_free(memory).await
+            .map_err(|e| crate::utils::error::Error::Cognitive(e.to_string()))
     }
 
     /// Get operation statistics - lock-free access

@@ -12,8 +12,12 @@ use smallvec::SmallVec;
 use std::time::Instant;
 
 use super::{
-    syndrome_detection::{QubitPosition, PauliType, PauliOperator},
-    layout_management::{SurfaceCodeLayout, BoundaryType},
+    syndrome_detection::{QubitPosition, PauliOperator},
+    layout_management::SurfaceCodeLayout,
+};
+use super::super::{
+    topological_pauli::PauliType,
+    topological_types::BoundaryType,
 };
 
 /// Type of logical operator

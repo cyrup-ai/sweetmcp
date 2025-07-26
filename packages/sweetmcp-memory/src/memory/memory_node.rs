@@ -8,44 +8,7 @@ use serde_json;
 use std::fmt;
 
 use super::memory_metadata::MemoryMetadata;
-
-/// Types of memory that can be stored in the system
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
-pub enum MemoryType {
-    /// Episodic memory - experiences and events
-    Episodic,
-    /// Semantic memory - facts and knowledge
-    Semantic,
-    /// Procedural memory - skills and procedures
-    Procedural,
-    /// Custom memory type
-    Custom(String),
-}
-
-impl fmt::Display for MemoryType {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            MemoryType::Episodic => write!(f, "episodic"),
-            MemoryType::Semantic => write!(f, "semantic"),
-            MemoryType::Procedural => write!(f, "procedural"),
-            MemoryType::Custom(name) => write!(f, "custom:{}", name),
-        }
-    }
-}
-
-impl From<&str> for MemoryType {
-    fn from(s: &str) -> Self {
-        match s {
-            "episodic" => MemoryType::Episodic,
-            "semantic" => MemoryType::Semantic,
-            "procedural" => MemoryType::Procedural,
-            s if s.starts_with("custom:") => {
-                MemoryType::Custom(s.strip_prefix("custom:").unwrap_or(s).to_string())
-            }
-            _ => MemoryType::Custom(s.to_string()),
-        }
-    }
-}
+use super::memory_type::MemoryTypeEnum as MemoryType;
 
 /// A memory node in the memory system - cache-line aligned for optimal performance
 #[derive(Debug, Clone, Serialize, Deserialize)]

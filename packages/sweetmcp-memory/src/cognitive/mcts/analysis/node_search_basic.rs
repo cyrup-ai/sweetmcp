@@ -3,7 +3,7 @@
 //! This module provides basic MCTS node search functionality
 //! with zero-allocation patterns and blazing-fast performance.
 
-use super::super::super::types::{MCTSNode, CodeState};
+use super::super::super::types::MCTSNode;
 use super::node_search_types::{NodeCriteria, NodeMatch, NodeSortCriteria};
 use std::collections::HashMap;
 

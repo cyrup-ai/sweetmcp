@@ -5,7 +5,8 @@
 
 use super::memory::SemanticMemory;
 use super::item_core::SemanticItem;
-use super::types::{ConfidenceLevel, SemanticItemType};
+use super::confidence::ConfidenceLevel;
+use super::item_types::SemanticItemType;
 
 impl SemanticMemory {
     /// Find items by content substring
@@ -116,7 +117,7 @@ impl SemanticMemory {
     }
 
     /// Count relationships by type
-    pub fn count_relationships_by_type(&self) -> std::collections::HashMap<super::relationship_types::SemanticRelationshipType, usize> {
+    pub fn count_relationships_by_type(&self) -> std::collections::HashMap<super::relationships::relationship_types::SemanticRelationshipType, usize> {
         let mut counts = std::collections::HashMap::new();
         for relationship in &self.relationships {
             *counts.entry(relationship.relationship_type).or_insert(0) += 1;

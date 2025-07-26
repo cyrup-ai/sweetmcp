@@ -144,7 +144,11 @@ impl RecursiveImprovement {
             ],
             performance_gain: total_improvement as f32,
             quality_score: 0.8,
-            metadata: self.collect_final_metrics(&current_state).await?,
+            metadata: {
+                let mut metadata = std::collections::HashMap::new();
+                metadata.insert("metrics".to_string(), self.collect_final_metrics(&current_state).await?);
+                metadata
+            },
         })
     }
 

@@ -1,7 +1,7 @@
 //! Committee event system extracted from consensus.rs
 
 use super::evaluation_phases::{EvaluationPhase, RoundStatistics};
-use super::steering::{SteeringFeedback, FeedbackType};
+use super::steering::SteeringFeedback;
 use super::super::core::{AgentEvaluation, ConsensusDecision};
 
 /// Committee event enumeration with comprehensive event tracking
@@ -29,6 +29,13 @@ pub enum CommitteeEvent {
         phase: EvaluationPhase,
         error_message: String,
         retry_count: u32,
+    },
+
+    /// Agent started evaluation
+    AgentStarted {
+        agent_id: String,
+        phase: EvaluationPhase,
+        timestamp: std::time::Instant,
     },
 
     /// Evaluation phase completed
@@ -87,6 +94,7 @@ impl CommitteeEvent {
             Self::EvaluationStarted { .. } => "evaluation_started",
             Self::AgentEvaluation { .. } => "agent_evaluation",
             Self::AgentEvaluationFailed { .. } => "agent_evaluation_failed",
+            Self::AgentStarted { .. } => "agent_started",
             Self::PhaseCompleted { .. } => "phase_completed",
             Self::SteeringDecision { .. } => "steering_decision",
             Self::FinalDecision { .. } => "final_decision",

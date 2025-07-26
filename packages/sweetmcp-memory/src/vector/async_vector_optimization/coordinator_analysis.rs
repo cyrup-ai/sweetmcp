@@ -45,40 +45,10 @@ impl RecentPerformance {
 }
 
 /// Performance trend enumeration
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum PerformanceTrend {
-    Improving,
-    Stable,
-    Declining,
-}
+// Re-export from canonical location
+pub use crate::cognitive::quantum_mcts::entanglement::metrics::performance_trends::PerformanceTrend;
 
-impl PerformanceTrend {
-    /// Get trend description
-    #[inline]
-    pub fn description(&self) -> &'static str {
-        match self {
-            PerformanceTrend::Improving => "Performance is improving",
-            PerformanceTrend::Stable => "Performance is stable",
-            PerformanceTrend::Declining => "Performance is declining",
-        }
-    }
-
-    /// Check if trend is positive
-    #[inline]
-    pub fn is_positive(&self) -> bool {
-        matches!(self, PerformanceTrend::Improving | PerformanceTrend::Stable)
-    }
-
-    /// Get trend score (0.0-1.0)
-    #[inline]
-    pub fn score(&self) -> f64 {
-        match self {
-            PerformanceTrend::Improving => 1.0,
-            PerformanceTrend::Stable => 0.8,
-            PerformanceTrend::Declining => 0.4,
-        }
-    }
-}
+// impl block removed - using canonical implementation from performance_trends.rs
 
 /// Detailed metrics summary
 #[derive(Debug, Clone)]

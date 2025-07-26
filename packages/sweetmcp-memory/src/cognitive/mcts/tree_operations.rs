@@ -149,7 +149,7 @@ impl TreeOperations {
                 }
 
                 // Select random action
-                let action_index = rand::thread_rng().gen_range(0..possible_actions.len());
+                let action_index = rand::rng().random_range(0..possible_actions.len());
                 let action = &possible_actions[action_index];
 
                 // Apply action

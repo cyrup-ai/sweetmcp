@@ -34,7 +34,6 @@ use super::super::{
 
 // Declare all engine submodules
 pub mod operation_types;
-pub mod engine_factory;
 pub mod combined_optimization;
 pub mod maintenance_statistics;
 pub mod maintenance_assessment;
@@ -43,9 +42,9 @@ pub mod performance_grading;
 // Re-export all types for ergonomic usage
 pub use self::{
     operation_types::{EngineOperationType, EngineOperationResult, EngineOperationDetails},
-    engine_factory::{QuantumEntanglementEngineFactory, WorkloadType},
-    maintenance_statistics::{EngineStatistics, MaintenanceAssessment, MaintenancePriority, MaintenanceAction},
-    maintenance_assessment::{MaintenancePlan, ResourceRequirements},
+    factory::QuantumEntanglementEngineFactory,
+    maintenance_statistics::{EngineStatistics, MaintenancePriority, MaintenanceAction},
+    maintenance_assessment::{MaintenanceAssessment, MaintenancePlan, ResourceRequirements},
     performance_grading::{PerformanceGrades, EnginePerformanceReport, TrendDirection},
     balancing::{BalancingResult, NodeBalance, BalancingStrategy, NetworkBalanceAnalysis, DistributionStatistics},
     core::{QuantumEntanglementEngine, EngineStatus},
@@ -91,16 +90,17 @@ impl EngineCoordinator {
         QuantumEntanglementEngineFactory::create_adaptive(config, entanglement_graph).await
     }
     
-    /// Create engine optimized for specific workload
-    pub fn create_workload_optimized_engine(
-        &self,
-        config: QuantumMCTSConfig,
-        entanglement_graph: Arc<RwLock<EntanglementGraph>>,
-        workload_type: WorkloadType,
-    ) -> QuantumEntanglementEngine {
-        debug!("Creating workload-optimized engine: {:?}", workload_type);
-        QuantumEntanglementEngineFactory::create_for_workload(config, entanglement_graph, workload_type)
-    }
+    // TODO: Implement WorkloadType or remove this function
+    // /// Create engine optimized for specific workload
+    // pub fn create_workload_optimized_engine(
+    //     &self,
+    //     config: QuantumMCTSConfig,
+    //     entanglement_graph: Arc<RwLock<EntanglementGraph>>,
+    //     workload_type: WorkloadType,
+    // ) -> QuantumEntanglementEngine {
+    //     debug!("Creating workload-optimized engine: {:?}", workload_type);
+    //     QuantumEntanglementEngineFactory::create_for_workload(config, entanglement_graph, workload_type)
+    // }
     
     /// Perform comprehensive engine assessment
     pub async fn assess_engine_performance(

@@ -29,7 +29,6 @@ use crate::monitoring::metrics::MetricsCollector;
 // Re-export key types for ergonomic access
 pub use counters::{EntanglementCounters, CounterSnapshot};
 pub use calculations::{MetricsCalculator, ComprehensiveMetrics, PerformanceCalculations, PerformanceSnapshot, TrendAnalysis};
-pub use crate::cognitive::quantum_mcts::statistics::TrendAnalysis;
 pub use tracking::{
     PerformanceTracker, BatchPerformanceTracker, BatchStatistics, 
     InfluenceTracker, InfluenceStatistics, PerformanceCategory, TimingUtils
@@ -154,7 +153,7 @@ impl EntanglementMetrics {
     
     /// Record entanglement operation with timing
     #[inline]
-    pub fn record_operation(&self, duration: Duration) {
+    pub fn record_operation(&mut self, duration: Duration) {
         self.counters.record_entanglement_operation(duration);
         self.rolling_monitor.add_sample(duration);
         
@@ -454,7 +453,7 @@ impl EntanglementMetrics {
     }
     
     /// Time a closure and record the operation
-    pub fn time_operation<F, R>(&self, f: F) -> (R, Duration)
+    pub fn time_operation<F, R>(&mut self, f: F) -> (R, Duration)
     where
         F: FnOnce() -> R,
     {
@@ -469,7 +468,7 @@ impl EntanglementMetrics {
     }
     
     /// Time an async closure and record the operation
-    pub async fn time_operation_async<F, Fut, R>(&self, f: F) -> (R, Duration)
+    pub async fn time_operation_async<F, Fut, R>(&mut self, f: F) -> (R, Duration)
     where
         F: FnOnce() -> Fut,
         Fut: std::future::Future<Output = R>,

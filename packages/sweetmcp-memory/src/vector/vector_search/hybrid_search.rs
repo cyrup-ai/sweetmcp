@@ -425,7 +425,7 @@ pub fn apply_combination_strategy(
     vector_results: Vec<SearchResult>,
     keyword_results: Vec<SearchResult>,
     strategy: CombinationStrategy,
-    vector_weight: f32,
+    _vector_weight: f32,  // Marked as unused with underscore
 ) -> Vec<SearchResult> {
     match strategy {
         CombinationStrategy::WeightedAverage => {
@@ -527,7 +527,7 @@ fn combine_with_reciprocal_rank_fusion(
         let rrf_score = 1.0 / (k + (rank + 1) as f32);
         
         match combined_map.get_mut(&result.id) {
-            Some((existing_result, existing_score)) => {
+            Some((_existing_result, existing_score)) => {
                 *existing_score += rrf_score;
             }
             None => {

@@ -39,8 +39,18 @@ impl QuantumOrchestrator {
         event_tx: mpsc::Sender<CommitteeEvent>,
     ) -> Result<Self, CognitiveError> {
         let quantum_config = QuantumConfig::default();
-        let quantum_router = Arc::new(QuantumRouter::new(quantum_config));
-        let evolution_engine = Arc::new(CognitiveCodeEvolution::new());
+        let state_manager = Arc::new(crate::cognitive::state::CognitiveStateManager::new());
+        let quantum_router = Arc::new(QuantumRouter::new(state_manager, quantum_config).await?);
+        
+        // Create default optimization spec for evolution engine
+        let default_spec = Arc::new(crate::vector::async_vector_optimization::OptimizationSpec::default());
+        let evolution_engine = Arc::new(CognitiveCodeEvolution::new(
+            default_spec,
+            "// Initial code placeholder".to_string(),
+            100.0, // initial_latency
+            50.0,  // initial_memory  
+            0.8,   // initial_relevance
+        ));
 
         let recursive_improvement = RecursiveImprovement::new(
             config.clone(),

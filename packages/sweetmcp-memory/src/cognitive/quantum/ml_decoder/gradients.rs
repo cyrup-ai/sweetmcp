@@ -4,7 +4,7 @@
 //! backpropagation, parameter shift rule, finite differences, and automatic
 //! differentiation with zero allocation fast paths and blazing-fast performance.
 
-use super::{MLDecoder, InferenceEngine};
+use super::quantum_ops::{MLDecoder, InferenceEngine};
 
 /// Gradient computation methods for ML decoder training
 #[derive(Debug, Clone)]

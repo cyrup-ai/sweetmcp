@@ -9,7 +9,8 @@ use std::collections::HashMap;
 use std::time::{SystemTime, Duration};
 use tracing::{debug, info, warn};
 
-use super::memory_manager_core::{MemoryStatistics, CleanupConfig};
+// Re-export for public use
+pub use super::memory_manager_core::{MemoryStatistics, CleanupConfig};
 use super::confidence::ConfidenceLevel;
 use super::semantic_item::SemanticItem;
 use super::semantic_relationship::SemanticRelationship;

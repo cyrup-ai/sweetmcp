@@ -20,9 +20,10 @@ use super::{
     action_manager::ActionManager,
 };
 use super::super::{
-    node_state::{QuantumMCTSNode, QuantumNodeState, QuantumNodeFactory},
+    node_state::{QuantumMCTSNode, QuantumNodeState},
     config::QuantumMCTSConfig,
 };
+use super::node_creation::QuantumNodeFactory;
 
 /// Quantum expansion engine with zero-copy optimization
 pub struct QuantumExpander {
@@ -179,8 +180,8 @@ impl QuantumExpander {
 
         // Optimized selection based on quantum probabilities
         use rand::Rng;
-        let mut rng = rand::thread_rng();
-        let selection = rng.gen_range(0.0..1.0);
+        let mut rng = rand::rng();
+        let selection = rng.random_range(0.0..1.0);
         let mut cumulative = 0.0;
 
         for (i, &p) in probabilities.iter().enumerate() {

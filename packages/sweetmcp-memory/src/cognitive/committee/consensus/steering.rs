@@ -1,7 +1,6 @@
 //! Steering feedback system extracted from consensus.rs
 
 use super::evaluation_phases::{EvaluationRound, RoundStatistics};
-use super::super::core::AgentEvaluation;
 
 /// Steering feedback generator with intelligent analysis
 pub struct SteeringSystem {

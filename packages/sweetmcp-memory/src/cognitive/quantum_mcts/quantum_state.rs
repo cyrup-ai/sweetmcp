@@ -7,9 +7,10 @@ use tracing::info;
 use crate::cognitive::quantum::{Complex64, QuantumMetrics};
 use crate::cognitive::types::CognitiveError;
 
-use super::core::{QuantumMCTS, QuantumNodeState};
+use super::node_state::core::QuantumNodeState;
+use super::QuantumMCTS;
 
-impl QuantumMCTS {
+impl QuantumMCTS<QuantumNodeState> {
     /// Recursive improvement loop
     pub async fn recursive_improve(&mut self, iterations: u32) -> Result<(), CognitiveError> {
         info!(

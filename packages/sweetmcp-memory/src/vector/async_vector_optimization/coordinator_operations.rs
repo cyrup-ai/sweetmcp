@@ -274,6 +274,6 @@ impl AsyncVectorOptimizationCoordinator {
         &self,
         characteristics: &VectorCharacteristics,
     ) -> Result<SmallVec<[OptimizationRecommendation; 8]>, Error> {
-        super::coordinator_analysis::RecommendationGenerator::generate_recommendations(characteristics)
+        crate::memory::semantic::memory_optimization::optimization_recommendations::RecommendationGenerator::generate_recommendations(characteristics)
     }
 }

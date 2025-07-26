@@ -3,8 +3,8 @@
 //! This module provides blazing-fast action application with zero allocation
 //! optimizations for MCTS action execution and state transitions.
 
-use super::super::types::{CodeState, ActionMetadata};
-use crate::cognitive::types::{CognitiveError, ImpactFactors};
+use super::super::types::CodeState;
+use crate::cognitive::types::CognitiveError;
 use crate::vector::async_vector_optimization::OptimizationSpec;
 use crate::cognitive::committee::EvaluationCommittee;
 use std::sync::Arc;

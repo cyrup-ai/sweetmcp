@@ -7,7 +7,7 @@ use std::collections::HashSet;
 
 use super::memory::SemanticMemory;
 use super::item_core::SemanticItem;
-use super::relationship::SemanticRelationship;
+use super::semantic_relationship::SemanticRelationship;
 use crate::utils::Result;
 
 impl SemanticMemory {

@@ -135,11 +135,11 @@ impl SemanticItem {
     /// 
     /// # Returns
     /// Number of keys that were compressed
-    pub fn compress_similar_metadata(&mut self, similarity_threshold: f64, combine_strategy: &str) -> usize {
+    pub fn compress_similar_metadata(&mut self, _similarity_threshold: f64, _combine_strategy: &str) -> usize {
         // This would use string similarity algorithms from item_metadata_similarity
         // For now, simplified placeholder implementation
-        let keys: Vec<String> = self.metadata.keys().cloned().collect();
-        let mut compressed_count = 0;
+        let _keys: Vec<String> = self.metadata.keys().cloned().collect();
+        let compressed_count = 0;
         
         // Implementation would go here - this is a placeholder for advanced logic
         if compressed_count > 0 {

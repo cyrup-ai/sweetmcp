@@ -3,10 +3,10 @@
 //! This module provides ergonomic re-exports and integration for all agent simulation
 //! components with zero-allocation patterns and blazing-fast performance.
 
-// Import and re-export submodules
-pub mod agent_simulation_core;
-pub mod agent_simulation_batch;
-pub mod agent_simulation_scores;
+// Import existing modules from the evaluation directory
+use super::agent_simulation_core;
+use super::agent_simulation_batch;
+use super::agent_simulation_scores;
 
 // Re-export core functionality
 pub use agent_simulation_core::AgentSimulator;

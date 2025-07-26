@@ -107,8 +107,8 @@ impl BottleneckDetector {
                     visited.insert(current.clone());
                     component.push(current.clone());
                     
-                    let neighbors = graph.get_entangled_nodes(&current).await?;
-                    for neighbor in neighbors {
+                    let neighbors = graph.get_entangled_nodes(&current)?;
+                    for (neighbor, _strength) in neighbors {
                         if !visited.contains(&neighbor) {
                             stack.push(neighbor);
                         }
@@ -152,12 +152,12 @@ impl BottleneckDetector {
         nodes: &HashMap<String, Arc<RwLock<QuantumMCTSNode>>>,
         node_id: &str,
     ) -> Result<BottleneckImpact, CognitiveError> {
-        let neighbors = graph.get_entangled_nodes(node_id).await?;
+        let neighbors = graph.get_entangled_nodes(node_id)?;
         let affected_nodes = neighbors.len();
         
         // Calculate how many nodes would be disconnected if this node fails
         let mut disconnected_count = 0;
-        for neighbor in &neighbors {
+        for (neighbor, _strength) in &neighbors {
             let neighbor_connections = graph.get_entanglement_count(neighbor).await.unwrap_or(0);
             if neighbor_connections <= 1 {
                 disconnected_count += 1;

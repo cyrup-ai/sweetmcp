@@ -235,8 +235,8 @@ impl std::str::FromStr for SemanticRelationshipType {
     }
 }
 
-/// Relationship direction for navigation and queries
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+/// Relationship direction for navigation and queries  
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum RelationshipDirection {
     /// Outgoing relationships (from source)
     Outgoing,

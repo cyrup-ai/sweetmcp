@@ -7,7 +7,7 @@ use std::collections::{HashMap, HashSet, VecDeque};
 
 use super::memory::SemanticMemory;
 use super::item_core::SemanticItem;
-use super::relationship::SemanticRelationship;
+use super::semantic_relationship::SemanticRelationship;
 
 impl SemanticMemory {
     /// Find shortest path between two items
@@ -79,15 +79,15 @@ impl SemanticMemory {
     }
 
     /// Tarjan's strongly connected components algorithm helper
-    fn tarjan_scc(
-        &self,
-        v: &str,
+    fn tarjan_scc<'a>(
+        &'a self,
+        v: &'a str,
         index: &mut usize,
-        stack: &mut Vec<&str>,
-        indices: &mut HashMap<&str, usize>,
-        lowlinks: &mut HashMap<&str, usize>,
-        on_stack: &mut HashSet<&str>,
-        components: &mut Vec<Vec<&str>>,
+        stack: &mut Vec<&'a str>,
+        indices: &mut HashMap<&'a str, usize>,
+        lowlinks: &mut HashMap<&'a str, usize>,
+        on_stack: &mut HashSet<&'a str>,
+        components: &mut Vec<Vec<&'a str>>,
     ) {
         indices.insert(v, *index);
         lowlinks.insert(v, *index);
@@ -96,14 +96,14 @@ impl SemanticMemory {
         on_stack.insert(v);
 
         for rel in self.get_outgoing_relationships(v) {
-            let w = &rel.target_id;
-            if !indices.contains_key(w.as_str()) {
+            let w = rel.target_id.as_str();
+            if !indices.contains_key(w) {
                 self.tarjan_scc(w, index, stack, indices, lowlinks, on_stack, components);
-                let w_lowlink = *lowlinks.get(w.as_str()).unwrap_or(&0);
+                let w_lowlink = *lowlinks.get(w).unwrap_or(&0);
                 let v_lowlink = *lowlinks.get(v).unwrap_or(&0);
                 lowlinks.insert(v, v_lowlink.min(w_lowlink));
-            } else if on_stack.contains(w.as_str()) {
-                let w_index = *indices.get(w.as_str()).unwrap_or(&0);
+            } else if on_stack.contains(w) {
+                let w_index = *indices.get(w).unwrap_or(&0);
                 let v_lowlink = *lowlinks.get(v).unwrap_or(&0);
                 lowlinks.insert(v, v_lowlink.min(w_index));
             }

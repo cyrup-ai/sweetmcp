@@ -7,8 +7,9 @@ use chrono::{DateTime, Utc};
 use serde_json::Value;
 use std::collections::HashMap;
 
-use super::item::SemanticItem;
-use super::types::{ConfidenceLevel, SemanticItemType};
+use super::semantic_item::SemanticItem;
+use super::confidence::ConfidenceLevel;
+use super::item_types::SemanticItemType;
 use crate::utils::{Result, error::Error};
 
 /// Conversion utilities for SemanticItem

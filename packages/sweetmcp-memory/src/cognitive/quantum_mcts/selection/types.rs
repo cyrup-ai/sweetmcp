@@ -329,7 +329,7 @@ impl SelectionStatistics {
         let max_index = self.strategy_counts
             .iter()
             .enumerate()
-            .max_by_key(|(_, &count)| count)
+            .max_by_key(|&(_, count)| count)
             .map(|(i, _)| i)
             .unwrap_or(0);
         

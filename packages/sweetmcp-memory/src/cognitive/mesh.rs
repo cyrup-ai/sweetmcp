@@ -142,7 +142,7 @@ impl AtomicAttentionMechanism {
 
         // Calculate attention weights with SIMD optimization
         let output = self.mechanism
-            .calculate_attention_weights_simd(query, keys, values)
+            .calculate_attention_weights(query, keys, values)
             .await
             .map_err(|e| crate::utils::Error::Attention(format!("SIMD attention failed: {:?}", e)))?;
 

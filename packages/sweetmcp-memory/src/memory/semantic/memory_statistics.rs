@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 use super::item_core::SemanticItem;
-use super::relationship::SemanticRelationship;
+use super::semantic_relationship::SemanticRelationship;
 
 /// Memory statistics structure
 #[derive(Debug, Clone, Serialize, Deserialize)]

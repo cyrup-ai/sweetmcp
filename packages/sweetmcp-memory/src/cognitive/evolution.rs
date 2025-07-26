@@ -2,12 +2,13 @@
 //! Self-optimizing component using MCTS with committee evaluation
 
 use crate::cognitive::committee::{CommitteeEvent, EvaluationCommittee};
-use crate::cognitive::compiler::{CompiledCode, RuntimeCompiler};
 use crate::cognitive::mcts::{CodeState, MCTS};
 use crate::cognitive::performance::PerformanceAnalyzer;
+use crate::cognitive::quantum::ml_decoder::ComplexityMetrics;
+use crate::cognitive::performance::PerformanceMetrics;
 use crate::cognitive::types::{
-    CognitiveError, EvolutionMetadata, OptimizationOutcome, OptimizationType,
-    PendingOptimizationResult, EvolutionRules, OptimizationResult,
+    CognitiveError, OptimizationOutcome, OptimizationType,
+    PendingOptimizationResult, OptimizationResult,
 };
 use crate::vector::async_vector_optimization::OptimizationSpec;
 
@@ -276,7 +277,39 @@ impl EvolutionEngine {
         }
     }
 
+    /// Create a new lock-free evolution engine with default initial state
+    pub fn new_lock_free(evolution_rate: f64) -> Self {
+        let initial_state = CodeState {
+            source_code: "".to_string(),
+            complexity_metrics: ComplexityMetrics {
+                cyclomatic_complexity: 1,
+                cognitive_complexity: 1,
+                lines_of_code: 0,
+                nested_depth: 0,
+                maintainability_index: 100.0,
+            },
+            performance_metrics: PerformanceMetrics {
+                execution_time: 0.0,
+                memory_usage: 0,
+                cpu_usage: 0.0,
+                io_operations: 0,
+                network_calls: 0,
+            },
+            memory_usage: 0,
+            complexity_score: 0.0,
+            metadata: crate::cognitive::mcts::types::node_types::CodeMetadata::default(),
+        };
 
+        let mut instance = Self::new(initial_state, 100);
+        
+        // Configure for lock-free operation with the provided evolution rate  
+        if let Ok(mut spec) = Arc::try_unwrap(instance.optimization_spec) {
+            spec.target_quality = evolution_rate.min(1.0);
+            instance.optimization_spec = Arc::new(spec);
+        }
+        
+        instance
+    }
 
     pub async fn evolve(&mut self) -> Result<bool, CognitiveError> {
         self.generation_count += 1;

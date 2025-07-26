@@ -10,24 +10,14 @@ pub mod formatting;
 pub mod dashboard;
 pub mod visualization;
 
-// Re-export core types for ergonomic access
-pub use types::{
-    MetricsReport, SummaryReport, PerformanceDashboard, HistoricalDataPoint,
-    PerformanceTrend, AggregatedMetrics, EntanglementMetricsSummary
-};
+// Re-export all public types from modules for ergonomic access
+pub use types::*;
+pub use generation::*;
+pub use summary::*;
+pub use formatting::*;
+pub use dashboard::*;
+pub use visualization::*;
 pub use super::super::engine::PerformanceGrades;
-
-// Re-export generation functionality
-pub use generation::MetricsReporter;
-
-// Re-export formatting utilities
-pub use formatting::ReportFormatter;
-
-// Re-export dashboard functionality
-pub use dashboard::{DashboardHealthStatus, KeyMetrics};
-
-// Re-export visualization utilities
-pub use visualization::DashboardVisualizer;
 
 /// Main reporting interface for metrics
 pub struct MetricsReporting {

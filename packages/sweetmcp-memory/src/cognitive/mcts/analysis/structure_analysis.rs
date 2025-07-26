@@ -3,10 +3,10 @@
 //! This module provides blazing-fast tree structure analysis with zero allocation
 //! optimizations for MCTS tree comprehensive analysis and reporting.
 
-use super::tree_analyzer::{TreeAnalyzer, NodeTypeCounts, VisitStatistics};
-use super::path_finder::{PathFinder, PathInfo, PathDiversityMetrics};
+use super::tree_analyzer::TreeAnalyzer;
+use super::path_finder::{PathFinder, PathDiversityMetrics};
 use super::node_search::{NodeSearch, CharacteristicNodes, BottleneckNode};
-use super::super::types::{MCTSNode, CodeState};
+use super::super::types::MCTSNode;
 use std::collections::HashMap;
 
 /// Comprehensive tree structure analyzer

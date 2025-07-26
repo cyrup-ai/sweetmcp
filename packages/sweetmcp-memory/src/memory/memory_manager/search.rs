@@ -9,7 +9,7 @@ use crate::memory::memory_stream::MemoryStream;
 use crate::schema::memory_schema::MemoryNodeSchema;
 use crate::utils::error::Error;
 
-impl MemoryManager for SurrealDBMemoryManager {
+impl SurrealDBMemoryManager {
     /// Search memory nodes by content using full-text search
     /// 
     /// This method performs efficient full-text search across memory node content

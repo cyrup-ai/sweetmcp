@@ -4,6 +4,7 @@
 //! rule-based validation and performance optimizations.
 
 use super::core::Entity;
+pub use super::types::AttributeType;
 use super::validation_rules::{RequiredAttributeRule, AttributeTypeRule, AttributeRangeRule, AttributeLengthRule};
 use crate::graph::graph_db::{GraphError, Result};
 
@@ -19,15 +20,6 @@ pub trait ValidationRule: Send + Sync {
     fn clone_rule(&self) -> Box<dyn ValidationRule>;
 }
 
-/// Attribute type enumeration for validation
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum AttributeType {
-    String,
-    Number,
-    Boolean,
-    Array,
-    Object,
-}
 
 /// Entity validator that manages and executes validation rules
 pub struct EntityValidator {

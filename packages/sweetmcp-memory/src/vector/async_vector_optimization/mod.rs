@@ -39,8 +39,8 @@ pub use optimization_algorithms::*;
 // Re-export search strategies (already declared above)
 pub use search_strategies::SearchStrategy;
 
-// Re-export related modules for convenience
-pub use super::async_vector_operations::{VectorSearchResult, VectorStore, DistanceMetric};
+// Re-export related modules for convenience  
+pub use super::async_vector_operations::DistanceMetric;
 
 /// Create a new async vector optimization coordinator with default configuration
 #[inline]

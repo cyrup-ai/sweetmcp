@@ -7,7 +7,6 @@ pub mod node_types;
 pub mod tree_types;
 pub mod action_types;
 
-use std::collections::HashMap;
 use std::time::Instant;
 
 // Re-export core types for ergonomic usage

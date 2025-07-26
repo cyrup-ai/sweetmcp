@@ -12,7 +12,7 @@ use tracing::{debug, info};
 use super::super::core::{CommitteeAgent, EvaluationRubric, ConsensusDecision};
 use super::calculation::{ConsensusCalculator, ConsensusQuality};
 use super::evaluation_phases::{EvaluationPhase, PhaseExecutor};
-use super::steering::{SteeringSystem, SteeringFeedback};
+use super::steering::SteeringSystem;
 use super::events::{CommitteeEvent, EventBus};
 
 /// High-performance committee evaluation system with advanced consensus algorithms
@@ -292,9 +292,8 @@ impl Committee {
         }
 
         // Publish through event bus
-        if let Ok(bus) = self.event_bus.read().await {
-            bus.publish(&event);
-        }
+        let bus = self.event_bus.read().await;
+        bus.publish(&event);
     }
 
     /// Record cache hit for metrics

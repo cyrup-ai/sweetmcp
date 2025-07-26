@@ -2,7 +2,6 @@
 
 use crate::cognitive::mcts::types::node_types::CodeState;
 use crate::cognitive::types::CognitiveError;
-use crate::vector::async_vector_optimization::OptimizationSpec;
 use futures::stream::{FuturesUnordered, StreamExt};
 use std::sync::Arc;
 use tokio::sync::Semaphore;

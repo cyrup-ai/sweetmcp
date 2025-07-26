@@ -11,7 +11,7 @@ use crate::memory::memory_stream::MemoryStream;
 use crate::schema::relationship_schema::RelationshipSchema;
 use crate::utils::error::Error;
 
-impl MemoryManager for SurrealDBMemoryManager {
+impl SurrealDBMemoryManager {
     /// Create a new relationship between memory nodes
     /// 
     /// This method creates a bidirectional relationship between two memory nodes
@@ -115,7 +115,7 @@ impl MemoryManager for SurrealDBMemoryManager {
                         let memory = crate::memory::memory_node::MemoryNode {
                             id: relationship.id.clone(),
                             content: format!("Relationship: {} -> {}", relationship.source_id, relationship.target_id),
-                            memory_type: crate::memory::memory_node::MemoryType::Relationship,
+                            memory_type: crate::memory::MemoryType::Relationship,
                             metadata: super::core::SurrealDBMemoryManager::convert_metadata_schema(metadata_schema),
                         };
                         

@@ -5,13 +5,15 @@
 
 // Import sibling modules
 use super::collector;
+use super::counter_snapshot;
 use super::tree_stats;
 use super::performance;
 use super::trends;
 use super::analysis;
 
 // Re-export core types for backward compatibility
-pub use collector::{QuantumStatisticsCollector, CounterSnapshot};
+pub use collector::QuantumStatisticsCollector;
+pub use counter_snapshot::CounterSnapshot;
 pub use tree_stats::{
     QuantumTreeStatistics, DepthStatistics, RewardStatistics, ConvergenceMetrics,
     RewardQuality, ConvergencePhase, ConvergenceHealth,

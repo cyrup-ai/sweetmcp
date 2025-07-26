@@ -1,13 +1,29 @@
 //! Quantum entanglement graph management
+//!
+//! This module provides a comprehensive implementation of quantum entanglement graphs,
+//! including nodes, edges, and various quantum operations for managing entanglement
+//! between quantum states.
 
 use crate::cognitive::quantum::{
     Complex64,
-    types::{CognitiveError, CognitiveResult, EntanglementType},
+    types::{CognitiveError, CognitiveResult},
+    QuantumEntanglementType,
 };
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, VecDeque};
 use std::time::{Duration, Instant};
 use uuid::Uuid;
+
+// Type aliases for backward compatibility
+/// Type alias for backward compatibility
+#[deprecated(note = "Use QuantumEntanglementType instead")]
+pub type EntanglementType = QuantumEntanglementType;
+
+/// Type alias for backward compatibility
+pub type EntanglementNode = QuantumNode;
+
+/// Type alias for backward compatibility
+pub type EntanglementMap = EntanglementGraph;
 
 /// Comprehensive entanglement graph with quantum correlations
 #[derive(Debug, Clone)]
@@ -53,30 +69,7 @@ pub struct DensityMatrix {
     pub von_neumann_entropy: f64,
 }
 
-/// Measurement basis for quantum measurements
-#[derive(Debug, Clone)]
-pub struct MeasurementBasis {
-    pub basis_vectors: Vec<Vec<Complex64>>,
-    pub basis_type: BasisType,
-    pub measurement_operators: Vec<MeasurementOperator>,
-}
 
-/// Basis types for quantum measurements
-#[derive(Debug, Clone, PartialEq)]
-pub enum BasisType {
-    Computational,
-    Hadamard,
-    Bell,
-    Custom(String),
-}
-
-/// Measurement operator
-#[derive(Debug, Clone)]
-pub struct MeasurementOperator {
-    pub matrix: Vec<Vec<Complex64>>,
-    pub eigenvalues: Vec<f64>,
-    pub eigenvectors: Vec<Vec<Complex64>>,
-}
 
 /// Correlation matrix for quantum entanglement analysis
 #[derive(Debug, Clone)]
@@ -177,7 +170,7 @@ impl EntanglementGraph {
         &mut self,
         source_id: &str,
         target_id: &str,
-        entanglement_type: EntanglementType,
+        entanglement_type: QuantumEntanglementType,
         bond_strength: f64,
     ) -> CognitiveResult<()> {
         if !self.nodes.contains_key(source_id) || !self.nodes.contains_key(target_id) {
@@ -306,6 +299,42 @@ impl EntanglementGraph {
         self.entanglement_entropy = entropy;
     }
 
+    /// Get all nodes entangled with the given node
+    pub fn get_entangled_nodes(&self, node_id: &str) -> CognitiveResult<Vec<(String, f64)>> {
+        let mut result = Vec::new();
+        
+        // Check all edges for connections to the given node
+        for ((source, target), edge) in &self.edges {
+            if source == node_id {
+                result.push((target.clone(), edge.bond_strength));
+            } else if target == node_id {
+                result.push((source.clone(), edge.bond_strength));
+            }
+        }
+        
+        Ok(result)
+    }
+    
+    /// Get the total number of entanglements in the graph
+    pub fn entanglement_count(&self) -> usize {
+        self.edges.len()
+    }
+    
+    /// Get the number of entanglements for a specific node
+    pub fn get_entanglement_count(&self, node_id: &str) -> usize {
+        self.edges
+            .keys()
+            .filter(|(source, target)| source == node_id || target == node_id)
+            .count()
+    }
+    
+    /// Check if there is an entanglement between two nodes
+    pub fn has_entanglement(&self, node1: &str, node2: &str) -> bool {
+        // Check both possible orderings of the node IDs
+        self.edges.contains_key(&(node1.to_string(), node2.to_string())) ||
+        self.edges.contains_key(&(node2.to_string(), node1.to_string()))
+    }
+    
     /// Find shortest entanglement path between two nodes
     pub fn find_entanglement_path(&self, source: &str, target: &str) -> Option<Vec<String>> {
         // Simple BFS implementation
@@ -402,6 +431,31 @@ impl DensityMatrix {
             von_neumann_entropy: 0.0,
         }
     }
+}
+
+/// Measurement basis for quantum measurements
+#[derive(Debug, Clone)]
+pub struct MeasurementBasis {
+    pub basis_vectors: Vec<Vec<Complex64>>,
+    pub basis_type: BasisType,
+    pub measurement_operators: Vec<MeasurementOperator>,
+}
+
+/// Basis types for quantum measurements
+#[derive(Debug, Clone, PartialEq)]
+pub enum BasisType {
+    Computational,
+    Hadamard,
+    Bell,
+    Custom(String),
+}
+
+/// Measurement operator for quantum measurements
+#[derive(Debug, Clone)]
+pub struct MeasurementOperator {
+    pub matrix: Vec<Vec<Complex64>>,
+    pub eigenvalues: Vec<f64>,
+    pub eigenvectors: Vec<Vec<Complex64>>,
 }
 
 impl MeasurementBasis {
@@ -506,7 +560,7 @@ mod tests {
 
         // Create entanglement
         graph
-            .create_entanglement("node1", "node2", EntanglementType::Bell, 0.8)
+            .create_entanglement("node1", "node2", QuantumEntanglementType::Bell, 0.8)
             .unwrap();
 
         assert_eq!(graph.edges.len(), 1);
@@ -541,10 +595,10 @@ mod tests {
         }
 
         graph
-            .create_entanglement("A", "B", EntanglementType::Bell, 0.8)
+            .create_entanglement("A", "B", QuantumEntanglementType::Bell, 0.8)
             .unwrap();
         graph
-            .create_entanglement("B", "C", EntanglementType::Bell, 0.8)
+            .create_entanglement("B", "C", QuantumEntanglementType::Bell, 0.8)
             .unwrap();
 
         let path = graph.find_entanglement_path("A", "C");

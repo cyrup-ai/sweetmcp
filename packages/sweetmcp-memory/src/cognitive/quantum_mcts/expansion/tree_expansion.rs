@@ -18,9 +18,10 @@ use crate::cognitive::{
     types::{CognitiveError, OptimizationSpec},
 };
 use super::super::{
-    node_state::{QuantumMCTSNode, QuantumNodeState, QuantumNodeFactory},
+    node_state::{QuantumMCTSNode, QuantumNodeState},
     config::QuantumMCTSConfig,
 };
+use super::node_creation::QuantumNodeFactory;
 
 /// Core tree expansion engine with quantum optimization
 pub struct TreeExpansionEngine {
@@ -126,7 +127,7 @@ impl TreeExpansionEngine {
 
         // Apply quantum transformation with parallel processing capability
         let new_quantum_state = self.apply_quantum_action_optimized(&parent_state, &action).await?;
-        let child_amplitude = self.calculate_child_amplitude_optimized(&parent_amplitude, &action);
+        let child_amplitude = self.calculate_child_amplitude_optimized(parent_amplitude, &action);
 
         // Get untried actions for the new state
         let untried_actions = self.get_quantum_actions_cached(&new_quantum_state.classical_state);
@@ -189,8 +190,8 @@ impl TreeExpansionEngine {
             .map_err(|e| CognitiveError::QuantumError(format!("Measurement failed: {}", e)))?;
 
         // Optimized selection based on quantum probabilities
-        let mut rng = rand::thread_rng();
-        let selection = rng.gen_range(0.0..1.0);
+        let mut rng = rand::rng();
+        let selection = rng.random_range(0.0..1.0);
         let mut cumulative = 0.0;
 
         for (i, &p) in probabilities.iter().enumerate() {
@@ -356,7 +357,7 @@ impl TreeExpansionEngine {
 
 /// Quantum transformation types for action parsing
 #[derive(Debug, Clone)]
-enum QuantumTransformation {
+pub enum QuantumTransformation {
     /// Create quantum superposition
     Superposition { basis_states: usize },
     

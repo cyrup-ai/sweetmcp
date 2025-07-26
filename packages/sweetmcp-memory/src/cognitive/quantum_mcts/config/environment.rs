@@ -266,8 +266,11 @@ pub fn load_from_file(config: &mut QuantumMCTSConfig, file_path: &str) -> Result
             let key = key.trim();
             let value = value.trim().trim_matches('"').trim_matches('\'');
             
-            // Temporarily set environment variable
-            env::set_var(key, value);
+            // Temporarily set environment variable (unsafe due to thread-safety)
+            // SAFETY: We're in control of the environment during this operation
+            unsafe {
+                env::set_var(key, value);
+            }
         }
     }
     
@@ -310,7 +313,7 @@ pub fn save_to_file(config: &QuantumMCTSConfig, file_path: &str) -> Result<(), S
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::env;
+    use temp_env;
     
     #[test]
     fn test_boolean_parsing() {
@@ -334,21 +337,21 @@ mod tests {
     fn test_environment_loading() {
         let mut config = QuantumMCTSConfig::default();
         
-        // Set some test environment variables
-        env::set_var("QUANTUM_MCTS_PARALLEL", "8");
-        env::set_var("QUANTUM_MCTS_EXPLORATION", "3.0");
-        env::set_var("QUANTUM_MCTS_ERROR_CORRECTION", "false");
-        
-        load_from_environment(&mut config);
-        
-        assert_eq!(config.max_quantum_parallel, 8);
-        assert!((config.quantum_exploration - 3.0).abs() < f64::EPSILON);
-        assert!(!config.enable_error_correction);
-        
-        // Clean up
-        env::remove_var("QUANTUM_MCTS_PARALLEL");
-        env::remove_var("QUANTUM_MCTS_EXPLORATION");
-        env::remove_var("QUANTUM_MCTS_ERROR_CORRECTION");
+        // Set test environment variables using temp_env
+        temp_env::with_vars(
+            [
+                ("QUANTUM_MCTS_PARALLEL", Some("8")),
+                ("QUANTUM_MCTS_EXPLORATION", Some("3.0")),
+                ("QUANTUM_MCTS_ERROR_CORRECTION", Some("false")),
+            ],
+            || {
+                load_from_environment(&mut config);
+                
+                assert_eq!(config.max_quantum_parallel, 8);
+                assert!((config.quantum_exploration - 3.0).abs() < f64::EPSILON);
+                assert!(!config.enable_error_correction);
+            },
+        );
     }
     
     #[test]
@@ -356,19 +359,23 @@ mod tests {
         let mut config = QuantumMCTSConfig::default();
         let original_exploration = config.quantum_exploration;
         
-        // Set invalid values
-        env::set_var("QUANTUM_MCTS_EXPLORATION", "invalid");
-        env::set_var("QUANTUM_MCTS_DECOHERENCE", "2.0"); // > 1.0
-        
-        load_from_environment(&mut config);
-        
-        // Should keep original values for invalid inputs
-        assert_eq!(config.quantum_exploration, original_exploration);
-        assert_eq!(config.decoherence_threshold, QuantumMCTSConfig::default().decoherence_threshold);
-        
-        // Clean up
-        env::remove_var("QUANTUM_MCTS_EXPLORATION");
-        env::remove_var("QUANTUM_MCTS_DECOHERENCE");
+        // Set invalid values using temp_env
+        temp_env::with_vars(
+            [
+                ("QUANTUM_MCTS_EXPLORATION", Some("invalid")),
+                ("QUANTUM_MCTS_DECOHERENCE", Some("2.0")), // > 1.0
+            ],
+            || {
+                load_from_environment(&mut config);
+                
+                // Should keep original values for invalid inputs
+                assert_eq!(config.quantum_exploration, original_exploration);
+                assert_eq!(
+                    config.decoherence_threshold, 
+                    QuantumMCTSConfig::default().decoherence_threshold
+                );
+            },
+        );
     }
     
     #[test]

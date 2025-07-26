@@ -61,14 +61,14 @@ pub trait VectorStore: Send + Sync {
     fn clear(&self) -> Pin<Box<dyn Future<Output = Result<()>> + Send>>;
 
     /// Get a vector by ID (async operation)
-    fn get(&self, id: String) -> crate::vector::async_vector_core::PendingVectorOp;
+    fn get(&self, id: String) -> crate::vector::PendingVectorOp;
 
     /// Remove a vector by ID (async operation)
-    fn remove(&self, id: String) -> crate::vector::async_vector_core::PendingVectorOp;
+    fn remove(&self, id: String) -> crate::vector::PendingVectorOp;
 
     /// Batch add multiple vectors (async operation)
-    fn batch_add(&self, items: Vec<(String, Vec<f32>, Option<serde_json::Value>)>) -> crate::vector::async_vector_core::PendingVectorOp;
+    fn batch_add(&self, items: Vec<(String, Vec<f32>, Option<serde_json::Value>)>) -> crate::vector::PendingVectorOp;
 
     /// Update metadata for a vector (async operation)
-    fn update_metadata(&self, id: String, metadata: serde_json::Value) -> crate::vector::async_vector_core::PendingVectorOp;
+    fn update_metadata(&self, id: String, metadata: serde_json::Value) -> crate::vector::PendingVectorOp;
 }

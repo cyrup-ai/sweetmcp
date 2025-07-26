@@ -36,13 +36,13 @@ impl BuilderFactory {
     
     /// Create a query builder with strict validation
     pub fn create_strict() -> ComplexQueryBuilder {
-        let validator = QueryValidator::with_limits(25, 5, 5000); // Stricter limits
+        let _validator = QueryValidator::with_limits(25, 5, 5000); // Stricter limits
         ComplexQueryBuilder::new() // Note: In full implementation would accept validator
     }
     
     /// Create a query builder for debugging
     pub fn create_debug() -> ComplexQueryBuilder {
-        let validator = QueryValidator::with_limits(100, 20, 50000); // Relaxed limits
+        let _validator = QueryValidator::with_limits(100, 20, 50000); // Relaxed limits
         ComplexQueryBuilder::new() // Note: In full implementation would accept validator
     }
     

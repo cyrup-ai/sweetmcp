@@ -5,17 +5,13 @@
 
 pub mod core;
 pub mod node;
-pub mod factory;
 
 // Re-export core types for backward compatibility
 pub use core::{QuantumNodeState, transitions};
 pub use node::QuantumMCTSNode;
-pub use factory::{
-    QuantumNodeFactory, PooledNodeFactory, ChildSpec, 
-    FactoryStatistics, PoolStatistics, global_factory, quick,
-};
 
 use std::sync::OnceLock;
+use crate::cognitive::quantum_mcts::expansion::QuantumNodeFactory;
 
 /// Node state coordinator for centralized management
 pub struct NodeStateCoordinator {

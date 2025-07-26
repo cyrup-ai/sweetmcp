@@ -121,7 +121,7 @@ pub mod analysis_presets {
 pub use tree_stats_mod::{CustomAnalysisResult, PerformanceAnalysis};
 
 /// Trend analysis utilities
-pub use tree_stats_mod::{utils::AnalysisComparison, utils::TrendAnalysis, utils::TrendDirection};
+pub use tree_stats_mod::{AnalysisComparison, TrendAnalysis, TrendDirection};
 
 /// Macro re-exports for convenient analysis
 pub use tree_stats_mod::analyze_tree;
@@ -140,13 +140,13 @@ mod tests {
 
     #[test]
     fn test_analysis_builder() {
-        let builder = AnalysisBuilder::new()
+        let _builder = AnalysisBuilder::new()
             .with_bottlenecks(true)
             .with_recommendations(true)
             .with_detailed_reporting(false)
             .with_performance_focus(true);
         
-        // Verify builder pattern works
+        // Verify builder pattern works (builder is used implicitly by its construction)
         assert!(true);
     }
 

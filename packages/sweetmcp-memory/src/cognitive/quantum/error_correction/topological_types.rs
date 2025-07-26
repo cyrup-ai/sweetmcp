@@ -12,14 +12,8 @@ use smallvec::SmallVec;
 
 // Re-export types from surface code module for backward compatibility
 pub use super::surface_code::syndrome_detection::StabilizerType;
+pub use super::topological_pauli::ColorType;
 
-/// Color types for color codes
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum ColorType {
-    Red,
-    Green,
-    Blue,
-}
 
 /// Logical operator types
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -170,8 +164,8 @@ impl FaceType {
     }
 }
 
-/// Types of boundaries
-#[derive(Debug, Clone, Copy, PartialEq)]
+/// Boundary type for topological codes (comprehensive decomposed version)
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum BoundaryType {
     /// Open boundaries
     Open,
@@ -200,6 +194,21 @@ impl BoundaryType {
             BoundaryType::Twisted => 1,       // Klein bottle (genus 1)
             BoundaryType::Mixed => 0,         // Varies
         }
+    }
+
+    /// Get string representation
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            BoundaryType::Open => "Open",
+            BoundaryType::Periodic => "Periodic",
+            BoundaryType::Twisted => "Twisted",
+            BoundaryType::Mixed => "Mixed",
+        }
+    }
+
+    /// Check if this boundary type supports logical operations
+    pub fn supports_logical_ops(&self) -> bool {
+        matches!(self, BoundaryType::Periodic | BoundaryType::Twisted)
     }
 }
 

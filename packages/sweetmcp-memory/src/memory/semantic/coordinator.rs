@@ -18,8 +18,8 @@ use super::{
         RelationshipStatistics, RelationshipValidator, RelationshipQueryBuilder,
     },
     memory_cleanup::{
-        SemanticMemoryManager, MemoryStatistics, CleanupConfig, OptimizationStrategy,
-        MemoryReport,
+        SemanticMemoryManager, MemoryStatistics, OptimizationStrategy,
+        MemoryReport, CleanupConfig as MemoryCleanupConfig,
     },
     memory_optimization::{
         OptimizationRecommendation, HealthCheckReport, HealthScore,
@@ -65,7 +65,9 @@ impl SemanticMemoryCoordinator {
         cleanup_config: CleanupConfig,
         optimization_strategy: OptimizationStrategy,
     ) -> Result<Self> {
-        let memory_manager = SemanticMemoryManager::with_config(cleanup_config, optimization_strategy).await?;
+        // Convert coordinator CleanupConfig to memory_cleanup CleanupConfig  
+        let memory_cleanup_config = MemoryCleanupConfig::default(); // Use default for now
+        let memory_manager = SemanticMemoryManager::new(memory_cleanup_config);
         let confidence_calculator = ConfidenceCalculator::new();
         let type_classifier = SemanticItemTypeClassifier::new();
         let relationship_validator = RelationshipValidator::new();

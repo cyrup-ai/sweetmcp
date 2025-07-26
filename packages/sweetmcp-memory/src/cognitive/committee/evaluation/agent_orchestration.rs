@@ -123,7 +123,8 @@ impl AgentOrchestrator {
                 phase: phase_clone,
             }).await;
 
-            // Execute agent evaluation
+            // Execute agent evaluation with timing
+            let start_time = chrono::Utc::now();
             let result = AgentSimulator::simulate_agent_evaluation(
                 &agent_id,
                 &state_clone,
@@ -133,12 +134,18 @@ impl AgentOrchestrator {
                 prev_evals.as_deref(),
                 steering.as_deref(),
             ).await;
+            let end_time = chrono::Utc::now();
+            let execution_time_ms = end_time
+                .signed_duration_since(start_time)
+                .num_milliseconds() as u64;
 
             // Send evaluation result event
             if let Ok(ref eval) = result {
                 let _ = tx.send(CommitteeEvent::AgentEvaluation {
                     agent_id: agent_id.clone(),
+                    phase: phase_clone,
                     evaluation: eval.clone(),
+                    execution_time_ms,
                 }).await;
             }
 

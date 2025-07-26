@@ -287,7 +287,7 @@ async fn handle_health_endpoint(
     State(state): State<ServerState>,
 ) -> Result<(StatusCode, Json<HealthResponse>), StatusCode> {
     let session_count = state.session_manager.session_count().await;
-    let mcp_healthy = state.mcp_bridge.health_check().await;
+    let mcp_healthy = state.mcp_bridge.health_check().await.unwrap_or(false);
 
     let response = HealthResponse {
         status: if mcp_healthy { "healthy" } else { "degraded" }.to_string(),

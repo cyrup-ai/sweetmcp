@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::time::Instant;
 use std::sync::Arc;
-use super::super::types::{ActionMetadata, NodeStatistics, CodeState};
+use super::super::types::{ActionMetadata, CodeState};
 use super::action_generator::ActionGenerator;
 use crate::vector::async_vector_optimization::OptimizationSpec;
 use crate::cognitive::committee::EvaluationCommittee;

@@ -11,42 +11,10 @@ use std::collections::{HashMap, HashSet};
 use smallvec::SmallVec;
 use std::time::Instant;
 
-use super::syndrome_detection::{QubitPosition, PauliType, PauliOperator, StabilizerGenerator, StabilizerType};
+use super::syndrome_detection::{QubitPosition, PauliOperator, StabilizerGenerator, StabilizerType};
+use super::super::topological_pauli::PauliType;
+use super::super::topological_types::BoundaryType;
 
-/// Boundary conditions for surface code
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub enum BoundaryType {
-    /// Open boundaries (finite lattice)
-    Open,
-    /// Periodic boundaries (torus)
-    Periodic,
-    /// Twisted boundaries
-    Twisted,
-}
-
-impl BoundaryType {
-    /// Get string representation
-    #[inline]
-    pub fn as_str(&self) -> &'static str {
-        match self {
-            BoundaryType::Open => "Open",
-            BoundaryType::Periodic => "Periodic",
-            BoundaryType::Twisted => "Twisted",
-        }
-    }
-
-    /// Check if boundaries are periodic
-    #[inline]
-    pub fn is_periodic(&self) -> bool {
-        matches!(self, BoundaryType::Periodic | BoundaryType::Twisted)
-    }
-
-    /// Check if boundaries support logical operations
-    #[inline]
-    pub fn supports_logical_ops(&self) -> bool {
-        true // All boundary types support logical operations
-    }
-}
 
 /// 2D layout for surface code qubits
 #[derive(Debug, Clone)]

@@ -47,6 +47,9 @@ pub enum Error {
 
     #[error("Validation error: {0}")]
     ValidationError(String),
+    
+    #[error("Not implemented: {0}")]
+    NotImplemented(String),
 
     #[error("Conversion error: {0}")]
     ConversionError(String),
@@ -59,9 +62,6 @@ pub enum Error {
 
     #[error("HTTP request error: {0}")]
     HttpRequest(#[from] reqwest::Error),
-
-    #[error("Not implemented: {0}")]
-    NotImplemented(String),
 
     #[error("Already exists: {0}")]
     AlreadyExists(String),
@@ -145,6 +145,7 @@ impl axum::response::IntoResponse for Error {
             Error::Cognitive(e) => (StatusCode::INTERNAL_SERVER_ERROR, e),
             Error::Attention(e) => (StatusCode::INTERNAL_SERVER_ERROR, e),
             Error::InvalidQuery(e) => (StatusCode::BAD_REQUEST, e),
+            Error::ConnectionFailed(e) => (StatusCode::INTERNAL_SERVER_ERROR, format!("Connection failed: {}", e)),
         };
 
         (status, Json(serde_json::json!({ "error": error_message }))).into_response()

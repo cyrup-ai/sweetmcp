@@ -79,8 +79,8 @@ impl QuantumScorer {
         
         if total_exp <= 0.0 || !total_exp.is_finite() {
             // Fallback to uniform selection if numerical issues occur
-            let mut rng = rand::thread_rng();
-            let index = rng.gen_range(0..ids.len());
+            let mut rng = rand::rng();
+            let index = rng.random_range(0..ids.len());
             return Ok(ids[index].clone());
         }
         
@@ -91,8 +91,8 @@ impl QuantumScorer {
             .collect();
 
         // Fast quantum measurement using cumulative distribution
-        let mut rng = rand::thread_rng();
-        let measurement = rng.gen_range(0.0..1.0);
+        let mut rng = rand::rng();
+        let measurement = rng.random_range(0.0..1.0);
         let mut cumulative = 0.0;
 
         for (i, &p) in probabilities.iter().enumerate() {

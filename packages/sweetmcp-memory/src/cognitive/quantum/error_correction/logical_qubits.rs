@@ -3,7 +3,7 @@
 //! This module provides logical qubit structures with physical
 //! qubit mappings and error syndrome management.
 
-use super::types::ErrorSyndrome;
+use super::syndromes::ErrorSyndrome;
 use super::quantum_circuits::QuantumCircuit;
 
 /// Logical qubit encoded in physical qubits with circuit definitions

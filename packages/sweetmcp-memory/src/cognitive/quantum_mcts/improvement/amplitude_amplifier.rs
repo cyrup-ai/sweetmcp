@@ -185,14 +185,17 @@ impl QuantumAmplitudeAmplifier {
         if self.performance_history.len() >= 100 {
             self.performance_history.remove(0);
         }
+        
+        // Clone performance before moving it into the history
+        let performance_clone = performance.clone();
         self.performance_history.push(performance);
         
-        // Update adaptation statistics
-        self.adaptation_stats.update(&performance);
+        // Update adaptation statistics with the cloned value
+        self.adaptation_stats.update(&performance_clone);
     }
     
     /// Adapt parameters based on performance history
-    pub fn adapt_parameters(&mut self, result: &AmplificationResult) {
+    pub fn adapt_parameters(&mut self, _result: &AmplificationResult) {
         if self.performance_history.len() < 5 {
             return; // Need more history for adaptation
         }

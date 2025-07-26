@@ -4,13 +4,15 @@
 //! entanglement creation, management, and zero-allocation graph operations.
 
 use std::collections::HashMap;
+use std::ops::Deref;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 use tracing::{debug, trace, warn};
 
-use crate::cognitive::{
-    quantum::{EntanglementGraph, EntanglementType},
+use crate::cognitive::quantum::{
+    entanglement::{EntanglementGraph, EntanglementLink},
     types::CognitiveError,
+    QuantumEntanglementType,
 };
 use super::{
     super::{
@@ -43,7 +45,7 @@ impl QuantumEntanglementManager {
             config,
             entanglement_graph,
             creation_cache: HashMap::with_capacity(10_000), // Pre-allocate for performance
-            metrics: EntanglementMetrics::new(),
+            metrics: EntanglementMetrics::new("quantum_entanglement_manager".to_string()),
         }
     }
     
@@ -251,14 +253,17 @@ impl QuantumEntanglementManager {
         &self,
         node1: &QuantumMCTSNode,
         node2: &QuantumMCTSNode,
-    ) -> (EntanglementType, f64) {
+    ) -> (QuantumEntanglementType, f64) {
         // Determine entanglement type based on node relationships
         let entanglement_type = if node1.parent == node2.parent && node1.parent.is_some() {
-            EntanglementType::Strong // Sibling nodes have strong entanglement
+            // Sibling nodes have strong entanglement
+            QuantumEntanglementType::Bell
         } else if self.are_ancestor_descendant(&node1.id, &node2.id) {
-            EntanglementType::Medium // Ancestor-descendant relationship
+            // Ancestor-descendant relationship
+            QuantumEntanglementType::GHZ
         } else {
-            EntanglementType::Weak // Distant relationship
+            // Distant relationship
+            QuantumEntanglementType::Werner
         };
         
         // Calculate strength based on multiple factors with numerical stability
@@ -273,9 +278,10 @@ impl QuantumEntanglementManager {
         
         // Type-based strength modulation
         let final_strength = match entanglement_type {
-            EntanglementType::Strong => base_strength * 1.0,
-            EntanglementType::Medium => base_strength * 0.8,
-            EntanglementType::Weak => base_strength * 0.6,
+            QuantumEntanglementType::Bell => base_strength * 1.0,
+            QuantumEntanglementType::GHZ => base_strength * 0.8,
+            QuantumEntanglementType::Werner => base_strength * 0.6,
+            _ => base_strength * 0.5, // Default for other types
         };
         
         (entanglement_type, final_strength.min(1.0))
@@ -315,9 +321,11 @@ impl QuantumEntanglementManager {
         &self,
         node_id: &str,
     ) -> Result<Vec<(String, f64)>, CognitiveError> {
+        use crate::cognitive::quantum::entanglement::EntanglementGraph as Graph;
         let entanglement_graph = self.entanglement_graph.read().await;
         
-        entanglement_graph.get_entangled(node_id)
+        // Use fully qualified path with module path
+        Graph::get_entangled_nodes(&*entanglement_graph, node_id)
             .map_err(|e| CognitiveError::QuantumError(format!("Failed to get entangled nodes: {}", e)))
     }
     
@@ -371,7 +379,7 @@ impl QuantumEntanglementManager {
     
     /// Reset performance metrics
     pub fn reset_metrics(&mut self) {
-        self.metrics = EntanglementMetrics::new();
+        self.metrics = EntanglementMetrics::new("quantum_entanglement".to_string());
         debug!("Entanglement metrics reset");
     }
     

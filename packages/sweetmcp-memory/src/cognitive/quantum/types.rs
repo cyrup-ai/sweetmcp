@@ -3,54 +3,8 @@
 use std::fmt;
 use thiserror::Error;
 
-/// Result type for cognitive operations
-pub type CognitiveResult<T> = Result<T, CognitiveError>;
-
-/// Errors that can occur in cognitive operations
-#[derive(Error, Debug)]
-pub enum CognitiveError {
-    #[error("Quantum decoherence detected: {0}")]
-    QuantumDecoherence(String),
-
-    #[error("Context processing error: {0}")]
-    ContextProcessingError(String),
-
-    #[error("System capacity exceeded: {0}")]
-    CapacityExceeded(String),
-
-    #[error("Network error: {0}")]
-    NetworkError(String),
-
-    #[error("Memory allocation error: {0}")]
-    MemoryAllocationError(String),
-
-    #[error("Invalid quantum state: {0}")]
-    InvalidQuantumState(String),
-
-    #[error("Measurement failed: {0}")]
-    MeasurementError(String),
-
-    #[error("Entanglement error: {0}")]
-    EntanglementError(String),
-
-    #[error("Error correction failed: {0}")]
-    ErrorCorrectionFailed(String),
-
-    #[error("Hardware backend error: {0}")]
-    HardwareBackendError(String),
-
-    #[error("LLM integration error: {0}")]
-    LLMIntegrationError(String),
-
-    #[error("Evolution error: {0}")]
-    EvolutionError(String),
-
-    #[error("Serialization error: {0}")]
-    SerializationError(String),
-
-    #[error("Unknown error: {0}")]
-    Unknown(String),
-}
+// Re-export CognitiveError and CognitiveResult from the more comprehensive types module
+pub use crate::cognitive::types::{CognitiveError, CognitiveResult};
 
 /// Query intent for routing decisions
 #[derive(Debug, Clone, PartialEq)]
@@ -120,7 +74,7 @@ pub struct AlternativeRoute {
 
 /// Types of entanglement between quantum states
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub enum EntanglementType {
+pub enum QuantumEntanglementType {
     Bell,
     GHZ,
     Werner,
@@ -128,14 +82,17 @@ pub enum EntanglementType {
     Custom,
 }
 
-impl fmt::Display for EntanglementType {
+// Re-export for backward compatibility
+pub use QuantumEntanglementType as EntanglementType;
+
+impl fmt::Display for QuantumEntanglementType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            EntanglementType::Bell => write!(f, "Bell"),
-            EntanglementType::GHZ => write!(f, "GHZ"),
-            EntanglementType::Werner => write!(f, "Werner"),
-            EntanglementType::Cluster => write!(f, "Cluster"),
-            EntanglementType::Custom => write!(f, "Custom"),
+            QuantumEntanglementType::Bell => write!(f, "Bell"),
+            QuantumEntanglementType::GHZ => write!(f, "GHZ"),
+            QuantumEntanglementType::Werner => write!(f, "Werner"),
+            QuantumEntanglementType::Cluster => write!(f, "Cluster"),
+            QuantumEntanglementType::Custom => write!(f, "Custom"),
         }
     }
 }

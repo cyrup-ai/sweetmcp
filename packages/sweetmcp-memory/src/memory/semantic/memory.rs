@@ -7,8 +7,9 @@
 use serde::{Deserialize, Serialize};
 
 use super::item_core::SemanticItem;
-use super::relationship::SemanticRelationship;
-use super::types::{ConfidenceLevel, SemanticItemType};
+use super::semantic_relationship::SemanticRelationship;
+use super::confidence::ConfidenceLevel;
+use super::item_types::SemanticItemType;
 use crate::memory::memory_type::{BaseMemory, MemoryTypeEnum};
 use crate::utils::{Result, Error};
 

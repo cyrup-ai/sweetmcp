@@ -34,9 +34,9 @@ pub use core::QuantumEntanglementManager;
 pub use engine_core::QuantumEntanglementEngine;
 pub use engine_operations::OptimizationResult;
 pub use engine_optimization::OptimizationPrediction;
-pub use engine_health::{EngineHealthReport, NetworkAnalysisReport, OptimizationPriority};
+pub use engine_health::{EngineHealthReport, NetworkAnalysisReport};
 pub use engine_health::NetworkPerformanceMetrics;
-pub use engine_health_types::{CriticalNode, CriticalityType, HealthStatus};
+pub use engine_health_types::{CriticalNode, CriticalityType, HealthStatus, OptimizationPriority};
 pub use engine_issue_types::{NetworkIssue, IssueSeverity, IssueCategory};
 pub use engine_issue_collection::{IssueCollection, IssueSummaryStats};
 
@@ -188,12 +188,14 @@ pub mod quick_health {
         let strategy = recommend_optimization_strategy(topology, metrics, issues);
         let urgency = calculate_optimization_urgency(topology, issues);
         
+        let requires_attention = composite_score < 0.7 || urgency.is_critical();
+        
         QuickHealthResult {
             health_score: composite_score,
             health_grade: grade_from_score(composite_score),
             strategy,
             urgency,
-            requires_attention: composite_score < 0.7 || urgency.is_critical(),
+            requires_attention,
         }
     }
     

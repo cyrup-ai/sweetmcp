@@ -80,7 +80,8 @@ impl EvaluationExecutor {
                     warn!("Event channel closed during agent start notification");
                 }
 
-                // Execute agent evaluation with error handling
+                // Execute agent evaluation with error handling and timing
+                let start_time = chrono::Utc::now();
                 let result = AgentSimulator::simulate_agent_evaluation(
                     &agent_id_clone,
                     &state_clone,
@@ -90,12 +91,18 @@ impl EvaluationExecutor {
                     prev_evals.as_deref(),
                     steering.as_deref(),
                 ).await;
+                let end_time = chrono::Utc::now();
+                let execution_time_ms = end_time
+                    .signed_duration_since(start_time)
+                    .num_milliseconds() as u64;
 
                 // Send evaluation result event without unwrap()
                 if let Ok(ref eval) = result {
                     if let Err(_) = tx.send(CommitteeEvent::AgentEvaluation {
                         agent_id: agent_id_clone.clone(),
+                        phase: phase_clone,
                         evaluation: eval.clone(),
+                        execution_time_ms,
                     }).await {
                         warn!("Event channel closed during evaluation notification");
                     }

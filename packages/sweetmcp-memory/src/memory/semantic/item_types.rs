@@ -7,7 +7,7 @@ use crate::utils::{Result, error::Error};
 use serde::{Deserialize, Serialize};
 
 /// Semantic item type enum with optimized string conversion
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum SemanticItemType {
     /// Concept (entity, object, idea)
     Concept,

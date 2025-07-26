@@ -165,7 +165,7 @@ impl QuantumTreePruner {
         self.stats.total_prunings += 1;
         self.stats.nodes_pruned += pruned_count as u64;
         self.stats.avg_pruning_time_us = (self.stats.avg_pruning_time_us * (self.stats.total_prunings - 1) as f64 + pruning_time) / self.stats.total_prunings as f64;
-        self.stats.memory_saved_bytes += estimated_memory_saved;
+        self.stats.memory_saved_bytes += estimated_memory_saved as u64;
         self.stats.last_pruning = Some(start_time);
 
         debug!("Pruned {} nodes from tree ({}→{})", pruned_count, initial_size, final_size);
@@ -174,7 +174,7 @@ impl QuantumTreePruner {
             nodes_pruned: pruned_count,
             initial_size,
             final_size,
-            memory_saved_bytes: estimated_memory_saved,
+            memory_saved_bytes: estimated_memory_saved as u64,
             pruning_time_us: pruning_time as u64,
         })
     }

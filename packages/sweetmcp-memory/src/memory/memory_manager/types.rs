@@ -4,7 +4,7 @@
 //! including content structures for creating/updating memory nodes and relationships.
 
 use serde::{Deserialize, Serialize};
-use crate::memory::memory_node::{MemoryNode, MemoryType};
+use crate::memory::{MemoryType, memory_node::MemoryNode};
 use crate::memory::memory_relationship::MemoryRelationship;
 use crate::schema::memory_schema::MemoryMetadataSchema;
 

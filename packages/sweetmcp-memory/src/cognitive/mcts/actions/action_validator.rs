@@ -3,11 +3,11 @@
 //! This module provides blazing-fast action validation with zero allocation
 //! optimizations for MCTS action safety and feasibility checking.
 
-use super::super::types::{CodeState, ActionMetadata};
-use crate::cognitive::types::{CognitiveError, ImpactFactors};
+use super::super::types::CodeState;
+use crate::cognitive::types::CognitiveError;
 use crate::vector::async_vector_optimization::OptimizationSpec;
 use std::sync::Arc;
-use tracing::{debug, warn};
+use tracing::debug;
 
 /// Action validator for MCTS operations
 pub struct ActionValidator {
@@ -278,7 +278,7 @@ impl ActionValidator {
 
     /// Check if action complies with evolution rule
     #[inline]
-    fn action_complies_with_rule(&self, action: &str, rule: &crate::cognitive::types::EvolutionRule) -> bool {
+    fn action_complies_with_rule(&self, action: &str, rule: &crate::cognitive::types::EvolutionRules) -> bool {
         match rule.rule_type.as_str() {
             "performance_first" => action.contains("optimize") || action.contains("improve"),
             "memory_constrained" => !action.contains("increase_memory") && !action.contains("sacrifice_memory"),

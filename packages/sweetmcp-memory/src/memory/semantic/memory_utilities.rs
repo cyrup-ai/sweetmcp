@@ -7,7 +7,7 @@ use super::memory_statistics::MemoryStatistics;
 
 impl MemoryStatistics {
     /// Update statistics with new data
-    pub fn update(&mut self, items: &[super::item_core::SemanticItem], relationships: &[super::relationship::SemanticRelationship]) {
+    pub fn update(&mut self, items: &[super::item_core::SemanticItem], relationships: &[super::semantic_relationship::SemanticRelationship]) {
         *self = Self::calculate(items, relationships);
     }
 

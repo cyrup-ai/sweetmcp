@@ -32,6 +32,7 @@ prometheus = { version = "0.14" }
 # Cognitive system dependencies
 rand = { version = "0.9" }
 base64 = { version = "0.22" }
+num-traits = { version = "0.2" }
 ndarray = { version = "0.16" }
 nalgebra = { version = "0.33", features = ["serde-serialize"] }
 petgraph = { version = "0.8" }
@@ -74,6 +75,8 @@ tempfile = { version = "3.20" }
 rand = { version = "0.9" }
 gix = { version = "0.72" }
 async-trait = { version = "0.1" }
+temp-env = "0.3.6"
+approx = "0.5.1"
 
 [features]
 default = ["surreal-vector", "openai-embeddings", "cognitive", "quantum-routing", "evolution", "api"]

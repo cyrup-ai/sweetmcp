@@ -49,6 +49,6 @@ impl Default for AttentionMechanism {
     }
 }
 
-// Re-export types from decomposed modules for ergonomic use
-pub use computation::AttentionUtils;
-pub use scoring::{AttentionStatistics, AttentionCluster};
+// Re-export all public types from modules for ergonomic use
+pub use computation::*;
+pub use scoring::*;

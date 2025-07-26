@@ -5,7 +5,6 @@
 //! fast paths and optimized performance.
 
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 
 use crate::cognitive::types::{Model, ModelType};
 

@@ -115,12 +115,12 @@ impl QueryBuilder {
     }
 
     /// Set ascending sort
-    pub fn sort_asc(mut self, field: impl Into<String>) -> Self {
+    pub fn sort_asc(self, field: impl Into<String>) -> Self {
         self.sort(field, SortDirection::Asc)
     }
 
     /// Set descending sort
-    pub fn sort_desc(mut self, field: impl Into<String>) -> Self {
+    pub fn sort_desc(self, field: impl Into<String>) -> Self {
         self.sort(field, SortDirection::Desc)
     }
 
@@ -211,7 +211,7 @@ impl QueryBuilder {
 
     /// Create a builder for range queries on numeric fields
     pub fn numeric_range(
-        mut self,
+        self,
         field: impl Into<String>,
         min: Option<f64>,
         max: Option<f64>,
@@ -224,7 +224,7 @@ impl QueryBuilder {
 
     /// Create a builder for date range queries
     pub fn date_range(
-        mut self,
+        self,
         field: impl Into<String>,
         start: Option<chrono::DateTime<chrono::Utc>>,
         end: Option<chrono::DateTime<chrono::Utc>>,
@@ -236,28 +236,28 @@ impl QueryBuilder {
     }
 
     /// Create a builder for string exact match
-    pub fn string_exact(mut self, field: impl Into<String>, value: impl Into<String>) -> Self {
+    pub fn string_exact(self, field: impl Into<String>, value: impl Into<String>) -> Self {
         self.exact(field, serde_json::Value::String(value.into()))
     }
 
     /// Create a builder for boolean exact match
-    pub fn bool_exact(mut self, field: impl Into<String>, value: bool) -> Self {
+    pub fn bool_exact(self, field: impl Into<String>, value: bool) -> Self {
         self.exact(field, serde_json::Value::Bool(value))
     }
 
     /// Create a builder for integer exact match
-    pub fn int_exact(mut self, field: impl Into<String>, value: i64) -> Self {
+    pub fn int_exact(self, field: impl Into<String>, value: i64) -> Self {
         self.exact(field, serde_json::Value::Number(serde_json::Number::from(value)))
     }
 
     /// Create a builder for float exact match
-    pub fn float_exact(mut self, field: impl Into<String>, value: f64) -> Self {
+    pub fn float_exact(self, field: impl Into<String>, value: f64) -> Self {
         let number = serde_json::Number::from_f64(value).unwrap_or_else(|| serde_json::Number::from(0));
         self.exact(field, serde_json::Value::Number(number))
     }
 
     /// Create a builder for array contains query
-    pub fn array_contains(mut self, field: impl Into<String>, value: serde_json::Value) -> Self {
+    pub fn array_contains(self, field: impl Into<String>, value: serde_json::Value) -> Self {
         // This would be implemented as a custom clause in a real system
         // For now, we'll use a text search as approximation
         if let serde_json::Value::String(s) = &value {
@@ -268,17 +268,17 @@ impl QueryBuilder {
     }
 
     /// Create a builder for null/empty checks
-    pub fn is_null(mut self, field: impl Into<String>) -> Self {
+    pub fn is_null(self, field: impl Into<String>) -> Self {
         self.exact(field, serde_json::Value::Null)
     }
 
     /// Create a builder for non-null checks
-    pub fn is_not_null(mut self, field: impl Into<String>) -> Self {
+    pub fn is_not_null(self, field: impl Into<String>) -> Self {
         self.exists(field)
     }
 
     /// Create a builder for multiple value matching (IN clause equivalent)
-    pub fn in_values(mut self, field: impl Into<String>, values: Vec<serde_json::Value>) -> Self {
+    pub fn in_values(self, field: impl Into<String>, values: Vec<serde_json::Value>) -> Self {
         if values.is_empty() {
             return self;
         }
@@ -301,7 +301,7 @@ impl QueryBuilder {
     }
 
     /// Create a builder for multiple string value matching
-    pub fn in_strings(mut self, field: impl Into<String>, values: Vec<String>) -> Self {
+    pub fn in_strings(self, field: impl Into<String>, values: Vec<String>) -> Self {
         let json_values: Vec<serde_json::Value> = values
             .into_iter()
             .map(serde_json::Value::String)
@@ -311,7 +311,7 @@ impl QueryBuilder {
     }
 
     /// Create a builder for multiple integer value matching
-    pub fn in_integers(mut self, field: impl Into<String>, values: Vec<i64>) -> Self {
+    pub fn in_integers(self, field: impl Into<String>, values: Vec<i64>) -> Self {
         let json_values: Vec<serde_json::Value> = values
             .into_iter()
             .map(|v| serde_json::Value::Number(serde_json::Number::from(v)))
@@ -321,27 +321,27 @@ impl QueryBuilder {
     }
 
     /// Create a builder for prefix matching
-    pub fn prefix(mut self, field: impl Into<String>, prefix: impl Into<String>) -> Self {
+    pub fn prefix(self, field: impl Into<String>, prefix: impl Into<String>) -> Self {
         let prefix_str = prefix.into();
         // Use fuzzy text search for prefix matching
         self.fuzzy_text(field, format!("{}*", prefix_str))
     }
 
     /// Create a builder for suffix matching
-    pub fn suffix(mut self, field: impl Into<String>, suffix: impl Into<String>) -> Self {
+    pub fn suffix(self, field: impl Into<String>, suffix: impl Into<String>) -> Self {
         let suffix_str = suffix.into();
         // Use fuzzy text search for suffix matching
         self.fuzzy_text(field, format!("*{}", suffix_str))
     }
 
     /// Create a builder for wildcard matching
-    pub fn wildcard(mut self, field: impl Into<String>, pattern: impl Into<String>) -> Self {
+    pub fn wildcard(self, field: impl Into<String>, pattern: impl Into<String>) -> Self {
         // Use fuzzy text search for wildcard matching
         self.fuzzy_text(field, pattern)
     }
 
     /// Create a builder for case-insensitive text search
-    pub fn text_case_insensitive(mut self, field: impl Into<String>, query: impl Into<String>) -> Self {
+    pub fn text_case_insensitive(self, field: impl Into<String>, query: impl Into<String>) -> Self {
         // Use fuzzy text search for case-insensitive matching
         self.fuzzy_text(field, query.into().to_lowercase())
     }

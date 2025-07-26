@@ -170,7 +170,7 @@ impl BackpropagationCoordinator {
     }
     
     /// Get comprehensive performance analysis
-    pub fn get_performance_analysis(&self) -> PerformanceAnalysis {
+    pub fn get_performance_analysis(&mut self) -> PerformanceAnalysis {
         let combined_metrics = self.engine.get_combined_metrics();
         let strategy_comparison = self.engine.get_strategy_comparison();
         let cache_stats = self.engine.backpropagator().cache_stats();

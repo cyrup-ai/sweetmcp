@@ -53,7 +53,7 @@ impl ConfigCoordinator {
         
         // Apply environment overrides
         if let Ok(env_config) = coordinator.env_loader.load_from_environment() {
-            config = coordinator.merge_configs(config, env_config);
+            config = coordinator.merge_configs(&config, &env_config);
         }
         
         // Validate final configuration
@@ -108,10 +108,9 @@ impl ConfigCoordinator {
     }
 
     /// Merge two configurations with intelligent precedence
-    fn merge_configs(&self, base: QuantumMCTSConfig, override_config: QuantumMCTSConfig) -> QuantumMCTSConfig {
-        // Environment variables override system-optimized values
-        // but only if they pass validation
-        let mut merged = base;
+    fn merge_configs(&self, base: &QuantumMCTSConfig, override_config: &QuantumMCTSConfig) -> QuantumMCTSConfig {
+        // Start with a clone of the base config
+        let mut merged = base.clone();
         
         // Merge parallelism (with bounds checking)
         if override_config.max_quantum_parallel != base.max_quantum_parallel {

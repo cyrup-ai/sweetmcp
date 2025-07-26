@@ -11,8 +11,10 @@ use crate::cognitive::types::CognitiveError;
 use super::super::super::node_state::QuantumMCTSNode;
 use super::{
     core::{QuantumEntanglementEngine},
-    core_types::{
+    operation_types::{
         EngineOperationResult, EngineOperationType, EngineOperationDetails,
+    },
+    core_types::{
         EngineStatistics, EnginePerformanceReport, PerformanceGrades,
     },
     OptimizationResult, CreationResult, PruningResult, BalancingResult,

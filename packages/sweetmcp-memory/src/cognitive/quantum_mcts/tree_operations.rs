@@ -5,16 +5,22 @@ use rand::Rng;
 use std::collections::HashMap;
 use tokio::task::JoinSet;
 use tracing::{error, info};
+use uuid::Uuid;
 
 use crate::cognitive::{
     mcts::CodeState,
-    quantum::{Complex64, EntanglementType, MeasurementBasis},
+    quantum::{
+        Complex64,
+        entanglement::{EntanglementGraph, MeasurementBasis},
+        QuantumEntanglementType,
+    },
     types::CognitiveError,
 };
 
-use super::core::{QuantumMCTS, QuantumMCTSNode, QuantumNodeState};
+use super::QuantumMCTS;
+use super::node_state::{core::QuantumNodeState, node::QuantumMCTSNode};
 
-impl QuantumMCTS {
+impl QuantumMCTS<QuantumNodeState> {
     /// Quantum selection using superposition and entanglement
     pub(crate) async fn quantum_select(&self) -> Result<String, CognitiveError> {
         let tree = self.tree.read().await;
@@ -91,8 +97,8 @@ impl QuantumMCTS {
         let probabilities: Vec<f64> = scores.iter().map(|(_, s)| s.exp() / total_score).collect();
 
         // Quantum measurement
-        let mut rng = rand::thread_rng();
-        let measurement = rng.gen_range(0.0..1.0);
+        let mut rng = rand::rng();
+        let measurement = rng.random_range(0.0..1.0);
         let mut cumulative = 0.0;
 
         for (i, p) in probabilities.iter().enumerate() {
@@ -128,23 +134,21 @@ impl QuantumMCTS {
         let new_quantum_state = self.apply_quantum_action(&parent_state, &action).await?;
 
         // Create child with quantum properties
-        let child_id = format!("{}-q{}", node_id, tree.len());
-        let child_node = QuantumMCTSNode {
-            id: child_id.clone(),
-            visits: 0,
-            amplitude: self.calculate_child_amplitude(&node.amplitude, &action),
-            quantum_reward: Complex64::new(0.0, 0.0),
-            children: HashMap::new(),
-            parent: Some(node_id.to_string()),
-            quantum_state: new_quantum_state,
-            untried_actions: Self::get_quantum_actions(
-                &new_quantum_state.classical_state,
-                &self.spec,
-            ),
-            is_terminal: false,
-            applied_action: Some(action.clone()),
-            improvement_depth: node.improvement_depth,
-        };
+        let child_id = Uuid::new_v4().to_string();
+        let child_amplitude = self.calculate_child_amplitude(&node.amplitude, &action);
+        let untried_actions = Self::get_quantum_actions(
+            &new_quantum_state.classical_state,
+            &self.spec,
+        );
+        let mut child_node = QuantumMCTSNode::new(
+            child_id.clone(),
+            new_quantum_state,
+            untried_actions,
+            Some(node_id.to_string()),
+            node.improvement_depth,
+        );
+        child_node.amplitude = child_amplitude;
+        child_node.applied_action = Some(action.clone());
 
         // Add to tree
         tree.insert(child_id.clone(), child_node);
@@ -169,8 +173,8 @@ impl QuantumMCTS {
         let probabilities = superposition.measure(&measurement)?;
 
         // Select based on quantum probabilities
-        let mut rng = rand::thread_rng();
-        let selection = rng.gen_range(0.0..1.0);
+        let mut rng = rand::rng();
+        let selection = rng.random_range(0.0..1.0);
         let mut cumulative = 0.0;
 
         for (i, &p) in probabilities.iter().enumerate() {
@@ -256,7 +260,7 @@ impl QuantumMCTS {
                 entanglement_graph.add_entanglement(
                     node_id.to_string(),
                     other_id.to_string(),
-                    EntanglementType::Weak,
+                    QuantumEntanglementType::Werner,
                     self.config.entanglement_strength,
                 )?;
             }

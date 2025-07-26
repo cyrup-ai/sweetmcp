@@ -3,7 +3,7 @@
 //! This module provides statistical analysis for MCTS node search results
 //! with zero-allocation patterns and blazing-fast performance.
 
-use super::super::super::types::{MCTSNode, CodeState};
+use super::super::super::types::MCTSNode;
 use std::collections::HashMap;
 
 /// Basic tree statistics

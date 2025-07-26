@@ -33,7 +33,7 @@ pub use node_search_advanced::{
     AdvancedNodeSearch, AnomalousNode, AnomalyType, PromisingPath
 };
 
-use super::super::super::types::{MCTSNode, CodeState};
+use super::super::super::types::MCTSNode;
 use std::collections::HashMap;
 
 /// Main node search interface

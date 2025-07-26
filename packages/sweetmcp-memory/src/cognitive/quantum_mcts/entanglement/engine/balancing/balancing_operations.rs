@@ -164,12 +164,12 @@ impl BalancingOperations {
 
     /// Find suitable redistribution targets
     #[inline]
-    fn find_suitable_redistribution_targets(
+    fn find_suitable_redistribution_targets<'a>(
         &self,
         source: &NodeRebalancingPriority,
-        candidates: &[&NodeRebalancingPriority],
+        candidates: &[&'a NodeRebalancingPriority],
         amount: usize,
-    ) -> Vec<&NodeRebalancingPriority> {
+    ) -> Vec<&'a NodeRebalancingPriority> {
         let mut suitable_targets = Vec::new();
 
         for &candidate in candidates {
@@ -576,11 +576,16 @@ impl RedistributionCache {
         // If still too large, remove 25% of entries
         if self.cache.len() >= self.max_size {
             let target_size = self.max_size * 3 / 4;
-            let mut entries: Vec<_> = self.cache.iter().collect();
-            entries.sort_by_key(|(_, entry)| entry.timestamp_ms);
+            let keys_to_remove: Vec<_> = {
+                let mut entries: Vec<_> = self.cache.iter().collect();
+                entries.sort_by_key(|(_, entry)| entry.timestamp_ms);
+                entries.iter().take(self.cache.len() - target_size)
+                    .map(|(key, _)| key.clone())
+                    .collect()
+            };
             
-            for (key, _) in entries.iter().take(self.cache.len() - target_size) {
-                self.cache.remove(*key);
+            for key in keys_to_remove {
+                self.cache.remove(&key);
             }
         }
     }

@@ -31,7 +31,26 @@ pub use committee::{CommitteeEvent, EvaluationCommittee};
 pub use evolution::{CodeEvolution, CognitiveCodeEvolution, EvolutionEngine};
 pub use mcts::{CodeState, MCTS};
 pub use orchestrator::InfiniteOrchestrator;
-pub use quantum_mcts::{QuantumMCTS, QuantumMCTSConfig, QuantumNodeState, QuantumTreeStatistics};
+
+// Quantum MCTS re-exports
+pub use quantum_mcts::{
+    QuantumMCTS,
+    QuantumMCTSConfig,
+    QuantumNodeState,
+    QuantumTreeStatistics,
+    QuantumStatisticsCollector,
+    ConvergenceMetrics,
+    PerformanceMetrics,
+    DepthStatistics,
+    RewardStatistics,
+    TreeStatisticsAnalyzer,
+    TreeAnalysis,
+    RewardQuality,
+    ConvergencePhase,
+    ConvergenceHealth,
+};
+
+// Quantum orchestrator re-exports
 pub use quantum_orchestrator::{QuantumOrchestrationConfig, QuantumOrchestrator, RecursiveState};
 pub use types::{
     CognitiveError, CognitiveMemoryNode, CognitiveSettings, EvolutionMetadata, ImpactFactors,

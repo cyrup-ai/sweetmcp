@@ -329,7 +329,7 @@ impl QuantumNodeFactory {
 
         // Shuffle for variety
         use rand::seq::SliceRandom;
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
         actions.shuffle(&mut rng);
     }
 

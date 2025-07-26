@@ -4,8 +4,7 @@
 //! quantum neural networks, classical neural networks, SVM, and random forest
 //! with zero allocation fast paths and blazing-fast performance.
 
-use super::{MLDecoder, QuantumLayer};
-use super::quantum_ops::MLModelType;
+use super::quantum_ops::{MLDecoder, QuantumLayer, MLModelType};
 
 impl MLDecoder {
     /// Decode quantum error syndrome using trained model with optimized inference

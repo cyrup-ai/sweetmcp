@@ -12,6 +12,14 @@ pub enum PerformanceTrend {
     Stable,
     /// Performance is degrading (getting slower)
     Degrading,
+    /// Performance is declining (synonym for degrading)
+    Declining,
+    /// Performance is volatile (unstable)
+    Volatile,
+    /// Trend is unknown or cannot be determined
+    Unknown,
+    /// Insufficient data to determine trend
+    Insufficient,
 }
 
 impl PerformanceTrend {
@@ -21,6 +29,10 @@ impl PerformanceTrend {
             PerformanceTrend::Improving => "Improving",
             PerformanceTrend::Stable => "Stable",
             PerformanceTrend::Degrading => "Degrading",
+            PerformanceTrend::Declining => "Performance is declining",
+            PerformanceTrend::Volatile => "Performance is volatile",
+            PerformanceTrend::Unknown => "Trend is unknown",
+            PerformanceTrend::Insufficient => "Insufficient data for trend analysis",
         }
     }
     
@@ -29,18 +41,27 @@ impl PerformanceTrend {
         matches!(self, PerformanceTrend::Improving | PerformanceTrend::Stable)
     }
     
-    /// Check if trend requires attention
-    pub fn requires_attention(&self) -> bool {
-        matches!(self, PerformanceTrend::Degrading)
+    /// Check if trend is negative
+    pub fn is_negative(&self) -> bool {
+        matches!(self, PerformanceTrend::Degrading | PerformanceTrend::Declining)
     }
     
-    /// Get trend score (0.0 to 1.0, higher is better)
+    /// Get trend score (0.0-1.0, higher is better)
     pub fn score(&self) -> f64 {
         match self {
             PerformanceTrend::Improving => 1.0,
             PerformanceTrend::Stable => 0.8,
             PerformanceTrend::Degrading => 0.3,
+            PerformanceTrend::Declining => 0.3,  // Same as Degrading
+            PerformanceTrend::Volatile => 0.2,
+            PerformanceTrend::Unknown => 0.1,
+            PerformanceTrend::Insufficient => 0.0,
         }
+    }
+    
+    /// Check if trend requires attention
+    pub fn requires_attention(&self) -> bool {
+        matches!(self, PerformanceTrend::Degrading | PerformanceTrend::Declining | PerformanceTrend::Volatile)
     }
     
     /// Get trend grade
@@ -49,6 +70,10 @@ impl PerformanceTrend {
             PerformanceTrend::Improving => 'A',
             PerformanceTrend::Stable => 'B',
             PerformanceTrend::Degrading => 'D',
+            PerformanceTrend::Declining => 'D',  // Same as Degrading
+            PerformanceTrend::Volatile => 'C',
+            PerformanceTrend::Unknown => '?',
+            PerformanceTrend::Insufficient => 'I',
         }
     }
     
@@ -58,6 +83,10 @@ impl PerformanceTrend {
             PerformanceTrend::Improving => "📈",
             PerformanceTrend::Stable => "➡️",
             PerformanceTrend::Degrading => "📉",
+            PerformanceTrend::Declining => "📉",  // Same as Degrading
+            PerformanceTrend::Volatile => "🔀",
+            PerformanceTrend::Unknown => "❓",
+            PerformanceTrend::Insufficient => "⏳",
         }
     }
     
@@ -67,6 +96,10 @@ impl PerformanceTrend {
             PerformanceTrend::Improving => "Performance is improving over time with faster execution",
             PerformanceTrend::Stable => "Performance is stable with consistent execution times",
             PerformanceTrend::Degrading => "Performance is degrading with slower execution times",
+            PerformanceTrend::Declining => "Performance is declining with slower execution times",
+            PerformanceTrend::Volatile => "Performance is volatile with inconsistent execution times",
+            PerformanceTrend::Unknown => "Performance trend cannot be determined",
+            PerformanceTrend::Insufficient => "Insufficient data to determine performance trend",
         }
     }
     
@@ -76,6 +109,10 @@ impl PerformanceTrend {
             PerformanceTrend::Improving => "Continue current optimizations",
             PerformanceTrend::Stable => "Monitor for any changes",
             PerformanceTrend::Degrading => "Investigate performance bottlenecks",
+            PerformanceTrend::Declining => "Investigate and address performance issues",
+            PerformanceTrend::Volatile => "Investigate sources of performance instability",
+            PerformanceTrend::Unknown => "Collect more data to determine performance trend",
+            PerformanceTrend::Insufficient => "Collect more data points for accurate analysis",
         }
     }
     
@@ -85,6 +122,10 @@ impl PerformanceTrend {
             PerformanceTrend::Improving => ActionPriority::Low,
             PerformanceTrend::Stable => ActionPriority::Medium,
             PerformanceTrend::Degrading => ActionPriority::High,
+            PerformanceTrend::Declining => ActionPriority::High,
+            PerformanceTrend::Volatile => ActionPriority::Medium,
+            PerformanceTrend::Unknown => ActionPriority::Low,
+            PerformanceTrend::Insufficient => ActionPriority::Low,
         }
     }
 }

@@ -198,7 +198,7 @@ impl RelationshipPattern {
         // Use more restrictive direction
         if other.direction != RelationshipDirection::Both {
             if self.direction == RelationshipDirection::Both {
-                self.direction = other.direction;
+                self.direction = other.direction.clone();
             } else if self.direction != other.direction {
                 // Conflicting directions - keep current
             }
@@ -233,7 +233,7 @@ impl RelationshipPattern {
         // Use more restrictive direction
         if other.direction != RelationshipDirection::Both {
             if self.direction == RelationshipDirection::Both {
-                self.direction = other.direction;
+                self.direction = other.direction.clone();
             } else if self.direction != other.direction {
                 // Conflicting directions - no matches possible
                 self.relationship_types.clear();

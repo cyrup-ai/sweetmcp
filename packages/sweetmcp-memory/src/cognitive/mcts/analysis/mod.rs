@@ -47,7 +47,7 @@ pub use structure_analysis::{
 };
 
 // Convenience re-exports for common analysis operations
-use super::types::{MCTSNode, CodeState};
+use super::types::MCTSNode;
 use std::collections::HashMap;
 
 /// Comprehensive tree analysis facade for ergonomic usage

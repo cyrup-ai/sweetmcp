@@ -265,8 +265,8 @@ pub struct RelationshipIndex {
 #[derive(Debug, Clone)]
 pub struct RelationshipStatistics {
     pub total_relationships: usize,
-    pub type_distribution: std::collections::HashMap<super::relationship_types::SemanticRelationshipType, usize>,
-    pub confidence_distribution: std::collections::HashMap<super::types::ConfidenceLevel, usize>,
+    pub type_distribution: std::collections::HashMap<super::relationships::relationship_types::SemanticRelationshipType, usize>,
+    pub confidence_distribution: std::collections::HashMap<super::confidence::ConfidenceLevel, usize>,
     pub source_degree_distribution: std::collections::HashMap<usize, usize>,
     pub target_degree_distribution: std::collections::HashMap<usize, usize>,
     pub average_relationships_per_item: f64,
@@ -277,8 +277,8 @@ pub struct RelationshipStatistics {
 pub struct ItemStatistics {
     pub total_items: usize,
     pub category_distribution: std::collections::HashMap<String, usize>,
-    pub type_distribution: std::collections::HashMap<super::types::SemanticItemType, usize>,
-    pub confidence_distribution: std::collections::HashMap<super::types::ConfidenceLevel, usize>,
+    pub type_distribution: std::collections::HashMap<super::item_types::SemanticItemType, usize>,
+    pub confidence_distribution: std::collections::HashMap<super::confidence::ConfidenceLevel, usize>,
     pub tag_distribution: std::collections::HashMap<String, usize>,
     pub content_length_distribution: std::collections::HashMap<usize, usize>,
     pub average_content_length: f64,

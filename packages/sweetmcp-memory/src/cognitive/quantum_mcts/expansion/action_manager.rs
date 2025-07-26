@@ -76,7 +76,7 @@ impl ActionManager {
         ].iter().map(|s| s.to_string()));
         
         // Shuffle for variety in action selection
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
         actions.shuffle(&mut rng);
     }
     

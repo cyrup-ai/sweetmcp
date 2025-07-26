@@ -533,7 +533,7 @@ impl EpisodicMemoryManager {
             let memory_node = MemoryNode {
                 id: episodic.base.id.clone(),
                 content: serde_json::to_string(&episodic.base.content).unwrap_or_default(),
-                memory_type: crate::memory::memory_node::MemoryType::Episodic,
+                memory_type: crate::memory::MemoryType::Episodic,
                 created_at: episodic.base.metadata.created_at,
                 updated_at: episodic.base.updated_at,
                 embedding: None,

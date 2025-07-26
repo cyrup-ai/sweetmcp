@@ -8,9 +8,7 @@ use uuid::Uuid;
 // Re-export MCTS types for backward compatibility
 pub use super::mcts::types::{MCTSNode, CodeState};
 
-// Re-export evolution types with alias for backward compatibility
-pub use super::evolution::EvolutionRules;
-pub use super::evolution::EvolutionRules as EvolutionRule;
+// EvolutionRules is defined in this file, no need to import
 
 // Re-export vector optimization types for cognitive usage
 pub use crate::vector::async_vector_optimization::coordinator_types::OptimizationSpec as VectorOptimizationSpec;
@@ -18,16 +16,10 @@ pub use crate::vector::async_vector_optimization::coordinator_types::Optimizatio
 // Alias for backward compatibility
 pub type OptimizationSpec = VectorOptimizationSpec;
 
-/// Cognitive state representing the current understanding and context
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CognitiveState {
-    pub activation_pattern: Vec<f32>,
-    pub attention_weights: Vec<f32>,
-    pub temporal_context: TemporalContext,
-    pub uncertainty: f32,
-    pub confidence: f32,
-    pub meta_awareness: f32,
-}
+// Re-export CognitiveState from the more decomposed state module
+pub use crate::cognitive::state::{CognitiveState, SemanticContext, AbstractionLevel};
+use smallvec::SmallVec;
+use arrayvec::{ArrayVec, ArrayString};
 
 /// Temporal context and dependencies
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -112,16 +104,36 @@ impl Default for CognitiveSettings {
 pub struct EntanglementBond {
     pub target_id: String,
     pub bond_strength: f32,
-    pub entanglement_type: EntanglementType,
+    pub entanglement_type: CognitiveEntanglementType,
 }
 
+/// Type of cognitive entanglement between memories
+/// 
+/// These represent high-level cognitive relationships, not quantum states.
+/// For quantum entanglements, use `quantum::QuantumEntanglementType`
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum EntanglementType {
+pub enum CognitiveEntanglementType {
+    /// Semantic similarity between memories
     Semantic,
+    /// Temporal relationship between memories
     Temporal,
+    /// Causal relationship between memories
     Causal,
+    /// Contextual relationship between memories
+    Contextual,
+    /// Emotional connection between memories
+    Emotional,
+    /// Episodic relationship (part of same event)
+    Episodic,
+    /// Thematic relationship between memories
+    Thematic,
+    /// Emergent relationship not fitting other categories
     Emergent,
 }
+
+// Re-export for backward compatibility
+#[deprecated(note = "Use CognitiveEntanglementType instead to avoid confusion with quantum entanglements")]
+pub use CognitiveEntanglementType as EntanglementType;
 
 /// Evolution metadata tracking system development
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -551,10 +563,23 @@ impl Model {
     }
 }
 
+/// Create a default cognitive state for backward compatibility
+fn create_default_cognitive_state() -> CognitiveState {
+    let semantic_context = SemanticContext {
+        primary_concepts: ArrayVec::new(),
+        secondary_concepts: ArrayVec::new(),
+        domain_tags: ArrayVec::new(),
+        abstraction_level: AbstractionLevel::Intermediate,
+    };
+    
+    CognitiveState::new(semantic_context)
+}
+
 impl CognitiveMemoryNode {
     /// Check if this memory node has been enhanced with cognitive features
     pub fn is_enhanced(&self) -> bool {
-        self.cognitive_state.activation_pattern.len() > 0
+        !self.cognitive_state.semantic_context.primary_concepts.is_empty()
+            || !self.cognitive_state.associations.is_empty()
             || self.quantum_signature.is_some()
             || self.evolution_metadata.is_some()
             || !self.attention_weights.is_empty()
@@ -570,19 +595,7 @@ impl From<crate::memory::MemoryNode> for CognitiveMemoryNode {
     fn from(memory: crate::memory::MemoryNode) -> Self {
         Self {
             base_memory: memory,
-            cognitive_state: CognitiveState {
-                activation_pattern: Vec::new(),
-                attention_weights: Vec::new(),
-                temporal_context: TemporalContext {
-                    history_embedding: Vec::new(),
-                    prediction_horizon: Vec::new(),
-                    causal_dependencies: Vec::new(),
-                    temporal_decay: 0.95,
-                },
-                uncertainty: 0.0,
-                confidence: 0.0,
-                meta_awareness: 0.0,
-            },
+            cognitive_state: create_default_cognitive_state(),
             quantum_signature: None,
             evolution_metadata: None,
             attention_weights: Vec::new(),

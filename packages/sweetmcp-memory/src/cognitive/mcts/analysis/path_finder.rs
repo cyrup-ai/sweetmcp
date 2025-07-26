@@ -3,7 +3,7 @@
 //! This module provides blazing-fast path finding with zero allocation
 //! optimizations for MCTS tree path analysis and exploration.
 
-use super::super::types::{MCTSNode, CodeState};
+use super::super::types::MCTSNode;
 use std::collections::HashMap;
 
 /// Path finding utilities for MCTS trees

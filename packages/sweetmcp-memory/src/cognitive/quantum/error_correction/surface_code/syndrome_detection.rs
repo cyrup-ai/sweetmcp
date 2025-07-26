@@ -8,6 +8,7 @@ use crate::cognitive::quantum::{
     types::{CognitiveError, CognitiveResult},
 };
 use std::collections::{HashMap, HashSet};
+use super::super::topological_pauli::PauliType;
 use smallvec::SmallVec;
 use std::time::Instant;
 
@@ -60,50 +61,6 @@ impl QubitPosition {
     }
 }
 
-/// Pauli operator types
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub enum PauliType {
-    I, // Identity
-    X, // Pauli-X
-    Y, // Pauli-Y
-    Z, // Pauli-Z
-}
-
-impl PauliType {
-    /// Get string representation
-    #[inline]
-    pub fn as_str(&self) -> &'static str {
-        match self {
-            PauliType::I => "I",
-            PauliType::X => "X",
-            PauliType::Y => "Y",
-            PauliType::Z => "Z",
-        }
-    }
-
-    /// Check if operator is Pauli-X or Pauli-Y (has X component)
-    #[inline]
-    pub fn has_x_component(&self) -> bool {
-        matches!(self, PauliType::X | PauliType::Y)
-    }
-
-    /// Check if operator is Pauli-Z or Pauli-Y (has Z component)
-    #[inline]
-    pub fn has_z_component(&self) -> bool {
-        matches!(self, PauliType::Z | PauliType::Y)
-    }
-
-    /// Commute with another Pauli operator
-    #[inline]
-    pub fn commutes_with(&self, other: &PauliType) -> bool {
-        match (self, other) {
-            (PauliType::I, _) | (_, PauliType::I) => true,
-            (PauliType::X, PauliType::X) | (PauliType::Z, PauliType::Z) => true,
-            (PauliType::Y, PauliType::Y) => true,
-            _ => false,
-        }
-    }
-}
 
 /// Pauli operator on specific qubit
 #[derive(Debug, Clone)]

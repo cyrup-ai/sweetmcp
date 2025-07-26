@@ -61,10 +61,24 @@ impl PerformanceAnalyzer {
     pub async fn estimate_reward(&self, state: &CodeState) -> Result<f64, CognitiveError> {
         // Ask committee to evaluate the state against the objective
         let evaluation_action = "evaluate_current_state";
-        let factors = self
+        let consensus = self
             .committee
             .evaluate_action(state, evaluation_action, &self.spec, &self.user_objective)
             .await?;
+
+        // Convert ConsensusDecision to ImpactFactors for reward calculation
+        let factors = ImpactFactors {
+            performance_impact: consensus.overall_score as f32,
+            quality_impact: consensus.overall_score as f32,
+            user_satisfaction_impact: if consensus.makes_progress { 0.8 } else { 0.2 },
+            system_stability_impact: consensus.confidence as f32,
+            maintainability_impact: consensus.overall_score as f32,
+            overall_score: consensus.overall_score as f32,
+            latency_factor: consensus.overall_score as f32,
+            memory_factor: consensus.overall_score as f32,
+            relevance_factor: consensus.overall_score as f32,
+            confidence: consensus.confidence as f32,
+        };
 
         // Calculate reward based on how well the state meets the objectives
         let reward = self.calculate_reward_from_factors(&factors, state);
@@ -172,13 +186,8 @@ impl PerformanceAnalyzer {
 }
 
 /// Performance trend analysis
-#[derive(Debug, Clone, PartialEq)]
-pub enum PerformanceTrend {
-    Improving,
-    Stable,
-    Degrading,
-    Insufficient,
-}
+// Re-export from canonical location
+pub use crate::cognitive::quantum_mcts::entanglement::metrics::performance_trends::PerformanceTrend;
 
 #[cfg(test)]
 mod tests {

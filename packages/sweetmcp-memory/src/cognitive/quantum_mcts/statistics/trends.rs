@@ -102,13 +102,18 @@ impl TrendsCoordinator {
             TrendMomentum::Insufficient
         };
         
+        // Clone trends to avoid move
+        let trends_clone = trends.clone();
+        let is_healthy = trends.is_performing_well();
+        let grade = trends.performance_grade();
+        
         TrendAnalysisResult {
-            trends,
+            trends: trends_clone,
             prediction,
             recommendations,
             momentum,
-            is_healthy: trends.is_performing_well(),
-            grade: trends.performance_grade(),
+            is_healthy,
+            grade,
         }
     }
 }

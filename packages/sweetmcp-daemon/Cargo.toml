@@ -38,6 +38,8 @@ axum          = { version = "0.7" }
 tower         = { version = "0.5" }
 tower-http    = { version = "0.6", features = ["cors", "trace"] }
 reqwest       = { version = "0.12", features = ["json"] }
+regex         = { version = "1.0" }
+url           = { version = "2.0" }
 uuid          = { version = "1.17", features = ["v4"] }
 tracing       = { version = "0.1" }
 async-stream  = { version = "0.3" }

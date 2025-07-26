@@ -258,8 +258,8 @@ impl AttentionMechanism {
     /// Get memories above attention threshold
     pub fn get_memories_above_threshold(&self, threshold: f32) -> Vec<(String, f32)> {
         self.attention_scores.iter()
-            .filter(|(_, score)| **score > threshold)
-            .map(|(id, score)| (id.clone(), **score))
+            .filter(|(_, score)| *score > threshold)
+            .map(|(id, score)| (id.clone(), *score))
             .collect()
     }
 

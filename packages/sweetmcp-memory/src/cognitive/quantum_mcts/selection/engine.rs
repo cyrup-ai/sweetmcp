@@ -185,13 +185,13 @@ impl QuantumSelectionEngine {
         Ok((visit_confidence * 0.4 + amplitude_confidence * 0.3 + coherence_confidence * 0.3).min(1.0))
     }
     
-    /// Calculate selection entropy for diversity analysis
-    fn calculate_selection_entropy(
-        &self,
+    /// Calculate selection entropy for the given node
+    pub fn calculate_selection_entropy(
+        &mut self,
         tree: &HashMap<String, QuantumMCTSNode>,
-        root_id: &str,
+        node_id: &str,
     ) -> Result<f64, CognitiveError> {
-        let root = tree.get(root_id)
+        let root = tree.get(node_id)
             .ok_or_else(|| CognitiveError::InvalidState("Root node not found".to_string()))?;
         
         if root.children.is_empty() {
@@ -295,9 +295,21 @@ impl QuantumSelectionEngine {
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashMap;
+    use std::sync::Arc;
+    use tokio::sync::RwLock;
+    
     use super::*;
-    use crate::cognitive::mcts::CodeState;
-    use super::super::super::node_state::{QuantumNodeState, QuantumMCTSNode};
+    use crate::cognitive::quantum_mcts::{
+        node_state::{QuantumNodeState, QuantumMCTSNode},
+        config::QuantumMCTSConfig,
+    };
+    use crate::cognitive::mcts::types::node_types::CodeState;
+    use super::super::core::QuantumSelector;
+    use super::super::types::{SelectionStrategy, SelectionResult, SelectionParameters, SelectionStatistics};
+    use crate::cognitive::types::CognitiveError;
+    use crate::cognitive::quantum_mcts::node_state::QuantumNodeState;
+    use crate::cognitive::quantum_mcts::node_state::QuantumMCTSNode;
     
     #[tokio::test]
     async fn test_selection_engine_creation() {
@@ -316,12 +328,12 @@ mod tests {
         
         // Create minimal tree for testing
         let mut tree_map = HashMap::new();
-        let classical_state = CodeState {
-            code: "test".to_string(),
-            latency: 1.0,
-            memory: 1.0,
-            relevance: 1.0,
-        };
+        let classical_state = CodeState::new(
+            "test".to_string(),
+            1.0,  // latency
+            1.0,  // memory
+            1.0,  // relevance
+        );
         
         let quantum_state = QuantumNodeState::new(classical_state, 2);
         let node = QuantumMCTSNode::new(
@@ -351,12 +363,12 @@ mod tests {
         let mut engine = QuantumSelectionEngine::new(config, SelectionStrategy::QuantumUCT);
         
         let mut tree_map = HashMap::new();
-        let classical_state = CodeState {
-            code: "test".to_string(),
-            latency: 1.0,
-            memory: 1.0,
-            relevance: 1.0,
-        };
+        let classical_state = CodeState::new(
+            "test".to_string(),
+            1.0,  // latency
+            1.0,  // memory
+            1.0,  // relevance
+        );
         
         let quantum_state = QuantumNodeState::new(classical_state, 2);
         let node = QuantumMCTSNode::new(

@@ -4,7 +4,6 @@
 //! optimizations and elegant ergonomic interfaces for MCTS node operations.
 
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 
 /// Codebase state with performance metrics
 #[derive(Clone, Debug, Serialize, Deserialize)]

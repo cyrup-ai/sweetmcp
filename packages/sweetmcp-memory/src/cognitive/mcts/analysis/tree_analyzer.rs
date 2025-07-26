@@ -3,7 +3,7 @@
 //! This module provides blazing-fast tree analysis with zero allocation
 //! optimizations for MCTS tree structure examination.
 
-use super::super::types::{MCTSNode, CodeState};
+use super::super::types::MCTSNode;
 use std::collections::HashMap;
 
 /// MCTS tree analyzer for structure analysis and depth calculations

@@ -12,13 +12,13 @@ pub use async_vector_operations::{
 };
 
 pub use async_vector_optimization::{
-    SearchStrategy, AggregationMethod, VectorCluster,
+    SearchStrategy,
 };
 
-// Re-export all core functionality
-pub mod async_vector_core;
-pub mod async_vector_operations;
-pub mod async_vector_optimization;
+// Import and re-export existing modules from the vector directory
+use super::async_vector_core;
+use super::async_vector_operations;
+use super::async_vector_optimization;
 
 /// Create a new in-memory vector store with default configuration
 #[inline]
@@ -101,12 +101,14 @@ mod tests {
     }
 
     #[test]
-    fn test_aggregation_methods() {
-        // Test that all aggregation methods are available
-        let _avg = AggregationMethod::Average;
-        let _max = AggregationMethod::Maximum;
-        let _min = AggregationMethod::Minimum;
-        let _sum = AggregationMethod::Sum;
+    fn test_distance_functions() {
+        // Test that distance metric functions work
+        let vec1 = vec![1.0, 2.0, 3.0];
+        let vec2 = vec![4.0, 5.0, 6.0];
+        
+        let _euclidean = DistanceMetric::Euclidean.calculate(&vec1, &vec2);
+        let _manhattan = DistanceMetric::Manhattan.calculate(&vec1, &vec2);
+        let _cosine = DistanceMetric::Cosine.calculate(&vec1, &vec2);
     }
 
     #[test]

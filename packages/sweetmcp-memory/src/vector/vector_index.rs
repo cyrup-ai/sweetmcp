@@ -98,6 +98,7 @@ impl FlatIndex {
                 }
             }
             DistanceMetric::DotProduct => -a.iter().zip(b.iter()).map(|(x, y)| x * y).sum::<f32>(),
+            DistanceMetric::Manhattan => a.iter().zip(b.iter()).map(|(x, y)| (x - y).abs()).sum::<f32>(),
         }
     }
 }

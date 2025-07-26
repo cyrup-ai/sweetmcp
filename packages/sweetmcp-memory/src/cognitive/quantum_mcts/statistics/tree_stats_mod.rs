@@ -71,7 +71,7 @@ pub mod quick {
 
     /// Generate one-line status for logging
     pub fn log_status(stats: &QuantumTreeStatistics) -> String {
-        let (health, is_healthy) = health_check(stats);
+        let (health, _is_healthy) = health_check(stats);
         let grade = performance_grade(stats);
         let phase = ConvergencePhase::from_convergence_metrics(&stats.convergence_metrics);
         

@@ -31,7 +31,23 @@ pub use expansion::QuantumExpander;
 pub use improvement::RecursiveImprovementEngine;
 pub use node_state::{QuantumMCTSNode, QuantumNodeState};
 pub use selection::QuantumSelector;
-pub use statistics::{QuantumStatisticsCollector, QuantumTreeStatistics};
+
+// Statistics re-exports
+pub use statistics::{
+    QuantumStatisticsCollector,
+    QuantumTreeStatistics,
+    ConvergenceMetrics,
+    PerformanceMetrics,
+    DepthStatistics,
+    RewardStatistics,
+    quick_stats,
+    analysis_presets,
+    TreeStatisticsAnalyzer,
+    TreeAnalysis,
+    RewardQuality,
+    ConvergencePhase,
+    ConvergenceHealth,
+};
 
 // Common types and traits
 use std::sync::Arc;

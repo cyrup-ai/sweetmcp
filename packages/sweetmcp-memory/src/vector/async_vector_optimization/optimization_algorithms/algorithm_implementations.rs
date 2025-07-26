@@ -169,7 +169,7 @@ impl super::optimization_executor::OptimizationExecutor {
 
     /// Optimize cache layout based on access patterns
     #[inline]
-    pub(super) fn optimize_cache_layout(&self, patterns: &AccessPatterns, cache_size: usize) -> Result<CacheLayout, Error> {
+    pub(super) fn optimize_cache_layout(&self, _patterns: &AccessPatterns, cache_size: usize) -> Result<CacheLayout, Error> {
         Ok(CacheLayout {
             hot_cache_size: cache_size * 80 / 100,
             cold_cache_size: cache_size * 20 / 100,
@@ -185,7 +185,7 @@ impl super::optimization_executor::OptimizationExecutor {
 
     /// Calculate optimal batch size for processing
     #[inline]
-    pub(super) fn calculate_optimal_batch_size(&self, vectors: &[(String, Vec<f32>)], current_batch_size: usize) -> Result<usize, Error> {
+    pub(super) fn calculate_optimal_batch_size(&self, vectors: &[(String, Vec<f32>)], _current_batch_size: usize) -> Result<usize, Error> {
         // Calculate optimal batch size based on data characteristics
         let vector_size = vectors.first().map(|(_, v)| v.len()).unwrap_or(0);
         let memory_per_vector = vector_size * 4; // 4 bytes per f32
@@ -228,7 +228,7 @@ impl super::optimization_executor::OptimizationExecutor {
 
     /// Optimize memory layout for cache efficiency
     #[inline]
-    pub(super) fn optimize_memory_layout(&self, vectors: &[(String, Vec<f32>)], analysis: &MemoryLayoutAnalysis) -> Result<OptimizedLayout, Error> {
+    pub(super) fn optimize_memory_layout(&self, _vectors: &[(String, Vec<f32>)], analysis: &MemoryLayoutAnalysis) -> Result<OptimizedLayout, Error> {
         Ok(OptimizedLayout {
             efficiency_improvement: 0.2,
             alignment_optimizations: analysis.alignment_issues,
@@ -238,7 +238,7 @@ impl super::optimization_executor::OptimizationExecutor {
 
     /// Apply memory layout optimizations
     #[inline]
-    pub(super) fn apply_memory_layout_optimizations(&self, vectors: &mut [(String, Vec<f32>)], layout: &OptimizedLayout) -> Result<(), Error> {
+    pub(super) fn apply_memory_layout_optimizations(&self, _vectors: &mut [(String, Vec<f32>)], layout: &OptimizedLayout) -> Result<(), Error> {
         // Apply memory layout optimizations (simplified)
         // In a real implementation, this would reorder vectors for better cache locality
         debug!("Applied {} alignment optimizations", layout.alignment_optimizations);

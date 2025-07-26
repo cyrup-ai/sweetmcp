@@ -279,7 +279,7 @@ impl SemanticRelationship {
             id: self.id.clone(),
             source_id: self.source_id.clone(),
             target_id: self.target_id.clone(),
-            relationship_type: self.relationship_type,
+            relationship_type: self.relationship_type.clone(),
             confidence: self.confidence,
             strength: self.strength,
             quality_score: self.quality_score(),

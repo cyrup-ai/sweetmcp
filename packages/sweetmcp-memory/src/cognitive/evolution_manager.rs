@@ -4,10 +4,9 @@
 use std::sync::Arc;
 use tokio::sync::RwLock;
 use tracing::{info, warn};
-use crate::cognitive::committee::{ConsensusDecision, EvaluationCommittee};
+use crate::cognitive::committee::ConsensusDecision;
 use crate::cognitive::mcts::types::node_types::CodeState;
 use crate::cognitive::types::CognitiveError;
-use crate::vector::async_vector_optimization::OptimizationSpec;
 
 /// Tracks evolution progress and manages prompt enhancement
 pub struct EvolutionManager {
